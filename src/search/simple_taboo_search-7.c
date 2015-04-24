@@ -6,7 +6,7 @@
 
 #include "fifo.h"	/* for taboo list */
 #include "time.h"
-
+#include "clique_count.h"
 #define MAXSIZE (541)
 #define TABOOSIZE (500)
 #define BIGCOUNT (9999999)
@@ -19,158 +19,6 @@
  *** uses a taboo list of size #TABOOSIZE# to hold and encoding of and edge
  *** (i,j)+clique_count
  ***/
-
-/*
- * PrintGraph
- *
- * prints in the right format for the read routine
- */
-void PrintGraph(int *g, int gsize)
-{
-	int i;
-	int j;
-	char file_name[100];
-	sprintf(file_name, "./CounterExamples/CE_%d", gsize);
-	FILE* fd = fopen(file_name, "a+");
-	fprintf(fd,"%d-------------------\n",gsize);
-
-	for(i=0; i < gsize; i++)
-	{
-		for(j=0; j < gsize; j++)
-		{
-			fprintf(fd,"%d ",g[i*gsize+j]);
-		}
-		fprintf(fd,"\n");
-	}
-	fclose(fd);
-	return;
-}
-
-/*
- * CopyGraph 
- *
- * copys the contents of old_g to corresponding locations in new_g
- * leaving other locations in new_g alone
- * that is
- * 	new_g[i,j] = old_g[i,j]
- */
-void CopyGraph(int *old_g, int o_gsize, int *new_g, int n_gsize)
-{
-	int i;
-	int j;
-
-	/*
-	 * new g must be bigger
-	 */
-	if(n_gsize < o_gsize)
-		return;
-
-	for(i=0; i < o_gsize; i++)
-	{
-		for(j=0; j < o_gsize; j++)
-		{
-			new_g[i*n_gsize+j] = old_g[i*o_gsize+j];
-		}
-	}
-
-	return;
-}
-
-int* DegradeGraph(int *old_g, int o_gsize) {
-	int i, j;
-	int* new_g = (int *)malloc((o_gsize - 1) * (o_gsize - 1) *sizeof(int));
-	for(i = 0; i < o_gsize - 1; i ++) {
-		for(j = 0; j < o_gsize - 1; j ++) {
-			new_g[i * (o_gsize - 1) + j] = old_g[i * o_gsize + j];
-		}
-	}
-	free(old_g);
-	return new_g;
-}
-/*
- ***
- *** returns the number of monochromatic cliques in the graph presented to
- *** it
- ***
- *** graph is stored in row-major order
- *** only checks values above diagonal
- */
-
-int CliqueCount(int *g,
-	     int gsize)
-{
-    int i;
-    int j;
-    int k;
-    int l;
-    int m;
-    int n;
-    int o;
-    int count=0;
-    int sgsize = 7;
-    
-    for(i=0;i < gsize-sgsize+1; i++)
-    {
-	for(j=i+1;j < gsize-sgsize+2; j++)
-        {
-	    for(k=j+1;k < gsize-sgsize+3; k++) 
-            { 
-		if((g[i*gsize+j] == g[i*gsize+k]) && 
-		   (g[i*gsize+j] == g[j*gsize+k]))
-		{
-		    for(l=k+1;l < gsize-sgsize+4; l++) 
-		    { 
-			if((g[i*gsize+j] == g[i*gsize+l]) && 
-			   (g[i*gsize+j] == g[j*gsize+l]) && 
-			   (g[i*gsize+j] == g[k*gsize+l]))
-			{
-			    for(m=l+1;m < gsize-sgsize+5; m++) 
-			    {
-				if((g[i*gsize+j] == g[i*gsize+m]) && 
-				   (g[i*gsize+j] == g[j*gsize+m]) &&
-				   (g[i*gsize+j] == g[k*gsize+m]) && 
-				   (g[i*gsize+j] == g[l*gsize+m])) {
-					for(n=m+1; n < gsize-sgsize+6; n++)
-					{
-						if((g[i*gsize+j]
-							== g[i*gsize+n]) &&
-						   (g[i*gsize+j] 
-							== g[j*gsize+n]) &&
-						   (g[i*gsize+j] 
-							== g[k*gsize+n]) &&
-						   (g[i*gsize+j] 
-							== g[l*gsize+n]) &&
-						   (g[i*gsize+j] 
-							== g[m*gsize+n])) {
-					for(o=n+1; o < gsize-sgsize+7; o++) {
-						if((g[i*gsize+j]
-							== g[i*gsize+o]) &&
-						   (g[i*gsize+j] 
-							== g[j*gsize+o]) &&
-						   (g[i*gsize+j] 
-							== g[k*gsize+o]) &&
-						   (g[i*gsize+j] 
-							== g[l*gsize+o]) &&
-						   (g[i*gsize+j] 
-							== g[m*gsize+o]) &&
-						   (g[i*gsize+j] == 
-							   g[n*gsize+o])) {
-			      					count++;
-						   }
-					}
-						}
-					}
-				}
-			    }
-			}
-		    }
-		}
-	    }
-         }
-     }
-    return(count);
-}
-
 
 int
 main(int argc,char *argv[])
@@ -352,7 +200,6 @@ main(int argc,char *argv[])
 		 * there is a bug here. If the best_i, best_j is
 		 * not found, the last flip will be reversed!!!!
 		 */
-		if()
 		g[best_i*gsize+best_j] = 1 - g[best_i*gsize+best_j];
 
 		/*

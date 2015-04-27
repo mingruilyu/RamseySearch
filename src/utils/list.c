@@ -46,8 +46,15 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 				out_index = i;
 			else out_index = j;
 			for( p = 0; p < clique_size; p++){
-				if(g[nodeArray[p]*g_size+out_index]!=clique_color)
-					break;
+                if(nodeArray[p]<out_index){
+                        if(g[nodeArray[p]*g_size+out_index]!=clique_color)
+                            break;
+                }
+                else{
+                    if(g[out_index*g_size+nodeArray[p]]!=clique_color)
+                        break;
+                }
+                    
 			}
 
 			if(p == clique_size) {

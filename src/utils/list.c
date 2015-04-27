@@ -192,7 +192,7 @@ void clique_init_6(Clique *clique, int color, int i, int j, int k,
 }
 
 
-
+/*
 int main( int argc, char *argv[])
 {
 	
@@ -230,7 +230,7 @@ fprintf(stdout," counter = %d \n ",counter);
     // clique_init_6(clique3, 0, 3,4,5,6,7,8);
     // list_add(list,clique3); 
     return(0); 
-}
+}*/
 
 
 

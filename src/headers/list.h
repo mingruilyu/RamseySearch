@@ -22,7 +22,8 @@ typedef struct List_ {
  * counter is the number of new cliques that
  * will be generated if flip edge(i, j)
  */
-int list_search_6(List *list,int *g, int g_size, int i, int j,  int stop);
+int list_search_6(List *list,int *g, int g_size, 
+									int i, int j,  int stop);
 
 /*
  * seach list to see if the cliques contains
@@ -38,13 +39,13 @@ void list_add(List *list, Clique *clique);
 
 void list_delete(List *list);
 // inline
-void clique_init_7(Clique *clique, int color, int i, int j, int k, 
-				 	int l, int m, int n, int o);
-void clique_init_6(Clique *clique, int color, int i, int j, int k, 
- 				 	int l, int m, int n);
+Clique* clique_init_7(int color, int i, int j, int k, 
+				 							int l, int m, int n, int o);
+Clique* clique_init_6(int color, int i, int j, int k, 
+ 				 							int l, int m, int n);
 
 
-void list_init(List *list, int clique_size);
+List* list_init(int clique_size);
 void print_list(List *list);
 
 #endif

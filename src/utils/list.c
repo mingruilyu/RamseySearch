@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <list.h>
 #include <stdbool.h>
+
 /*
  * seach list to see if the cliques contains
  * edge(i, j). if a clique does not contain 
@@ -11,8 +12,6 @@
  * counter is the number of new cliques that
  * will be generated if flip edge(i, j)
  */
-
-
 
 int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 	int clique_size = list->clique_size;
@@ -97,7 +96,6 @@ int list_search_7(List *list, int i, int j){
 	return counter;
 }
 
-
 void list_add(List *list, Clique *clique){
 
 	Clique *tail = list->back;
@@ -108,14 +106,14 @@ void list_add(List *list, Clique *clique){
 		list->front = clique;		
 	}
 	list->back = clique;
-	list->length = list->length +1;
+	list->length = list->length + 1;
 	return;
 	
 }
 
 void list_delete(List *list){
-	Clique *toDelete = list -> front;
-	Clique *next_clique= toDelete-> next;
+	Clique *toDelete = list->front;
+	Clique *next_clique= toDelete->next;
 	
 	while(toDelete!=NULL){		
 		free(toDelete);
@@ -123,8 +121,8 @@ void list_delete(List *list){
 		if(next_clique !=NULL)
 			next_clique = next_clique->next;
 
-	}	
-	list_init(list, list->clique_size);
+	}
+	free(list);
 	return;
 }
 
@@ -144,51 +142,44 @@ void print_list(List *list){
 }
 
 
-void list_init(List *list, int clique_size){
-	//list =(List*) malloc(sizeof(List));
+List* list_init(int clique_size){
+	List* list =(List*) malloc(sizeof(List));
 	list->front = NULL;
 	list->back = NULL;
 	list->clique_size = clique_size;
 	list-> length = 0;
-	return;
+	return list;
 }
 
-void clique_init_7(Clique *clique,int color, int i, int j, int k, 
-				 	int l, int m, int n, int o){
+Clique* clique_init_7(int color, int i, int j, 
+											int k, int l, int m, 
+											int n, int o){
 
 	int *nodes; 
-    nodes=(int*)malloc(7*sizeof(int*)); 
-    nodes[0]=i;
-    nodes[1]=j;
-    nodes[2]=k;
-    nodes[3]=l;
-    nodes[4]=m;
-    nodes[5]=n;
-    nodes[6]=o;
-
-	clique -> clique_node = nodes;
-	clique -> color = color;
-	clique -> next = NULL;
-	return;
+	Clique* clique = (Clique *) malloc(sizeof(Clique));
+  nodes = (int *) malloc(7 * sizeof(int)); 
+  nodes[0] = i; nodes[1] = j;
+  nodes[2] = k; nodes[3] = l;
+  nodes[4] = m; nodes[5] = n;
+  nodes[6] = o;
+	clique->clique_node = nodes;
+	clique->color = color;
+	clique->next = NULL;
+	return clique;
 }
 // inline
-void clique_init_6(Clique *clique, int color, int i, int j, int k, 
-				 	int l, int m, int n){
-	 
-	 int *nodes; 
-     nodes=(int*)malloc(6*sizeof(int*)); 
-
-     nodes[0]=i;
-     nodes[1]=j;
-     nodes[2]=k;
-     nodes[3]=l;
-     nodes[4]=m;
-     nodes[5]=n;
-	 clique -> clique_node = nodes;
-	 clique -> color = color;
-    clique -> next = NULL;
-	 return;
-
+Clique* clique_init_6(int color, int i, int j, 
+											int k, int l, int m, int n) {
+	int *nodes; 
+	Clique* clique = (Clique *) malloc(sizeof(Clique));
+  nodes = (int *) malloc(6 * sizeof(int)); 
+  nodes[0] = i; nodes[1] = j;
+  nodes[2] = k; nodes[3] = l;
+  nodes[4] = m; nodes[5] = n;
+	clique->clique_node = nodes;
+	clique->color = color;
+  clique->next = NULL;
+	return clique;
 }
 
 

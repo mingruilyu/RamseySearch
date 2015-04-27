@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 			while(best_count != 0 && try_count != gsize / 2) {
 				// scan the current graph and create cache
 				// for 6 clique and 7 clique
-				cache_6 = (List *) malloc(sizeof(List));
-				cache_7 = (List *) malloc(sizeof(List));
+				cache_6 = list_init(6);
+				cache_7 = list_init(7);
 				CliqueCountCreateCache(g, gsize, cache_6, cache_7);	
 				// Only flip the outmost column
 				j = gsize - 1;
@@ -129,6 +129,8 @@ int main(int argc, char *argv[])
 			best_count = 100;
 			j = gsize - 1;
 			while(best_count != 0 && try_count != gsize * gsize / 2) {
+				cache_6 = list_init(6);
+				cache_7 = list_init(7);
 				CliqueCountCreateCache(g, gsize, cache_6, cache_7);	
 				for(j = gsize - 1; j >= 1; j --) {
 					for(i = 0; i < j - 1; i ++) {

@@ -144,8 +144,7 @@ int CliqueCountCreateCache(int *g, int gsize,
 												&& (color == g[k * gsize + n]) 
 												&& (color == g[l * gsize + n]) 
 												&& (color == g[m * gsize + n])) {
-											clique = (Clique *) malloc(sizeof(Clique));
-											clique_init_6(clique, color, i, j, k, l, m, n);
+											clique = clique_init_6(color, i, j, k, l, m, n);
 											list_add(cache_6, clique);
 											for(o = n + 1; o < gsize - sgsize + 7;o ++) {
 												if((color == g[i * gsize + o]) 
@@ -155,8 +154,7 @@ int CliqueCountCreateCache(int *g, int gsize,
 														&&(color == g[m * gsize + o]) 
 														&&(color == g[n * gsize + o])) {
 		      								count++;
-													clique = (Clique *) malloc(sizeof(Clique));
-													clique_init_7(clique, color, i, j, k, l, m, n, o);
+													clique = clique_init_7(color, i, j, k, l, m, n, o);
 													list_add(cache_7, clique);
 			  								}
 											}

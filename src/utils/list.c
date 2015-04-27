@@ -113,14 +113,12 @@ void list_add(List *list, Clique *clique){
 
 void list_delete(List *list){
 	Clique *toDelete = list->front;
-	Clique *next_clique= toDelete->next;
+	Clique *temp;
 	
-	while(toDelete!=NULL){		
-		free(toDelete);
-		toDelete = next_clique;
-		if(next_clique !=NULL)
-			next_clique = next_clique->next;
-
+	while(toDelete!=NULL){	
+		temp = toDelete;
+		toDelete = toDelete -> next;
+		free(temp);
 	}
 	free(list);
 	return;
@@ -183,45 +181,39 @@ Clique* clique_init_6(int color, int i, int j,
 }
 
 
-/*
-int main( int argc, char *argv[])
+
+/*int main( int argc, char *argv[])
 {
 	
-	List *list;	
-	list = (List*) malloc(sizeof(List));	
-    list_init(list, 6);
+	List *list = list_init(6);
 
 
-    // fprintf(stdout,"3");
-     Clique *clique1;     
-     clique1 = (Clique*) malloc(sizeof(Clique));
-     
-     print_list(list);     
-     clique_init_6(clique1, 0, 1,2,3,4,5,6);    
+    fprintf(stdout,"3333");
+     Clique *clique1 = clique_init_6(0, 1,2,3,4,5,6);
 
      list_add(list,clique1);
      	
      print_list(list);
-     Clique *clique2;
-     clique2 = (Clique*) malloc(sizeof(Clique));
-     clique_init_6(clique2, 0, 2,3,4,5,6,7);
+     Clique *clique2 = clique_init_6(0, 2,3,4,5,6,7);
      list_add(list,clique2);
      print_list(list);
-     //list_delete(list);
-    // print_list(list);
+    fprintf(stdout,"1111");
+     list_delete(list);
+   //  fprintf(stdout,"2222");
+   //  print_list(list);
 
 
    //  int counter = list_search_6(list, 1,2);
     // fprintf(stdout," counter = %d \n ",counter);
-int *g =(int*)malloc(64*sizeof(int*)); 
-int counter = list_search_6(list, g, 10, 10,  8,  100);
-fprintf(stdout," counter = %d \n ",counter);
+//int *g =(int*)malloc(64*sizeof(int*)); 
+//int counter = list_search_6(list, g, 10, 10,  8,  100);
+//fprintf(stdout," counter = %d \n ",counter);
     // Clique *clique3;
     // clique3 = (Clique*) malloc(sizeof(Clique));
     // clique_init_6(clique3, 0, 3,4,5,6,7,8);
     // list_add(list,clique3); 
     return(0); 
-}*/
+} */
 
 
 

@@ -28,7 +28,7 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 		bool inclique_i=false;
 		bool inclique_j=false;
 		int p;
-		int in_index;
+		int out_index;
 
 		for(p = 0; p < clique_size; p++){
 			if(nodeArray[p] == i){
@@ -182,8 +182,8 @@ Clique* clique_init_6(int color, int i, int j,
 	return clique;
 }
 
-/*
 
+/*
 int main( int argc, char *argv[])
 {
 	

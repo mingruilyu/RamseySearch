@@ -34,10 +34,12 @@ void PrintGraph(int *g, int gsize)
 }
 
 /*
- * reads a graph of the correct format from the file referenced
- * by #fname#.  The resulting is passed back through the #g# and #gsize#
- * out parameters.  The space for the file is malloced and the routine
- * is not thread safe.  Returns 1 on success and 0 on failure.
+ * reads a graph of the correct format from the 
+ * file referenced by #fname#.  The resulting 
+ * is passed back through the #g# and #gsize#
+ * out parameters.  The space for the file is 
+ * malloced and the routine is not thread safe.  
+ * Returns 1 on success and 0 on failure.
  */
 int ReadGraph(char *fname, int **g, int *gsize)
 {
@@ -70,7 +72,7 @@ int ReadGraph(char *fname, int **g, int *gsize)
  	 */
 	if(!isdigit(line_buff[i])) {
 		fprintf(stderr,
-				"ReadGraph format error on size\n");
+						"ReadGraph format error on size\n");
 		fflush(stderr);
 		fclose(fd);
 		return(0);
@@ -80,7 +82,7 @@ int ReadGraph(char *fname, int **g, int *gsize)
 	lsize = (int)strtol(tempc,&tempc,10);
 	if((lsize < 0) || (lsize > MAXSIZE)) {
 		fprintf(stderr,
-				"ReadGraph size bad, read: %d, max: %d\n",
+						"ReadGraph size bad, read: %d, max: %d\n",
 				lsize, MAXSIZE);
 		fflush(stderr);
 		fclose(fd);

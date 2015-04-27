@@ -1,0 +1,26 @@
+#include "jrb.h"
+#include "stdio.h"
+#include "list.h"
+int main() {
+	int node[] = {1, 2, 3, 4, 5, 6, 7}; 
+	double key = 0;
+	long radix = 1;
+	int it_1;
+	JRB root = make_jrb();
+
+	for(it_1 = 0; it_1 < 7; it_1 ++) {
+		key += node[it_1] * radix;
+		radix *= 250;
+	}
+
+	printf("original key: %f\n", key);
+	double key_2 = 2.1;
+	radix = 1;
+	MAKE_KEY(node, key_2, radix)
+	jrb_insert_dbl(root, key, new_jval_v(NULL));
+	int result = jrb_find_dbl(root, key_2);
+	if(result)
+		printf("find result: %f\n", key_2);
+	else printf("not found! \n");
+	return 0;
+}

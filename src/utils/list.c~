@@ -34,9 +34,9 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 
 		for(p = 0; p < clique_size; p++){
 			if(nodeArray[p] == i)
-				inclique_i = true;
+				inclique_i = p;
 			if(nodeArray[p] == j)
-				inclique_j = true;
+				inclique_j = p;
 		}
 
 
@@ -49,37 +49,33 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 				if(g[nodeArray[p]*g_size+out_index]!=clique_color)
 					break;
 			}
+			// get key array, an array of seven people 
+			// sorted in ascending order. 
+			int q = 0;
+			bool out_index_added = false;
+			for(p = 0; p < 7; p ++) {
+				if(q >= 6 || (out_index < nodeArray[q] 
+											&& !out_index_added)) {
+					key_array[p] = out_index;
+					out_index_added = true;
+				}
+				else key_array[p] = nodeArray[q ++];
+			}
 
 			if(p == clique_size) {
-				// get key array, an array of seven people 
-				// sorted in ascending order. 
-				int q = 0;
-				bool out_index_added = false;
-				for(p = 0; p < 7; p ++) {
-					if(q >= 6 || (out_index < nodeArray[q] 
-												&& !out_index_added)) {
-						key_array[p] = out_index;
-						out_index_added = true;
-					}
-					else key_array[p] = nodeArray[q ++];
-				}
-				for(p = 0; p < 7; p ++)
-					printf("%d\t", key_array[p]);
-				printf("\n");
-				// get key
+			
 				int key, radix = 1; 
-				MAKE_KEY(key_array, key, radix)
+				MAKE_KEY(key_array, key, radix);
 				if(!jrb_find_dbl(root, key)) {
 					counter++;
-					jrb_insert_dbl(root, key, new_jval_v(NULL));
+					jrb_insert_dbl(root, current->key, new_jval_v(NULL));
 				}
 			}
+	    current = current->next;
     }
-	  current = current->next;
-	}
-  if(counter > stop)
-      return(-1);
-  return counter;
+    if(counter > stop)
+        return(-1);
+    return counter;
 }
 
 
@@ -197,6 +193,7 @@ Clique* clique_init_6(int color, int i, int j,
   nodes[0] = i; nodes[1] = j;
   nodes[2] = k; nodes[3] = l;
   nodes[4] = m; nodes[5] = n;
+
 	clique->clique_node = nodes;
 	clique->color = color;
   clique->next = NULL;
@@ -205,7 +202,13 @@ Clique* clique_init_6(int color, int i, int j,
 
 // keys are big double that is 250 radix.  
 // the maximum double is 1.7E+308, 250^7
-// does not exceed the maximum					 
+// does not exceed the maximum
+
+#define MAKE_KEY(key_array, key, radix) (\
+	int it;												 \
+	for(it = 0; it < 7; it ++) {   \
+		key+= key_array[it] * radix; \
+		radix *= 250;}							 
 
 /*
 int main( int argc, char *argv[])

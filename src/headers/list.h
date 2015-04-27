@@ -14,6 +14,11 @@ typedef struct List_ {
 	long length;
 } List;
 
+#define MAKE_KEY(key_array, key, radix) \
+	int it;												 \
+	for(it = 0; it < 7; it ++) {   \
+		key+= key_array[it] * radix; \
+		radix *= 250; }		
 /*
  * seach list to see if the cliques contains
  * edge(i, j). if a clique does not contain 

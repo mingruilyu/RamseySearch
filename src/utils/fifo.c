@@ -17,15 +17,13 @@
  **/
 
 
-struct fifo_stc
+typedef struct fifo_stc
 {
 	JRB findex;
 	Dllist fifo;
 	int fcount;
 	int max_size;
-};
-
-typedef struct fifo_stc FIFO_t;
+} FIFO_t;
 
 
 void *FIFOInitGraph(int size)

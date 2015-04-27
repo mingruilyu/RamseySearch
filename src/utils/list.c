@@ -23,7 +23,7 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 	}
 
 	Clique *current = list -> front;
-	while (current != NULL && counter < stop) {  
+	while (current != NULL && counter <= stop) {
 		int *nodeArray = current -> clique_node;		
 		bool inclique_i=false;
 		bool inclique_j=false;
@@ -55,6 +55,8 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 	    current = current->next;
 
     }
+    if(counter > stop)
+        return(-1);
     return counter;
 }
 
@@ -180,9 +182,9 @@ Clique* clique_init_6(int color, int i, int j,
 	return clique;
 }
 
+/*
 
-
-/*int main( int argc, char *argv[])
+int main( int argc, char *argv[])
 {
 	
 	List *list = list_init(6);
@@ -198,14 +200,14 @@ Clique* clique_init_6(int color, int i, int j,
      list_add(list,clique2);
      print_list(list);
     fprintf(stdout,"1111");
-     list_delete(list);
+   //  list_delete(list);
    //  fprintf(stdout,"2222");
    //  print_list(list);
 
-
-   //  int counter = list_search_6(list, 1,2);
-    // fprintf(stdout," counter = %d \n ",counter);
-//int *g =(int*)malloc(64*sizeof(int*)); 
+int *g =(int*)malloc(64*sizeof(int*));
+     int counter = list_search_6(list, g, 8, 2,  8,  1);
+     fprintf(stdout," counter = %d \n ",counter);
+//int *g =(int*)malloc(64*sizeof(int*));
 //int counter = list_search_6(list, g, 10, 10,  8,  100);
 //fprintf(stdout," counter = %d \n ",counter);
     // Clique *clique3;

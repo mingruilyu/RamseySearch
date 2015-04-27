@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <list.h>
@@ -231,23 +230,3 @@ fprintf(stdout," counter = %d \n ",counter);
     // list_add(list,clique3); 
     return(0); 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

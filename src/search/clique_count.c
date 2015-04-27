@@ -1,4 +1,5 @@
 #include "clique_count.h"
+#include "stdio.h"
 /*
  * returns the number of monochromatic 
  * cliques in the graph presented to it.
@@ -89,6 +90,7 @@ int CliqueCount(int* g, int gsize) {
 														&&(color == g[m * gsize + o]) 
 														&&(color == g[n * gsize + o])) {
 		      								count++;
+													printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, k , l, m, n, o);
 			  								}
 											}
 										}
@@ -108,8 +110,10 @@ int CliqueCountUseCache(int *g, int gsize, int i, int j, int stop,
 												List *cache_6, List *cache_7) {
 	int clique_6to7_count = list_search_6(cache_6, g, gsize, 
 																				i, j, stop);
+	printf("clique_6to7_count\t%d\n", clique_6to7_count);
 	if(clique_6to7_count == -1) return -1;
 	int clique_7to6_count = list_search_7(cache_7, i, j);
+	printf("clique_7to6_count\t%d\n", clique_7to6_count);
 	int clique_7 = clique_6to7_count + (cache_7->length - clique_7to6_count);
 	if(clique_7 > stop)
 		return -1;
@@ -144,8 +148,6 @@ int CliqueCountCreateCache(int *g, int gsize,
 												&& (color == g[k * gsize + n]) 
 												&& (color == g[l * gsize + n]) 
 												&& (color == g[m * gsize + n])) {
-											clique = clique_init_6(color, i, j, k, l, m, n);
-											list_add(cache_6, clique);
 											for(o = n + 1; o < gsize - sgsize + 7;o ++) {
 												if((color == g[i * gsize + o]) 
 														&&(color == g[j * gsize + o]) 
@@ -156,7 +158,10 @@ int CliqueCountCreateCache(int *g, int gsize,
 		      								count++;
 													clique = clique_init_7(color, i, j, k, l, m, n, o);
 													list_add(cache_7, clique);
-			  								}
+			  								} else {
+													clique = clique_init_6(color, i, j, k, l, m, n);
+													list_add(cache_6, clique);
+												}
 											}
 										}
 									}

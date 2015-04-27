@@ -1,18 +1,18 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-struct Clique {
-	int* clique_edge;
+typedef struct Clique_ {
+	int* clique_node;
 	int color;
-	Clique* next;
-}
+	struct Clique_* next;
+} Clique;
 
-struct List {
+typedef struct List_ {
 	unsigned int clique_size;
 	Clique* front;
 	Clique* back;
 	long length;
-}
+} List;
 
 /*
  * seach list to see if the cliques contains
@@ -22,7 +22,7 @@ struct List {
  * counter is the number of new cliques that
  * will be generated if flip edge(i, j)
  */
-int list_search_6(List *list, int i, int j, int color);
+int list_search_6(List *list,int *g, int g_size, int i, int j,  int stop);
 
 /*
  * seach list to see if the cliques contains
@@ -32,16 +32,19 @@ int list_search_6(List *list, int i, int j, int color);
  * number of cliques has to be removed from the
  * original clique count
  */
-int list_search_7(List *list, int i, int j, int color);
+int list_search_7(List *list, int i, int j);
 
 void list_add(List *list, Clique *clique);
 
-void list_delet(List *list);
+void list_delete(List *list);
 // inline
-void clique_init_7(Clique *clique, int i, int j, int k, 
+void clique_init_7(Clique *clique, int color, int i, int j, int k, 
 				 	int l, int m, int n, int o);
-// inline
-void clique_init_6(Clique *clique, int i, int j, int k, 
-				 	int l, int m, int n);
-//inline
-void clique_check(Clique *clique, int i, int j);
+void clique_init_6(Clique *clique, int color, int i, int j, int k, 
+ 				 	int l, int m, int n);
+
+
+void list_init(List *list, int clique_size);
+void print_list(List *list);
+
+#endif

@@ -15,7 +15,7 @@ int main() {
 	printf("# of clique_6:\t%d\n", cache_6->length);
 	printf("# of clique_7:\t%d\n", cache_7->length);
 	
-	int i = 1, j = 10;
+	int i = 40, j = 80;
 
 	printf("Flipping (%d, %d)\n", i, j);
 	g[i * gsize + j] = 1 - g[i * gsize + j];

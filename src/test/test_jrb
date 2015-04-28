@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include "list.h"
 int main() {
-	int node[] = {1, 2, 3, 4, 5, 6, 7}; 
+	int node[] = {1,10,24,28, 31,45, 64}; 
 	double key = 0;
 	long radix = 1;
 	int it_1;
@@ -14,7 +14,7 @@ int main() {
 	}
 
 	printf("original key: %f\n", key);
-	double key_2 = 2.1;
+	double key_2 = 1;
 	radix = 1;
 	MAKE_KEY(node, key_2, radix)
 	jrb_insert_dbl(root, key, new_jval_v(NULL));

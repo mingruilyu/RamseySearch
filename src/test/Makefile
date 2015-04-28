@@ -21,7 +21,7 @@ SRCS = $(shell ls *.c)
 
 OBJS = $(SRCS:.c=.o)
 
-TEST = test
+TEST = test_middle
 
 all : $(TEST)
 

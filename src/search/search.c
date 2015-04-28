@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 	int try_count = 0;
 	bool backtrack_flag = false;
+	bool break_flag = false;
 	List *cache_6, *cache_7;
 	
 	// start with graph of size 8
@@ -75,18 +76,17 @@ int main(int argc, char *argv[])
 					g[i	*	gsize	+	j] = 1 - g[i * gsize + j];
 					count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
 					// count is either -1 or (not -1 and less than best_count)
-					if(count == -1) {
-						g[i * gsize + j] = 1 - g[i * gsize + j];
-						continue;
-					} else if(!FIFOFindEdgeCount(taboo_list_forward, i, j, count)) {
-						best_count = count;
-						best_i = i;
-						best_j = j;
-						if(count == 0)  {
-							g[i * gsize + j] = 1 - g[i * gsize + j];
-							break;
-						}
-					} else printf("Already in the forward taboo list!\n");
+					if(count != -1) { 
+						if(!FIFOFindEdgeCount(taboo_list_forward, i, j, count)) {
+							best_count = count;
+							best_i = i;
+							best_j = j;
+							if(count == 0)  {
+								g[i * gsize + j] = 1 - g[i * gsize + j];
+								break;
+							}
+						} else printf("Already in the forward taboo list!\n");
+					}
 					// flip it back 
 					g[i * gsize + j] = 1 - g[i * gsize + j];
 				}
@@ -126,28 +126,31 @@ int main(int argc, char *argv[])
 			// next time around
 			
 			try_count = 0;
-			best_count = 100;
+			best_count = 100; // last_flip, actually we need to set best_count to zero and unflip the last edge 
 			j = gsize - 1;
 			while(best_count != 0 && try_count != gsize * gsize / 2) {
 				cache_6 = list_init(6);
 				cache_7 = list_init(7);
+				break_flag = false;
 				CliqueCountCreateCache(g, gsize, cache_6, cache_7);	
-				for(j = gsize - 1; j >= 1; j --) {
+				for(j = gsize - 1; !break_flag && j >= 1; j --) {
 					for(i = 0; i < j - 1; i ++) {
 			 			// flip it
 						g[i * gsize + j] = 1 - g[i * gsize + j];
 						count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
 						// count is either -1 or not -1 and less than best_count
-						if(count == -1) continue;
-						else if(!FIFOFindEdgeCount(taboo_list_backtrace, i, j, count)) {
-							best_count = count;
-							best_i = i;
-							best_j = j;
-							if(count == 0)  {
-								g[i * gsize + j] = 1 - g[i * gsize + j];
-								break;
-							}
-						} else printf("Already in the backtrace taboo list!\n");
+						if(count != -1) {
+							if(!FIFOFindEdgeCount(taboo_list_backtrace, i, j, count)) {
+								best_count = count;
+								best_i = i;
+								best_j = j;
+								if(count == 0)  {
+									g[i * gsize + j] = 1 - g[i * gsize + j];
+									break_flag = true; 
+									break;
+								}
+							} else printf("Already in the backtrace taboo list!\n");
+						}
 						// flip it back
 						g[i * gsize + j] = 1 - g[i * gsize + j]; 
 					}

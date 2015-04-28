@@ -90,7 +90,7 @@ int CliqueCount(int* g, int gsize) {
 														&&(color == g[m * gsize + o]) 
 														&&(color == g[n * gsize + o])) {
 		      								count++;
-													printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, k , l, m, n, o);
+													//printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, k , l, m, n, o);
 			  								}
 											}
 										}

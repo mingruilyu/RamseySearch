@@ -76,9 +76,9 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 				if(!jrb_find_dbl(root, key)) {
 					counter++;
 					jrb_insert_dbl(root, key, new_jval_v(NULL));
-					for(p = 0; p < 7; p ++)
+					/*for(p = 0; p < 7; p ++)
 						printf("%d\t", key_array[p]);
-					printf("\n");
+					printf("\n");*/
 				} //else {
 				//	printf("Already in the list\n");	
 			//	}

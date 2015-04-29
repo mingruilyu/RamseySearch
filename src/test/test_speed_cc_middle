@@ -9,10 +9,10 @@ int main() {
 	List *cache_6, *cache_7;
 	ReadGraph("ce", &g, &gsize);
 	PrintGraph(g, gsize);
-	i = 70, j = 80;
+	i = 4, j = 10;
 	printf("Preflip (%d, %d)\n", i, j);
 	g[i * gsize + j] = 1 - g[i * gsize + j];
-	i = 69, j = 70;
+/*	i = 69, j = 70;
 	printf("Preflip (%d, %d)\n", i, j);
 	g[i * gsize + j] = 1 - g[i * gsize + j];
 	i = 64, j = 79;
@@ -23,23 +23,22 @@ int main() {
 	g[i * gsize + j] = 1 - g[i * gsize + j];
 	i = 70, j = 79;
 	printf("Preflip (%d, %d)\n", i, j);
-	g[i * gsize + j] = 1 - g[i * gsize + j];
-
-		for(i = 0; i < 80; i ++) {
-			for(j = i + 1; j < 80; j ++) {
-				g[i * gsize + j] = 1 - g[i * gsize + j];
-				count = CliqueCountFast(g, gsize, best_count);
-				printf("(%d, %d) count = %d\n", i, j, count);
-				if(count != -1) {
-					best_count = count;
-					best_i = i;
-					best_j = j;
-				}
-				g[i * gsize + j] = 1 - g[i * gsize + j];
+	g[i * gsize + j] = 1 - g[i * gsize + j];*/
+	for(i = 0; i < 88; i ++) {
+		for(j = i + 1; j < 88; j ++) {
+			g[i * gsize + j] = 1 - g[i * gsize + j];
+			count = CliqueCountFast(g, gsize, best_count);
+			//printf("(%d, %d) count = %d\n", i, j, count);
+			if(count != -1) {
+				best_count = count;
+				best_i = i;
+				best_j = j;
 			}
-		}	
-		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
-		printf("Flip (%d, %d) bestcount = %d \n", i, j, best_count);
+			g[i * gsize + j] = 1 - g[i * gsize + j];
+		}
+	}	
+	g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+	printf("Flip (%d, %d) bestcount = %d \n", best_i, best_j, best_count);
 	free(g);
 	return 0;
 }

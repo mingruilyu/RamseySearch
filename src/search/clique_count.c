@@ -41,7 +41,7 @@ int CliqueCountFast(int* g, int gsize, int stop) {
 														&&(color == g[m * gsize + o]) 
 														&&(color == g[n * gsize + o])) {
 		      								count++;
-													if(count >= stop) return (-1);
+													if(count > stop) return (-1);
 			  								}
 											}
 										}
@@ -110,10 +110,10 @@ int CliqueCountUseCache(int *g, int gsize, int i, int j, int stop,
 												List *cache_6, List *cache_7) {
 	int clique_6to7_count = list_search_6(cache_6, g, gsize, 
 																				i, j, stop);
-	printf("clique_6to7_count\t%d\n", clique_6to7_count);
+	//printf("clique_6to7_count\t%d\n", clique_6to7_count);
 	if(clique_6to7_count == -1) return -1;
 	int clique_7to6_count = list_search_7(cache_7, i, j);
-	printf("clique_7to6_count\t%d\n", clique_7to6_count);
+	//printf("clique_7to6_count\t%d\n", clique_7to6_count);
 	int clique_7 = clique_6to7_count + (cache_7->length - clique_7to6_count);
 	if(clique_7 > stop)
 		return -1;
@@ -173,4 +173,5 @@ int CliqueCountCreateCache(int *g, int gsize,
 			}
 		}
 	}
+	return cache_7->length;
 }

@@ -21,7 +21,7 @@ SRCS = $(shell ls *.c)
 
 OBJS = $(SRCS:.c=.o)
 
-TEST = test_middle
+TEST = test_clique_count
 
 all : $(TEST)
 

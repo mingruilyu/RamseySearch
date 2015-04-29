@@ -1,8 +1,14 @@
 SRC_DIRS=\
 src/utils \
-src/search \
+src/search 
 
-all: multimake 
+MKDIR = mkdir -p
+LOG_DIR = CounterExamples
+
+all: multimake dirs
+
+dirs:
+	$(MKDIR) $(LOG_DIR)
 
 multimake:
 	@for d in $(SRC_DIRS);  \

@@ -8,7 +8,7 @@
 #include "clique_count.h"
 #define MAXSIZE (541)
 #define TABOOSIZE (500)
-#define BIGCOUNT (200)
+#define BIGCOUNT (500)
 
 /*
  * example of very simple search for R(7, 7) counter 
@@ -24,13 +24,14 @@ int main(int argc, char *argv[])
 	typedef enum {false, true} bool;
 	int *g, *new_g;
 	int gsize, count, i, j, rand_no, 
-			best_count, best_i, best_j;
+			best_count, best_i, best_j, try_count = 0,
+			last_flip_i = -1, last_flip_j = -1, 
+			last_flip_i_forward = -2,
+			last_flip_j_forward = -2;
 	void *taboo_list_forward, *taboo_list_backtrace;
 	srand(time(NULL));
-	int try_count = 0;
-	bool backtrack_flag = false;
-	bool break_flag = false;
-	List *cache_6, *cache_7;
+	bool backtrack_flag = false, break_flag = false;
+//	List *cache_6, *cache_7;
 	
 	// start with graph of size 8
 	gsize = 8;
@@ -56,8 +57,7 @@ int main(int argc, char *argv[])
 	}
 
 	// while we do not have a publishable result
-	while(gsize < 206)
-	{
+	while(gsize < 206) {
 		// keep flipping the outmost column until counter
 		// example is found
 		if(!backtrack_flag) {
@@ -66,47 +66,71 @@ int main(int argc, char *argv[])
 			while(best_count != 0 && try_count != gsize / 2) {
 				// scan the current graph and create cache
 				// for 6 clique and 7 clique
-				cache_6 = list_init(6);
-				cache_7 = list_init(7);
-				CliqueCountCreateCache(g, gsize, cache_6, cache_7);	
+//				cache_6 = list_init(6);
+//				cache_7 = list_init(7);
+//				best_count = CliqueCountCreateCache(g, gsize, cache_6, cache_7);
+				//best_count = CliqueCountFast(g, gsize, best_count);
+//				printf("cache_6 size: %d\n", cache_6->length);
 				// Only flip the outmost column
 				j = gsize - 1;
+				best_i = -2;	
 				for(i = 0; i < gsize - 1; i ++) {
+					if(i == last_flip_i_forward && j == last_flip_j_forward)
+						continue;
 					// flip it
 					g[i	*	gsize	+	j] = 1 - g[i * gsize + j];
-					count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
+					//count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
+					
+					count = CliqueCountFast(g, gsize, best_count);
 					// count is either -1 or (not -1 and less than best_count)
 					if(count != -1) { 
 						if(!FIFOFindEdgeCount(taboo_list_forward, i, j, count)) {
 							best_count = count;
 							best_i = i;
 							best_j = j;
-							if(count == 0)  {
+							if(count == 0) {
 								g[i * gsize + j] = 1 - g[i * gsize + j];
 								break;
 							}
-						} else printf("Already in the forward taboo list!\n");
+						} else printf("FORWARDING: Already in the forward taboolist!\n");
 					}
 					// flip it back 
 					g[i * gsize + j] = 1 - g[i * gsize + j];
 				}
-				// keep the best flip we saw
-				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
-
-			  // taboo this graph configuration so that we 
-				// don't visit it again
-				FIFOInsertEdgeCount(taboo_list_forward, best_i, best_j, best_count);
-				printf("MOVING FORWARD size: %d, best_count: %d, \
-							 best edge: (%d,%d), new color: %d\n",
+				printf("bestcount = %d, best_i = %d, best_j = %d, last_flip_i_forward = %d, last_flip_j_forward = %d\n", best_count, best_i, best_j, last_flip_i_forward, last_flip_j_forward);
+				if(best_i != -2) {// && (best_i != last_flip_i_forward 
+				//	|| best_j != last_flip_j_forward)) {
+					// this is necessary since if fliping any edge
+					// does not make the best count better, it will
+					// happen that the last flip will be undo
+					// keep the best flip we saw
+					g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+					last_flip_i_forward = best_i;
+					last_flip_j_forward = best_j;
+			  	// taboo this graph configuration so that we 
+					// don't visit it again
+					FIFOInsertEdgeCount(taboo_list_forward, best_i, best_j, best_count);
+					printf("MOVING FORWARD size: %d, best_count: %d, \
+					best edge: (%d,%d), new color: %d\n",
 							 gsize, best_count, best_i, best_j,
 							 g[best_i * gsize + best_j]);
 	
-				try_count ++;
-				list_delete(cache_6);
-				list_delete(cache_7);
+					try_count ++;
+//					list_delete(cache_6);
+//					list_delete(cache_7);
+				} else {
+//					list_delete(cache_6);
+//					list_delete(cache_7);
+					//	printf("JUMP out");
+					break;
+				}
+				printf("TRYCOUNT: %d\n", try_count);
 			}
+			// no matter we are going to backtrack or 
+			// to go forward, we need to delete FIFO
+			// anyway
+			FIFODelete(taboo_list_forward);
 			if(best_count != 0) {
-				FIFODelete(taboo_list_forward);
 				g = (int *) DegradeGraph(g, gsize);
 				gsize --;
 				printf("Not found in the outmost layer!\
@@ -118,7 +142,7 @@ int main(int argc, char *argv[])
 			}
 		} else {
 			// we need to backtrace. let's start from the 
-			// outmost edges, new count, and work all the way 
+			// outmost edges, and work all the way 
 			// to the inner edges. At the begining, we set the 
 			// best_count to 100. Thus, if a flip generate 
 			// count greater than the best_count, we discard it.	
@@ -126,18 +150,21 @@ int main(int argc, char *argv[])
 			// next time around
 			
 			try_count = 0;
-			best_count = 100; // last_flip, actually we need to set best_count to zero and unflip the last edge 
-			j = gsize - 1;
+			best_count = BIGCOUNT; // last_flip, actually we need to set best_count to zero and unflip the last edge 
+			best_i = -3, best_j = -3;
 			while(best_count != 0 && try_count != gsize * gsize / 2) {
-				cache_6 = list_init(6);
-				cache_7 = list_init(7);
+//				cache_6 = list_init(6);
+//				cache_7 = list_init(7);
 				break_flag = false;
-				CliqueCountCreateCache(g, gsize, cache_6, cache_7);	
+//				CliqueCountCreateCache(g, gsize, cache_6, cache_7);	
+//				printf("cache_6 size: %d\n", cache_6->length);
 				for(j = gsize - 1; !break_flag && j >= 1; j --) {
 					for(i = 0; i < j - 1; i ++) {
+						if(i == last_flip_i && j == last_flip_j) continue;
 			 			// flip it
 						g[i * gsize + j] = 1 - g[i * gsize + j];
-						count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
+					//	count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
+						count = CliqueCountFast(g, gsize, best_count);
 						// count is either -1 or not -1 and less than best_count
 						if(count != -1) {
 							if(!FIFOFindEdgeCount(taboo_list_backtrace, i, j, count)) {
@@ -155,18 +182,25 @@ int main(int argc, char *argv[])
 						g[i * gsize + j] = 1 - g[i * gsize + j]; 
 					}
 				}
+				// Since we set best_i and best_j to negative, we
+				// may need to check here. Another possibility is 
+				// that if no count better than the best count is 
+				// found, we won't be able to change any of the edge
+				// Here comes an dead lock. Thus, we need to allow 
+				// degenerate. 
 				printf("BACKTRACKING size: %d, best_count: %d,\
-							 best edge: (%d, %d), new color: %d\n",
+				best edge: (%d, %d), new color: %d\n",
 							 gsize, best_count, best_i, best_j, 
 							 g[best_i * gsize + best_j]); 
 				// keep the best flip we saw there is a bug here. 
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
-
+				last_flip_i = best_i;
+				last_flip_j = best_j;
 		  	// taboo this graph configuration so that we 
 				// don't visit it again
 				FIFOInsertEdgeCount(taboo_list_backtrace, best_i, best_j, count);
-				list_delete(cache_6);
-				list_delete(cache_7);
+				//list_delete(cache_6);
+				//list_delete(cache_7);
 				try_count ++;
 			}
 			if(best_count != 0) {
@@ -192,8 +226,14 @@ int main(int argc, char *argv[])
 			// randomly assigned value for last column
 			for(i = 0; i < gsize + 1; i ++) {
 				rand_no = rand() % 100;
-				if(rand_no > 50) new_g[i * (gsize + 1) + gsize] = 1; // last column
-				else new_g[i * (gsize + 1) + gsize] = 0; // last column
+				if(rand_no > 50) {
+					new_g[i * (gsize + 1) + gsize] = 1; // last column
+					new_g[gsize * (gsize + 1) + i] = 1;	
+				}
+				else {
+					new_g[i * (gsize + 1) + gsize] = 0; // last column
+					new_g[gsize * (gsize + 1) + i] = 0;	
+				}
 			}
 			gsize = gsize + 1;
 			// reset the taboo list for the new graph

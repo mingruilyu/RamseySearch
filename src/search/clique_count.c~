@@ -12,7 +12,7 @@ int CliqueCountFast(int* g, int gsize, int stop_7, long *clique_6) {
   int count = 0;
 	int color;
   int sgsize = 7;  
-//	long totalcount = 0;
+	long totalcount = 0;
 	*clique_6 = 0;
   for(i = 0; i < gsize - sgsize + 1; i ++) {
 		for(j = i + 1; j < gsize - sgsize + 2; j ++) {
@@ -44,25 +44,20 @@ int CliqueCountFast(int* g, int gsize, int stop_7, long *clique_6) {
 														&&(color == g[m * gsize + o]) 
 														&&(color == g[n * gsize + o])) {
 		      								count ++;
-	//												totalcount ++;
-													if(count > stop_7) {
-		//												printf("total operation in counting finding clique : %lu\n", totalcount);
-														return (-1);
-													}
-			  								}// else totalcount ++;
+													if(count > stop_7) return (-1);
+			  								}
 											}
-										}// else totalcount ++;
+										}
 									}
-								}// else totalcount ++;
+								}
 							}
-						}// else totalcount ++;
+						}
 					}
-				}// else totalcount ++;
+				}
 			}
 		}
 	}
 //	if(count == stop_7) return -2;
-//	printf("total operation in counting finding clique : %lu\n", totalcount);
 	return(count);
 }
 

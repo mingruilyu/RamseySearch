@@ -8,7 +8,7 @@ HEADER_DIR = ../headers
 
 #OBJ_DIR = $(BUILD_DIR)/obj
 OBJ_DIR = .
-OBJS_DIR = ./*.o $(filter-out ../../build/obj/search.o, $(wildcard ../../build/obj/*.o))
+OBJS_DIR = ./*.o $(filter-out ../../build/obj/search_2.o, $(wildcard ../../build/obj/*.o))
 
 #BIN_DIR = $(BUILD_DIR)/bin
 BIN_DIR = .

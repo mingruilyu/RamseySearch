@@ -8,7 +8,7 @@ HEADER_DIR = ../headers
 
 #OBJ_DIR = $(BUILD_DIR)/obj
 OBJ_DIR = .
-OBJS_DIR = ./*.o $(filter-out ../../build/obj/search_2.o, $(wildcard ../../build/obj/*.o))
+OBJS_DIR = ./*.o $(filter-out ../../build/obj/search_3.o, $(wildcard ../../build/obj/*.o))
 
 #BIN_DIR = $(BUILD_DIR)/bin
 BIN_DIR = .
@@ -21,7 +21,7 @@ SRCS = $(shell ls *.c)
 
 OBJS = $(SRCS:.c=.o)
 
-TEST = test_clique_count
+TEST = test_taboo_list
 
 all : $(TEST)
 

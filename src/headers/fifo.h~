@@ -1,5 +1,3 @@
-#include "dllist.h"
-#include "jrb.h"
 #if !defined(FIFO_H)
 #define FIFO_H
 
@@ -25,13 +23,6 @@ void *FIFOResetGraph(void *in_f);
 int MakeGraphKey(int *s, int ssize, char **key);
 int FIFOCount(void *in_f);
 
-typedef struct fifo_stc
-{
-	JRB findex;
-	Dllist fifo;
-	int fcount;
-	int max_size;
-} FIFO_t;
 
 #define MAXKEYSIZE (256)
 

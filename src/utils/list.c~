@@ -34,9 +34,9 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 
 		for(p = 0; p < clique_size; p++){
 			if(nodeArray[p] == i)
-				inclique_i = true;
+				inclique_i = p;
 			if(nodeArray[p] == j)
-				inclique_j = true;
+				inclique_j = p;
 		}
 
 
@@ -45,53 +45,37 @@ int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
 			if(inclique_j)
 				out_index = i;
 			else out_index = j;
-			
 			for( p = 0; p < clique_size; p++){
-				if(nodeArray[p]<out_index){
-        	if(g[nodeArray[p]*g_size+out_index]!=clique_color)
-						break;
-					} else{
-            if(g[out_index*g_size+nodeArray[p]]!=clique_color)
-              break;
-          }          
+				if(g[nodeArray[p]*g_size+out_index]!=clique_color)
+					break;
+			}
+			// get key array, an array of seven people 
+			// sorted in ascending order. 
+			int q = 0;
+			bool out_index_added = false;
+			for(p = 0; p < 7; p ++) {
+				if(q >= 6 || (out_index < nodeArray[q] 
+											&& !out_index_added)) {
+					key_array[p] = out_index;
+					out_index_added = true;
+				}
+				else key_array[p] = nodeArray[q ++];
 			}
 
 			if(p == clique_size) {
-				// get key array, an array of seven people 
-				// sorted in ascending order. 
-				int q = 0;
-				bool out_index_added = false;
-				for(p = 0; p < 7; p ++) {
-					if(q >= 6 || (out_index < nodeArray[q] 
-												&& !out_index_added)) {
-						key_array[p] = out_index;
-						out_index_added = true;
-					}
-					else key_array[p] = nodeArray[q ++];
-				}
-							// get key
-				double key = 0; long radix = 1; 
-				/*if(key_array[0] == 2 && key_array[1] == 3 && key_array[2] == 7
-					&& key_array[3] == 8 && key_array[4] == 15 && key_array[5] == 33
-					&& key_array[6] == 88)
-					printf("find the clique_7!");*/
-				MAKE_KEY(key_array, key, radix)
+			
+				int key, radix = 1; 
+				MAKE_KEY(key_array, key, radix);
 				if(!jrb_find_dbl(root, key)) {
 					counter++;
-					jrb_insert_dbl(root, key, new_jval_v(NULL));
-				/*	for(p = 0; p < 7; p ++)
-						printf("%d\t", key_array[p]);
-					printf("\n");*/
-				} //else {
-				//	printf("Already in the list\n");	
-			//	}
+					jrb_insert_dbl(root, current->key, new_jval_v(NULL));
+				}
 			}
+	    current = current->next;
     }
-	  current = current->next;
-	}
-  if(counter > stop)
-      return(-1);
-  return counter;
+    if(counter > stop)
+        return(-1);
+    return counter;
 }
 
 
@@ -115,8 +99,8 @@ int list_search_7(List *list, int i, int j){
 	Clique *current = list -> front;
 	while (current != NULL) {  
 		int *nodeArray = current -> clique_node;
-		bool inclique_i = false;
-		bool inclique_j = false;
+		bool inclique_i;
+		bool inclique_j;
 		int p;
 
 		for(p = 0; p < clique_size; p++){
@@ -168,7 +152,6 @@ void print_list(List *list){
 		for(i = 0; i<list->clique_size; i++){
 			fprintf(stdout,"%d ", array[i]);
 		}		
-		printf("\n");
 		toDelete = toDelete->next;	
 	}	
 	fprintf(stdout," end of print list \n ");
@@ -210,6 +193,7 @@ Clique* clique_init_6(int color, int i, int j,
   nodes[0] = i; nodes[1] = j;
   nodes[2] = k; nodes[3] = l;
   nodes[4] = m; nodes[5] = n;
+
 	clique->clique_node = nodes;
 	clique->color = color;
   clique->next = NULL;
@@ -218,7 +202,13 @@ Clique* clique_init_6(int color, int i, int j,
 
 // keys are big double that is 250 radix.  
 // the maximum double is 1.7E+308, 250^7
-// does not exceed the maximum					 
+// does not exceed the maximum
+
+#define MAKE_KEY(key_array, key, radix) (\
+	int it;												 \
+	for(it = 0; it < 7; it ++) {   \
+		key+= key_array[it] * radix; \
+		radix *= 250;}							 
 
 /*
 int main( int argc, char *argv[])

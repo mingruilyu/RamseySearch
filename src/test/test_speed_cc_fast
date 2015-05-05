@@ -28,11 +28,11 @@ int main() {
 	cache_6 = list_init(6);
 	cache_7 = list_init(7);
 	CliqueCountCreateCache(g, gsize, cache_6, cache_7);
-	for(i = 0; i < 80; i ++) {
-		for(j = i + 1; j < 80; j ++) {
+	for(i = 0; i < 110; i ++) {
+		for(j = i + 1; j < 110; j ++) {
 			g[i * gsize + j] = 1 - g[i * gsize + j];
 			count = CliqueCountUseCache(g, gsize, i, j, best_count, cache_6, cache_7);
-			//printf("(%d, %d) count = %d\n", i, j, count);
+			printf("(%d, %d) count = %d\n", i, j, count);
 			if(count != -1 && count	< best_count) {
 				best_count = count;
 				best_i = i;

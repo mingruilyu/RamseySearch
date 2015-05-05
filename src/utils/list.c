@@ -1,9 +1,10 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "list.h"
 #include <stdbool.h>
 #include "jrb.h"
+
+
 /*
  * seach list to see if the cliques contains
  * edge(i, j). if a clique does not contain 
@@ -13,203 +14,42 @@
  * will be generated if flip edge(i, j)
  */
 
-int list_search_6(List *list, int *g, int g_size, int i, int j, int stop){
-	int clique_size = list->clique_size;
-	int counter = 0;
-	JRB root = make_jrb();
-	
-	if( clique_size!=6){
-		fprintf(stdout,"Wrong clique_size");
-		return -1;
-	}
 
-	Clique *current = list -> front;
-	while (current != NULL && counter <= stop) {
-		int *nodeArray = current -> clique_node;		
-		int key_array[7];
-		bool inclique_i = false;
-		bool inclique_j = false;
-		int p;
-		int out_index;
-
-		for(p = 0; p < clique_size; p++){
-			if(nodeArray[p] == i)
-				inclique_i = true;
-			if(nodeArray[p] == j)
-				inclique_j = true;
-		}
-
-
-		int clique_color = current -> color;		
-		if( inclique_j != inclique_i){
-			if(inclique_j)
-				out_index = i;
-			else out_index = j;
-			for( p = 0; p < clique_size; p++){
-                if(nodeArray[p]<out_index){
-                        if(g[nodeArray[p]*g_size+out_index]!=clique_color)
-                            break;
-                }
-                else{
-                    if(g[out_index*g_size+nodeArray[p]]!=clique_color)
-                        break;
-                }
-                    
-			}
-
-			if(p == clique_size) {
-				// get key array, an array of seven people 
-				// sorted in ascending order. 
-				int q = 0;
-				bool out_index_added = false;
-				for(p = 0; p < 7; p ++) {
-					if(q >= 6 || (out_index < nodeArray[q] 
-												&& !out_index_added)) {
-						key_array[p] = out_index;
-						out_index_added = true;
-					}
-					else key_array[p] = nodeArray[q ++];
-				}
-							// get key
-				double key = 0; long radix = 1; 
-				MAKE_KEY(key_array, key, radix)
-				if(!jrb_find_dbl(root, key)) {
-					counter++;
-					jrb_insert_dbl(root, key, new_jval_v(NULL));
-					/*for(p = 0; p < 7; p ++)
-						printf("%d\t", key_array[p]);
-					printf("\n");*/
-				} //else {
-				//	printf("Already in the list\n");	
-			//	}
-			}
-    }
-	  current = current->next;
-	}
-  if(counter > stop)
-      return(-1);
-  return counter;
-}
-
-
-
-/*
- * seach list to see if the cliques contains
- * edge(i, j). if a clique contains edge(i, j) 
- * and color is the same as the clique's color, 
- * the counter increments. The counter is the
- * number of cliques has to be removed from the
- * original clique count
- */
-int list_search_7(List *list, int i, int j){
-	int clique_size = list->clique_size;
-	int counter = 0;
-
-	if( clique_size!=7){
-		fprintf(stdout,"Wrong clique_size");
-		return -1;
-	}
-	Clique *current = list -> front;
-	while (current != NULL) {  
-		int *nodeArray = current -> clique_node;
-		bool inclique_i;
-		bool inclique_j;
-		int p;
-
-		for(p = 0; p < clique_size; p++){
-			if(nodeArray[p] == i)
-				inclique_i=true;
-			if(nodeArray[p]==j)
-				inclique_j=true;
-		}		
-		if( inclique_j && inclique_i)
-			counter++;
-	    current = current->next;
-	}
-	return counter;
-}
-
-void list_add(List *list, Clique *clique){
-
-	Clique *tail = list->back;
-	if(tail != NULL){
-		tail->next = clique;
-	}
-	else{
-		list->front = clique;		
-	}
-	list->back = clique;
-	list->length = list->length + 1;
-	return;
-}
-
-void list_delete(List *list){
-	Clique *toDelete = list->front;
-	Clique *temp;
-	
-	while(toDelete!=NULL){	
-		temp = toDelete;
-		toDelete = toDelete -> next;
-		free(temp);
-	}
-	free(list);
-	return;
-}
-
-void print_list(List *list){
-	Clique *toDelete = list -> front;
-	fprintf(stdout," start print list \n ");
-	int i;
-	while(toDelete!=NULL){	
-		int * array = toDelete-> clique_node;		
-		for(i = 0; i<list->clique_size; i++){
-			fprintf(stdout,"%d ", array[i]);
-		}		
-		toDelete = toDelete->next;	
-	}	
-	fprintf(stdout," end of print list \n ");
-	return;
-}
-
-
-List* list_init(int clique_size){
-	List* list =(List*) malloc(sizeof(List));
-	list->front = NULL;
-	list->back = NULL;
-	list->clique_size = clique_size;
-	list-> length = 0;
-	return list;
-}
-
-Clique* clique_init_7(int color, int i, int j, 
+void add_clique_7(int color, int i, int j,
 											int k, int l, int m, 
 											int n, int o){
 
 	int *nodes; 
-	Clique* clique = (Clique *) malloc(sizeof(Clique));
-  nodes = (int *) malloc(7 * sizeof(int)); 
-  nodes[0] = i; nodes[1] = j;
-  nodes[2] = k; nodes[3] = l;
-  nodes[4] = m; nodes[5] = n;
-  nodes[6] = o;
-	clique->clique_node = nodes;
-	clique->color = color;
-	clique->next = NULL;
-	return clique;
+	int index = cache_7.length;
+	//Clique* clique = (Clique *) malloc(sizeof(Clique));
+    cache_7.array[index].clique_node[0]=i;
+    cache_7.array[index].clique_node[1]=j;
+    cache_7.array[index].clique_node[2]=k;
+    cache_7.array[index].clique_node[3]=l;
+    cache_7.array[index].clique_node[4]=m;
+    cache_7.array[index].clique_node[5]=n;
+    cache_7.array[index].clique_node[6]=o;
+    cache_7.array[index].color=color;
+    cache_7.length++;
+	return;
 }
 // inline
-Clique* clique_init_6(int color, int i, int j, 
+void add_clique_6( int color, int i, int j,
 											int k, int l, int m, int n) {
-	int *nodes; 
-	Clique* clique = (Clique *) malloc(sizeof(Clique));
-  nodes = (int *) malloc(6 * sizeof(int)); 
-  nodes[0] = i; nodes[1] = j;
-  nodes[2] = k; nodes[3] = l;
-  nodes[4] = m; nodes[5] = n;
-	clique->clique_node = nodes;
-	clique->color = color;
-  clique->next = NULL;
-	return clique;
+    
+    int *nodes;
+    int index = cache_6.length;
+    //Clique* clique = (Clique *) malloc(sizeof(Clique));
+    cache_6.array[index].clique_node[0]=i;
+    cache_6.array[index].clique_node[1]=j;
+    cache_6.array[index].clique_node[2]=k;
+    cache_6.array[index].clique_node[3]=l;
+    cache_6.array[index].clique_node[4]=m;
+    cache_6.array[index].clique_node[5]=n;
+    cache_6.array[index].color=color;
+    cache_6.length++;
+    return;
+
 }
 
 // keys are big double that is 250 radix.  
@@ -220,25 +60,28 @@ Clique* clique_init_6(int color, int i, int j,
 int main( int argc, char *argv[])
 {
 	
-	List *list = list_init(6);
+	Clique array[3];
+
 
 
     fprintf(stdout,"3333");
-     Clique *clique1 = clique_init_6(0, 1,2,3,4,5,6);
+ //    Clique *clique1 = clique_init_6(0, 1,2,3,4,5,6);
+	// Clique *clique2 = clique_init_6(0, 2,3,4,5,6,7);
+ //    Clique *clique3 = clique_init_6(0, 3,4,5,6,7,8);
+ 	
+ 	Clique *clique1 = clique_init_7(0, 1,2,3,4,5,6,7);
+	Clique *clique2 = clique_init_7(0, 2,3,4,5,6,7,8);
+    Clique *clique3 = clique_init_7(0, 3,4,5,6,7,8,9);
 
-     list_add(list,clique1);
-     	
-     print_list(list);
-     Clique *clique2 = clique_init_6(0, 2,3,4,5,6,7);
-     list_add(list,clique2);
-     print_list(list);
-    fprintf(stdout,"1111");
-   //  list_delete(list);
-   //  fprintf(stdout,"2222");
-   //  print_list(list);
 
-int *g =(int*)malloc(64*sizeof(int*));
-     int counter = list_search_6(list, g, 8, 2,  8,  1);
+	array[0] = *clique1;
+	array[1]= *clique2;
+   	array[2]= *clique3;  
+     
+
+	int *g =(int*)malloc(64*sizeof(int*));
+	int counter = search_7(array, 3, 1,2);
+     //int counter = search_6(array,3, g, 8, 3,  6,  10);
      fprintf(stdout," counter = %d \n ",counter);
 //int *g =(int*)malloc(64*sizeof(int*));
 //int counter = list_search_6(list, g, 10, 10,  8,  100);
@@ -249,6 +92,122 @@ int *g =(int*)malloc(64*sizeof(int*));
     // list_add(list,clique3); 
     return(0); 
 } */
+
+
+int search_7(int i, int j){
+
+	int counter = 0;
+	int p = 0;
+	while(p<cache_7.length){
+		int *nodeArray = cache_7.array[p].clique_node;
+		bool inclique_i = false;
+		bool inclique_j = false;
+		int r;
+
+		for(r = 0; r < 7; r++){
+			if(nodeArray[r] == i)
+				inclique_i=true;
+			if(nodeArray[r]==j)
+				inclique_j=true;
+		}		
+		if( inclique_j && inclique_i)
+			counter++;
+	    p++;
+	}
+	return counter;
+}
+
+
+int search_6( int *g, int g_size, int i, int j, int stop){
+	JRB root = make_jrb();   //   comment 1  by yanhong
+	int counter = 0, p = 0, t, q = 0;
+	int searchEnd = binary_search_first(cache_6.array, 0, cache_6.length-1, j);
+  int key_array[7];
+	bool out_index_added = false;
+	double key = 0; 
+	long radix = 1; 
+	while(p<searchEnd && counter <= stop){
+		if(cache_6.array[p].clique_node[5]>=i){
+			int *nodeArray = cache_6.array[p].clique_node;
+			bool inclique_i = false;
+			bool inclique_j = false;
+			int out_index;
+			int r = 0;
+	
+			for(; r < 6; r++){
+				if(nodeArray[r] == i)
+					inclique_i = true;
+				if(nodeArray[r] == j)
+					inclique_j = true;
+			}
+			int clique_color = cache_6.array[p].color;
+			if(inclique_i!=inclique_j){
+				if(inclique_j)
+					out_index = i;
+				else out_index = j;
+				for( r = 0; r < 6; r++){
+					if(nodeArray[r]<out_index){
+        				if(g[nodeArray[r]*g_size+out_index]!=clique_color)
+							break;
+					} else{
+            			if(g[out_index*g_size+nodeArray[r]]!=clique_color)
+              				break;
+          			}          
+				}
+				if(r==6){
+				//	counter ++;
+					q=0;
+					out_index_added = false;
+					key = 0; radix = 1; 
+					for(t = 0; t < 7; t ++) {
+						if(q >= 6 || (out_index < nodeArray[q] 
+												&& !out_index_added)) {
+							key_array[t] = out_index;
+							out_index_added = true;
+						}
+						else key_array[t] = nodeArray[q ++];
+					}
+					// get a key
+					MAKE_KEY(key_array, key, radix)
+					if(!jrb_find_dbl(root, key)) {
+						counter ++;
+						jrb_insert_dbl(root, key, new_jval_v(NULL));
+					//	for(p = 0; p < 7; p ++)
+					//	printf("%d\t", key_array[p]);
+					//printf("\n");
+					}
+        }
+			}
+		}
+		p++;
+	}
+
+	if(counter > stop)
+    	return(-1);
+
+	return counter;
+}
+
+int binary_search_first(Clique6 *array, int start, int end, int target){
+	int s = start;
+	int e = end;
+
+	while(s<=end && e>=start && s<e){
+
+		int half = (s+e)/2;
+		if(array[half].clique_node[0]<=target){
+			s=half+1;
+		}
+		else{
+			e = half;
+		}
+	}
+	//printf("end of binary_search_first\n");
+	return s;
+}
+
+
+	
 
 
 

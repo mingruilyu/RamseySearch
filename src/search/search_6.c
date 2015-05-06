@@ -354,8 +354,8 @@ int main(int argc, char *argv[])
 						FIFOInsertEdgeCount(rand_taboo_list, hot_i, hot_j, 100);
 						printf("MUTATED (%d, %d)\n", hot_i, hot_j);
 						memory[memory_index][0] = hot_i;
-						memory[memory_index ++][1] = hot_j;
-						get_hottest_edge(stat, people, &hot_i, &hot_j);
+						memory[memory_index ++][1] = hot_j;*/
+					/*	get_hottest_edge(stat, people, &hot_i, &hot_j);
 						g[hot_i * gsize + hot_j] = 1 - g[hot_i * gsize + hot_j];
 						FIFOInsertEdgeCount(rand_taboo_list, hot_i, hot_j, 100);
 						printf("MUTATED (%d, %d)\n", hot_i, hot_j);	
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 										memory[memory_index ++][1] = node[k];
 										break;
 									}
-						/*	if(rand() % 100 > 95) {				
+				/*			if(rand() % 100 > 95) {				
 									j = rand() % 6;
 									do k = rand() % 7;
 									while(k <= j);
@@ -396,7 +396,7 @@ int main(int argc, char *argv[])
 							}
 						}
 						//for(i = 0; i < 1; i ++) {
-						rand_count = 0;
+					/*	rand_count = 0;
 						do {
 							rand_no = rand() % cache_7.length;
 							rand_i = rand_list[rand_no][0];
@@ -413,7 +413,7 @@ int main(int argc, char *argv[])
 								//break;
 							}
 							
-						} while(rand_count < 1);
+						} while(rand_count < 1);*/
 				/*		for(i = 0; i < 20; i ++) {
 							rand_i = rand() % (gsize - 1);
 							rand_j = rand() % (gsize - 1 - rand_i) + rand_i;

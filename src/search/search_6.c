@@ -258,12 +258,15 @@ int main(int argc, char *argv[])
 								count = CliqueCountUseCache(g, gsize, node[j], node[k], best_count);
 								if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100) && !FIFOFindEdgeCount(taboo_list, node[j], node[k], best_count)) {
 							//		if(best_count > count) {
-									best_count = count;
-									best_i = node[j];
-									best_j = node[k];
+								//	best_count = count;
+								//	best_i = node[j];
+								//	best_j = node[k];
 										//g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
 							//		}
 									if(count < best_count) {
+										best_count = count;
+										best_i = node[j];
+										best_j = node[k];
 										break_flag = true;
 										g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
 										break;
@@ -298,12 +301,20 @@ int main(int argc, char *argv[])
 						for(i = 0; i < cache_7.length; i ++) {
 							node = cache_7.array[i].clique_node;
 							break_flag = false;
-							for(j = 0; j < 6 && !break_flag; j ++) {
+							for(j = 5; j >= 0 && !break_flag; j ++) {
 								for(k = j + 1; k < 7; k ++) {
-									rand_list[rand_list_index][0] = node[j];					
-									rand_list[rand_list_index ++][1] = node[k];
-									break_flag = true;
-									break;
+									//rand_list[rand_list_index][0] = node[j];					
+									//rand_list[rand_list_index ++][1] = node[k];
+									if(!FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100)) {
+										break_flag = true;
+										g[rand_i * gsize + rand_j] = 1 - g[rand_i * gsize + rand_j];
+										FIFOInsertEdgeCount(rand_taboo_list, rand_i, rand_j, 100);
+										printf("MUTATED (%d, %d)\n", rand_i, rand_j);	
+										// add to memory
+										memory[memory_index][0] = rand_i;
+										memory[memory_index ++][1] = rand_j;
+										break;
+									}
 						/*	if(rand() % 100 > 95) {				
 									j = rand() % 6;
 									do k = rand() % 7;
@@ -319,7 +330,7 @@ int main(int argc, char *argv[])
 							}
 						}
 						//for(i = 0; i < 1; i ++) {
-						rand_count = 0;
+					/*	rand_count = 0;
 						do {
 							rand_no = rand() % cache_7.length;
 							rand_i = rand_list[rand_no][0];
@@ -336,7 +347,7 @@ int main(int argc, char *argv[])
 								//break;
 							}
 							
-						} while(rand_count < 1);
+						} while(rand_count < 1);*/
 				/*		for(i = 0; i < 20; i ++) {
 							rand_i = rand() % (gsize - 1);
 							rand_j = rand() % (gsize - 1 - rand_i) + rand_i;
@@ -346,8 +357,7 @@ int main(int argc, char *argv[])
 							memory[memory_index ++][1] = rand_j;
 						}*/
 						best_count = BIGCOUNT;
-					}
-						else {
+					} else {
 						printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
 								 gsize, cache_6.length, best_count, best_i, best_j, 
 								 g[best_i * gsize + best_j]); 

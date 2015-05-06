@@ -15,7 +15,7 @@ void PrintGraph(int *g, int gsize)
 	int i;
 	int j;
 	char file_name[100];
-	sprintf(file_name, "../../CounterExamples/CE_%d", gsize);
+	sprintf(file_name, "../../ce", gsize);
 	FILE* fd = fopen(file_name, "w");
 	fprintf(fd,"%d-------------------\n",gsize);
 	fprintf(stdout,"%d-------------------\n",gsize);

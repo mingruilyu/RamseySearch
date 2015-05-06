@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+//#include <stdbool.h>
 #include <string.h>
 #include "list.h"
 #include "fifo.h"	/* for taboo list */
@@ -18,7 +19,7 @@
  * uses a taboo list of size #TABOOSIZE# to hold and 
  * encoding of and edge (i, j) + clique_count
  */
-
+typedef enum {false, true} bool;
 int rand_taboo_check(int i, int j, int list[100][2], int size) {
 	int index;
 	for(index = 0; index < size; index ++) {
@@ -28,9 +29,49 @@ int rand_taboo_check(int i, int j, int list[100][2], int size) {
 	return -1;
 }
 
+void create_edge_stat(int stat[120][120], bool people[120]) {
+	int i, j, k;
+	int* node;
+	for(i = 0; i < 120; i ++) {
+		for(j = 0; j < 120; j ++)
+			stat[i][j] = 0;
+		people[i] = false;
+	}
+
+	for(i = 0; i < cache_7.length; i ++) {
+		node = cache_7.array[i].clique_node;
+		for(j = 0; j < 6; j ++) {
+			for(k = j + 1; k < 7; k ++) {
+				people[node[j]] = true;
+				people[node[k]] = true;
+				stat[node[j]][node[k]] ++;
+			}
+		}		
+	}
+}
+
+
+void get_hottest_edge(int stat[120][120], bool people[120], int *a, int *b) {
+	int i, j, hot_i, hot_j, count = -1, ptr = 0;
+	// here may be a bug
+	for(i = 0; i < 120; i ++) {
+		if(people[i]) {
+			for(j = i + 1; j < 120; j ++) {
+				if(stat[i][j] > count) {
+					hot_i = i;
+					hot_j = j;
+					count = stat[i][j];
+				}
+			}
+		}
+	}
+	stat[hot_i][hot_j] = 0;	
+	*a = hot_i;
+	*b = hot_j;
+}
+
 int main(int argc, char *argv[])
 {
-	typedef enum {false, true} bool;
 	int *g, *new_g;
 	int gsize, count, i, j, k, rand_no, 
 			best_count, best_i, best_j,
@@ -46,6 +87,9 @@ int main(int argc, char *argv[])
 	int memory_index = 0;
 	int* node;
 	long clique_6;
+	int stat[120][120];
+	bool people[120];
+	int hot_i, hot_j;
 	best_count = BIGCOUNT;
 	if(argc == 0) { 
 		// start with graph of size 8
@@ -160,6 +204,10 @@ int main(int argc, char *argv[])
 							 start backtracing\n\
 							 =====================================\n");	
 					backtrack_flag = true;
+					for(i = 0; i < cache_7.length; i ++) {
+						node = cache_7.array[i].clique_node;
+						printf("%d %d %d %d %d %d %d\n", node[0], node[1], node[2], node[3], node[4], node[5], node[6]);
+					}
 			/*	} else {
 					printf("REGENERATING!!!!!!!!!!!!!1\n");
 					regenerate_flag = true;
@@ -245,7 +293,7 @@ int main(int argc, char *argv[])
 						}
 					}*/
 					//printf("random count = %d\n", rand_count);
-					for(i = 0; i < cache_7.length; i ++) {
+					for(i = 0; i < cache_7.length && !break_flag; i ++) {
 						node = cache_7.array[i].clique_node;
 						break_flag = false;
 						for(j = 0; j < 6 && !break_flag; j ++) {
@@ -285,7 +333,8 @@ int main(int argc, char *argv[])
 							taboo_list = FIFOInitEdge(TABOOSIZE);
 							FIFODelete(rand_taboo_list);
 							rand_taboo_list = FIFOInitEdge(TABOOSIZE);
-						} else if(best_count > last_best) {
+							create_edge_stat(stat, people);
+						} else if(best_count >= last_best) {
 							printf("RESTORING!!!!!!!!!!\n");
 							for(i = 0; i < memory_index; i ++) {
 								g[memory[i][0] * gsize + memory[i][1]] = 1 - g[memory[i][0] * gsize + memory[i][1]];
@@ -298,21 +347,38 @@ int main(int argc, char *argv[])
 						rand_list_index = 0;
 						memory_index = 0;
 						// establish the random list
-						for(i = 0; i < cache_7.length; i ++) {
+						break_flag = false;
+						CliqueCountCreateCache(g, gsize);
+					/*	get_hottest_edge(stat, people, &hot_i, &hot_j);
+						g[hot_i * gsize + hot_j] = 1 - g[hot_i * gsize + hot_j];
+						FIFOInsertEdgeCount(rand_taboo_list, hot_i, hot_j, 100);
+						printf("MUTATED (%d, %d)\n", hot_i, hot_j);
+						memory[memory_index][0] = hot_i;
+						memory[memory_index ++][1] = hot_j;
+						get_hottest_edge(stat, people, &hot_i, &hot_j);
+						g[hot_i * gsize + hot_j] = 1 - g[hot_i * gsize + hot_j];
+						FIFOInsertEdgeCount(rand_taboo_list, hot_i, hot_j, 100);
+						printf("MUTATED (%d, %d)\n", hot_i, hot_j);	
+						// add to memory
+						memory[memory_index][0] = hot_i;
+						memory[memory_index ++][1] = hot_j;*/
+						for(i = cache_7.length - 1; i >= 0 && !break_flag; i --) {
 							node = cache_7.array[i].clique_node;
-							break_flag = false;
-							for(j = 5; j >= 0 && !break_flag; j ++) {
+						//	printf("%d %d %d %d %d %d %d\n", node[0], node[1], node[2], node[3], node[4], node[5], node[6]);
+							for(j = 5; j >= 0 && !break_flag; j --) {
 								for(k = j + 1; k < 7; k ++) {
-									//rand_list[rand_list_index][0] = node[j];					
-									//rand_list[rand_list_index ++][1] = node[k];
+								//	printf("i = %d, j = %d, k = %d\n", i, j, k);
+						//			rand_list[rand_list_index][0] = node[j];					
+						//			rand_list[rand_list_index ++][1] = node[k];
+							//		printf("(%d, %d, %d)\n", i, j, k);	
 									if(!FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100)) {
 										break_flag = true;
-										g[rand_i * gsize + rand_j] = 1 - g[rand_i * gsize + rand_j];
-										FIFOInsertEdgeCount(rand_taboo_list, rand_i, rand_j, 100);
-										printf("MUTATED (%d, %d)\n", rand_i, rand_j);	
+										g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
+										FIFOInsertEdgeCount(rand_taboo_list, node[j], node[k], 100);
+										printf("MUTATED (%d, %d)\n", node[j], node[k]);	
 										// add to memory
-										memory[memory_index][0] = rand_i;
-										memory[memory_index ++][1] = rand_j;
+										memory[memory_index][0] = node[j];
+										memory[memory_index ++][1] = node[k];
 										break;
 									}
 						/*	if(rand() % 100 > 95) {				
@@ -325,12 +391,12 @@ int main(int argc, char *argv[])
 									memory[memory_index ++][1] = node[k];
 							}*/
 							//		break_flag = true;
-									//break;*/
+									//break;
 								}
 							}
 						}
 						//for(i = 0; i < 1; i ++) {
-					/*	rand_count = 0;
+						rand_count = 0;
 						do {
 							rand_no = rand() % cache_7.length;
 							rand_i = rand_list[rand_no][0];
@@ -347,7 +413,7 @@ int main(int argc, char *argv[])
 								//break;
 							}
 							
-						} while(rand_count < 1);*/
+						} while(rand_count < 1);
 				/*		for(i = 0; i < 20; i ++) {
 							rand_i = rand() % (gsize - 1);
 							rand_j = rand() % (gsize - 1 - rand_i) + rand_i;
@@ -370,7 +436,7 @@ int main(int argc, char *argv[])
 					}
 				}
 			}
-	//	}
+		//}
 
 		// if we have a counter example.
 		if(!backtrack_flag && !regenerate_flag)	{

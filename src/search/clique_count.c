@@ -193,3 +193,44 @@ int CliqueCountCreateCache(int *g, int gsize) {
 		}
 	}
 }
+
+long CliqueCount6(int *g, int gsize, long stop) {
+  int i, j, k, l, m, n, color;
+	int sgsize = 6;
+	long count = 0;
+  for(i = 0; i < gsize - sgsize + 1; i ++) {
+		for(j = i + 1; j < gsize - sgsize + 2; j ++) {
+	  	for(k = j + 1; k < gsize - sgsize + 3; k ++) { 
+				if((g[i * gsize + j] == g[i * gsize + k]) 
+						&& (g[i * gsize + j] == g[j * gsize + k])) {
+						color = g[i * gsize + j];
+					for(l = k + 1; l < gsize - sgsize + 4; l ++) {
+						if((color == g[i * gsize + l]) 
+								&& (color == g[j * gsize + l]) 
+								&& (color == g[k * gsize + l])) {
+							for(m = l + 1; m < gsize - sgsize + 5; m ++) {
+								if((color == g[i * gsize + m]) 
+										&& (color == g[j * gsize + m]) 
+										&& (color == g[k * gsize + m]) 
+										&& (color == g[l * gsize + m])) {
+			  					for(n = m + 1; n < gsize - sgsize + 6; n ++) {
+										if((color == g[i * gsize + n]) 
+												&& (color == g[j * gsize + n]) 
+												&& (color == g[k * gsize + n]) 
+												&& (color == g[l * gsize + n]) 
+												&& (color == g[m * gsize + n])) {
+											count ++;
+											/*if(count > stop)
+												return -1;*/
+										} 
+									}
+								}
+							}
+						} 
+					}
+				} 
+			}
+		}
+	}
+	return count;
+}

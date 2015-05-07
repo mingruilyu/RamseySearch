@@ -157,6 +157,7 @@ int CliqueCountCreateCache(int *g, int gsize) {
 												&& (color == g[k * gsize + n]) 
 												&& (color == g[l * gsize + n]) 
 												&& (color == g[m * gsize + n])) {
+											add_clique_6(color, i, j, k, l, m, n);
 											for(o = n + 1; o < gsize - sgsize + 8; o ++) {
 												if((o < gsize - sgsize + 7) 
 														&& (color == g[i * gsize + o]) 
@@ -166,21 +167,8 @@ int CliqueCountCreateCache(int *g, int gsize) {
 														&& (color == g[m * gsize + o]) 
 														&& (color == g[n * gsize + o])) {
 		      								count++;
-													
-                                                    //clique = clique_init_7(color, i, j, k, l, m, n, o);
-                                                    
-													//list_add(cache_7, clique);
-                                                    add_clique_7(color, i, j, k, l, m, n, o);
-                                                   
-                                                    
-                                                    
-			  								} else {
-													//if(i == 2 && j == 7 && k == 8 && l == 15 && m == 33 && n == 88) printf("find the clique\n");
-													//clique = clique_init_6(color, i, j, k, l, m, n);
-													//list_add(cache_6, clique);
-                                                    //cache_6[Clique_6_counter++]=clique;
-                                                    add_clique_6(color, i, j, k, l, m, n);
-												}
+                          add_clique_7(color, i, j, k, l, m, n, o);
+			  								}
 											}
 										} 
 									}
@@ -220,8 +208,9 @@ long CliqueCount6(int *g, int gsize, long stop) {
 												&& (color == g[l * gsize + n]) 
 												&& (color == g[m * gsize + n])) {
 											count ++;
-											/*if(count > stop)
-												return -1;*/
+						//					printf("%d %d %d %d %d %d \n", i, j, k, l, m, n);
+												if(count > stop)
+												return -1;
 										} 
 									}
 								}

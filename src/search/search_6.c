@@ -9,7 +9,7 @@
 #include "clique_count.h"
 #define MAXSIZE (541)
 #define TABOOSIZE (500)
-#define BIGCOUNT (1000000)
+#define BIGCOUNT (1000)
 #define THRESHOLD (10)
 /*
  * example of very simple search for R(7, 7) counter 
@@ -20,20 +20,76 @@
  * encoding of and edge (i, j) + clique_count
  */
 typedef enum {false, true} bool;
+int rand_taboo_check(int i, int j, int list[100][2], int size) {
+	int index;
+	for(index = 0; index < size; index ++) {
+		if(i == list[index][0] && j == list[index][1])
+			return index;
+	}
+	return -1;
+}
 
+void create_edge_stat(int stat[120][120], bool people[120]) {
+	int i, j, k;
+	int* node;
+	for(i = 0; i < 120; i ++) {
+		for(j = 0; j < 120; j ++)
+			stat[i][j] = 0;
+		people[i] = false;
+	}
+
+	for(i = 0; i < cache_7.length; i ++) {
+		node = cache_7.array[i].clique_node;
+		for(j = 0; j < 6; j ++) {
+			for(k = j + 1; k < 7; k ++) {
+				people[node[j]] = true;
+				people[node[k]] = true;
+				stat[node[j]][node[k]] ++;
+			}
+		}		
+	}
+}
+
+
+void get_hottest_edge(int stat[120][120], bool people[120], int *a, int *b) {
+	int i, j, hot_i, hot_j, count = -1, ptr = 0;
+	// here may be a bug
+	for(i = 0; i < 120; i ++) {
+		if(people[i]) {
+			for(j = i + 1; j < 120; j ++) {
+				if(stat[i][j] > count) {
+					hot_i = i;
+					hot_j = j;
+					count = stat[i][j];
+				}
+			}
+		}
+	}
+	stat[hot_i][hot_j] = 0;	
+	*a = hot_i;
+	*b = hot_j;
+}
 
 int main(int argc, char *argv[])
 {
 	int *g, *new_g;
-	int gsize, i, j, k, rand_no, best_i, best_j, memory_index = 0,
+	int gsize, count, i, j, k, rand_no, 
+			best_count, best_i, best_j,
 			t, try_count = 0, rand_count = 0;
 	void *taboo_list, *rand_taboo_list;
-	long best_count, last_best = 1000000, count;
 	srand(time(NULL));
 	bool backtrack_flag = false, break_flag = false, regenerate_flag = false;
 	int rand_i, rand_j;
+	int last_best = 10000;
+	int rand_list[5000][2];
+	int rand_list_index = 0;
+	int memory[500][2];
+	int memory_index = 0;
 	int* node;
-	int memory[1000][2];
+	long clique_6;
+	int stat[120][120];
+	bool people[120];
+	int hot_i, hot_j;
 	best_count = BIGCOUNT;
 	if(argc == 1) { 
 		// start with graph of size 8
@@ -89,39 +145,45 @@ int main(int argc, char *argv[])
 		try_count = 0;
 		best_count = BIGCOUNT;	
 			// directed search to kill most of clique 7
-		while(best_count != 0) {
+	//	CliqueCountCreateCache(g, gsize);
+		while(best_count > 100) {
 				
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
+			if(best_count < 200) {
+				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
+				backtrack_flag = false;
+				break;
+			}
+					// do the second round of clean up by breaking the ties
+					// since best_count is initialized to BIGCOUNT, we won't
+					// have 
 			best_i = -2;	
 			CliqueCountCreateCache(g, gsize);
 			break_flag = false;
 				//printf("random count = %d\n", rand_count);
 			for(i = 0; i < cache_6.length && !break_flag; i ++) {
 				node = cache_6.array[i].clique_node;
-				break_flag = false;
 				for(j = 0; j < 5 && !break_flag; j ++) {
 					for(k = j + 1; k < 6; k ++) {
 							// try to flip it
 						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
-						//CliqueCountFast(g, gsize, 100000, &count);
 						count = CliqueCount6(g, gsize, best_count);
-						if(count < best_count && !FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100) && !FIFOFindEdgeCount(taboo_list, node[j], node[k], count)) {
+						if(count != -1 && !FIFOFindEdgeCount(taboo_list, node[j], node[k], count)) {
+							if(count < best_count) {
 								best_count = count;
 								best_i = node[j];
 								best_j = node[k];
 								break_flag = true;
-								g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
 								break;
+							}
 						} // else printf("Already in taboo list!\n");
-						CliqueCountCreateCache(g, gsize);
-						printf("count 6 = %d\n", cache_6.length);
 						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
 					}
 				}
 			}
 			if(best_i == -2) {
-				CliqueCountCreateCache(g, gsize);
+		//		CliqueCountCreateCache(g, gsize);
 				if(best_count < last_best) {
 					printf("EVOLVNG!!!!!!!!!!\n");
 					last_best = best_count;
@@ -141,6 +203,7 @@ int main(int argc, char *argv[])
 					// random flip 2 edges in the cache_7
 						// add all edges into rand_list
 				printf("MUTATING!!!!!!!!!!\n");
+				rand_list_index = 0;
 				memory_index = 0;
 						// establish the random list
 				break_flag = false;
@@ -164,7 +227,7 @@ int main(int argc, char *argv[])
 				}
 				best_count = BIGCOUNT;
 			} else {
-				printf("BACKTRACKING size: %d, best_6_count: %d, best_7_count: %d, best edge: (%d, %d), new color: %d\n",
+				printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
 							 gsize, best_count, cache_7.length, best_i, best_j, 
 							 g[best_i * gsize + best_j]); 
 						// keep the best flip we saw. 

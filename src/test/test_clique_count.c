@@ -10,7 +10,8 @@ int main() {
 	int gsize, i, j, count_1, count_2;
 	ReadGraph("ce", &g, &gsize);
 	PrintGraph(g, gsize);
-	long clique_6;	
+	long clique_6;
+	int* node;	
 //	
 //	List *cache_6 = list_init(6);
 //	List *cache_7 = list_init(7);
@@ -24,22 +25,20 @@ int main() {
 //        cache_7[i]=(Clique *)malloc(sizeof(Clique));
 //    }
     
-    
-    
-    
-
 	CliqueCountCreateCache(g, gsize);
 	printf("# of clique_6:\t%d\n", cache_6.length);
-	printf("# of clique_7:\t%d\n", CliqueCount(g, gsize));
-//	int a, b, c, d, e, f, h;
-//	a = 71, b = 72, c = 77, d = 90, e = 96, f = 101, h = 104;
-//	printf("%d\t%d\t%d\t%d\t%d\t\n", g[a * gsize + b], g[a * gsize + c], g[a * gsize + d], g[a * gsize + e], g[a * gsize + f]);
-//	printf("%d\t%d\t%d\t%d\t\n", g[b * gsize + c], g[b * gsize + d], g[b * gsize + e], g[b * gsize + f]);
-//	printf("%d\t%d\t%d\t\n", g[c * gsize + d], g[c * gsize + e], g[c * gsize + f]);
-//	printf("%d\t%d\t\n", g[d * gsize + e], g[d * gsize + f]);
-//	printf("%d\t\n", g[e * gsize + f]);
-//	
-//	printf("%d\t%d\t%d\t%d\t%d\t%d\t", g[a * gsize + h], g[h * gsize + b], g[h * gsize + c], g[h * gsize + d], g[h * gsize + e], g[h * gsize + f]);
+	
+	printf("===========================================\n");
+	printf("# of clique_6 by original:\t%d\n", CliqueCount6(g, gsize, 1000000));
+	
+	/*for(i = 0; i < cache_6.length; i ++) {
+		node = cache_6.array[i].clique_node;
+		printf("%d %d %d %d %d %d\n", node[0], node[1], node[2], node[3], node[4], node[5]);
+	}*/
+	
+	
+              // try to flip it
+
 	printf("======================================\n");
 	printf("======================================\n");
 //	print_list(cache_6);
@@ -56,7 +55,7 @@ int main() {
 			
 			count_2 = CliqueCountUseCache(g, gsize, i, j, 10000);
 			//printf("# of clique_7 by cache:\t%d\n", count_2);
-			printf("count = %d\n", count_2);
+	//		printf("count = %d\n", count_2);
 			if(count_1 != count_2) { 
 				printf("# of clique_7 by normal:\t%d\n", count_1);
 				printf("# of clique_7 by cache:\t%d\n", count_2);

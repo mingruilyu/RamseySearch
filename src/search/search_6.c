@@ -175,9 +175,9 @@ int main(int argc, char *argv[])
 								best_count = count;
 								best_i = node[j];
 								best_j = node[k];
-								break_flag = true;
-								g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
-								break;
+				//				break_flag = true;
+				//				g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
+				//				break;
 							}
 						} // else printf("Already in taboo list!\n");
 						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
@@ -209,21 +209,8 @@ int main(int argc, char *argv[])
 				memory_index = 0;
 						// establish the random list
 				break_flag = false;
-					/*	get_hottest_edge(stat, people, &hot_i, &hot_j);
-						g[hot_i * gsize + hot_j] = 1 - g[hot_i * gsize + hot_j];
-						FIFOInsertEdgeCount(rand_taboo_list, hot_i, hot_j, 100);
-						printf("MUTATED (%d, %d)\n", hot_i, hot_j);
-						memory[memory_index][0] = hot_i;
-						memory[memory_index ++][1] = hot_j;*/
-					/*	get_hottest_edge(stat, people, &hot_i, &hot_j);
-						g[hot_i * gsize + hot_j] = 1 - g[hot_i * gsize + hot_j];
-						FIFOInsertEdgeCount(rand_taboo_list, hot_i, hot_j, 100);
-						printf("MUTATED (%d, %d)\n", hot_i, hot_j);	
-						// add to memory
-						memory[memory_index][0] = hot_i;
-						memory[memory_index ++][1] = hot_j;*/
-//				CliqueCountCreateCache(g, gsize);
-				for(i = cache_7.length - 1; i >= 0 && !break_flag; i --) {
+				while(!break_flag) {
+					i = rand() % cache_7.length;
 					node = cache_7.array[i].clique_node;
 					for(j = 5; j >= 0 && !break_flag; j --) {
 						for(k = j + 1; k < 7; k ++) {

@@ -17,7 +17,7 @@ typedef struct Clique_7 {
 
 typedef struct Clique_6_list{
 	Clique6 array[CLIQUE_6_LIST_MAX_SIZE];
-	int length;
+	long length;
 }Clique6list;
 
 typedef struct Clique_7_list{

@@ -170,14 +170,11 @@ int main(int argc, char *argv[])
 							// try to flip it
 						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
 						count = CliqueCountUseCache(g, gsize, node[j], node[k], best_count);
-						if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100) && !FIFOFindEdgeCount(taboo_list, node[j], node[k], best_count)) {
+						if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100) && !FIFOFindEdgeCount(taboo_list, node[j], node[k], count)) {
 							if(count < best_count) {
 								best_count = count;
 								best_i = node[j];
 								best_j = node[k];
-				//				break_flag = true;
-				//				g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
-				//				break;
 							}
 						} // else printf("Already in taboo list!\n");
 						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];

@@ -146,11 +146,12 @@ int main(int argc, char *argv[])
 		best_count = BIGCOUNT;	
 			// directed search to kill most of clique 7
 	//	CliqueCountCreateCache(g, gsize);
-		while(best_count > 100) {
+		while(best_count > 0) {
 				
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(best_count < 200 + 50 * (gsize - 66)) {
+			//if(best_count < 200 + 50 * (gsize - 66)) {
+			if(best_count < 200 + 50 * (gsize - 70)) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
 				break;
@@ -162,6 +163,11 @@ int main(int argc, char *argv[])
 			CliqueCountCreateCache(g, gsize);
 			break_flag = false;
 				//printf("random count = %d\n", rand_count);
+			if(cache_6.length == 0) {
+			
+				backtrack_flag = false;
+				break;
+			}
 			for(i = 0; i < cache_6.length && !break_flag; i ++) {
 				node = cache_6.array[i].clique_node;
 				for(j = 0; j < 5 && !break_flag; j ++) {
@@ -175,6 +181,7 @@ int main(int argc, char *argv[])
 								best_i = node[j];
 								best_j = node[k];
 								break_flag = true;
+								g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
 								break;
 							}
 						} // else printf("Already in taboo list!\n");

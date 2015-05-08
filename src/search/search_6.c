@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 				
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(best_count < 200) {
+			if(best_count < 200 + 50 * (gsize - 66)) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
 				break;

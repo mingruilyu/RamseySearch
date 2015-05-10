@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 				
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(cache_7.length < 5) {
+			if(cache_7.length < 35) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
 				break;

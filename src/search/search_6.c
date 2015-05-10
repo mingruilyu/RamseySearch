@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
 	int rand_list_index = 0;
 	int memory[500][2];
 	int memory_index = 0;
+	int best_ever;
 	int* node;
 	long clique_6;
 	int stat[120][120];
@@ -183,10 +184,14 @@ int main(int argc, char *argv[])
 			}
 			if(best_i == -2) {
 				CliqueCountCreateCache(g, gsize);
-				if(best_count < last_best || (rand() % 100 > (90 + (best_count - last_best)))) {
-					printf("EVOLVNG!!!!!!!!!!\n");
+				if(best_count < last_best || (rand() % 100 > (90 + (best_count - best_ever)))) {
+					if(best_count < best_ever) {
+						printf("EVOLVNG!!!!!!!!!!\n");
+						PrintGraph(g, gsize);
+						best_ever = best_count;
+					}
+
 					last_best = best_count;
-					PrintGraph(g, gsize);
 					FIFODelete(taboo_list);
 					taboo_list = FIFOInitEdge(TABOOSIZE);
 					FIFODelete(rand_taboo_list);
@@ -270,6 +275,7 @@ int main(int argc, char *argv[])
 			taboo_list = FIFOInitEdge(TABOOSIZE);
 			best_count = BIGCOUNT;
 			last_best  = BIGCOUNT;
+			best_ever  = BIGCOUNT;
 		}
 	}
 //	FIFODeleteGraph(taboo_list);

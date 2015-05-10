@@ -212,9 +212,7 @@ int main(int argc, char *argv[])
 								}
 							} // else printf("Already in taboo list!\n");
 							g[i * gsize + j] = 1 - g[i * gsize + j];
-						} else {
-							printf("i = %d j = %d \n", i, j);
-						}
+						} 
 					}
 				}
 			}

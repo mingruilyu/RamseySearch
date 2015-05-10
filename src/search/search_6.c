@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 			}
 			if(best_i == -2) {
 				CliqueCountCreateCache(g, gsize);
-				if(best_count < last_best) {
+				if(best_count < last_best || (rand() % 100 > (90 + (best_count - last_best)))) {
 					printf("EVOLVNG!!!!!!!!!!\n");
 					last_best = best_count;
 					PrintGraph(g, gsize);

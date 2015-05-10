@@ -1,6 +1,6 @@
 #ifndef _LIST_H_
 #define _LIST_H_
-#define CLIQUE_6_LIST_MAX_SIZE 1000000
+#define CLIQUE_6_LIST_MAX_SIZE 100000
 #define CLIQUE_7_LIST_MAX_SIZE 1000
 
 

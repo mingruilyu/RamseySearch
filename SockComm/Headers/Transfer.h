@@ -1,14 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <time.h>
+#include <errno.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <pthread.h>
 
 #define BUFFER_SIZE 1024
+#define PORT 8000
+
+static int SERVER_LISTEN_PORT = -1;
+static int CLIENT_LISTEN_PORT = -1;
 
 static int desNum = 0;
+struct broadcast* broadcast_list[20];
 
 void *connection_handler(void *);
 
@@ -80,6 +89,12 @@ void receive_file(int connected_socket, char *filename) {
 	}
 }
 
+void set_port() {
+	srand(time(NULL) * 1000);
+	SERVER_LISTEN_PORT = PORT;
+	CLIENT_LISTEN_PORT = PORT + 1;
+}
+
 void *send_to_one_des(void* _des) {
 	struct broadcast des = *(struct broadcast*)_des;
 	
@@ -104,7 +119,7 @@ void *send_to_one_des(void* _des) {
 
 	iResult = bind(client_socket, (struct sockaddr*)&client_addr, sizeof(client_addr));
 	if (iResult != 0) {
-		printf("Could not bind send_to_one_des socket!\n");
+		perror("Could not bind send_to_one_des socket!\n");
 		exit(1);
 	}
 	printf("send_to_one_des socket bounded!\n");
@@ -112,7 +127,7 @@ void *send_to_one_des(void* _des) {
 	struct sockaddr_in server_addr;
 	memset(&server_addr, '0', sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(8000);
+	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
 
 	if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
 		printf("Input IP is not correct!\n");
@@ -131,6 +146,7 @@ void *send_to_one_des(void* _des) {
 	send_file(client_socket, file_name);
 	
 	close(client_socket);
+	pthread_exit(0);
 }
 
 void *send_to_des(void* _des) {
@@ -160,7 +176,7 @@ void *send_to_des(void* _des) {
 
 		iResult = bind(client_socket, (struct sockaddr*)&client_addr, sizeof(client_addr));
 		if (iResult != 0) {
-			printf("Could not bind send_to_des socket!\n");
+			perror("Could not bind send_to_des socket!\n");
 			exit(1);
 		}
 		printf("send_to_des socket bounded!\n");
@@ -168,7 +184,7 @@ void *send_to_des(void* _des) {
 		struct sockaddr_in server_addr;
 		memset(&server_addr, '0', sizeof(server_addr));
 		server_addr.sin_family = AF_INET;
-		server_addr.sin_port = htons(8000);
+		server_addr.sin_port = htons(CLIENT_LISTEN_PORT);
 		
 		if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
 			printf("No.%d input IP is not correct!\n", i);
@@ -188,9 +204,15 @@ void *send_to_des(void* _des) {
 
 		close(client_socket);
 	}
+	pthread_exit(0);
 }
 
 void *server_listen_to_clients_handler(void* _file_name) {
+	int err = pthread_detach(pthread_self());
+	if (err != 0) {
+		perror("Could not pthread_detach!");
+	}
+	
 	char* file_name = (char*)_file_name;
 
 	int iResult = 0;
@@ -201,7 +223,7 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	//Address family (must be AF_INET)
 	serv_addr.sin_family = AF_INET;
 	//IP port
-	serv_addr.sin_port = htons(8000);
+	serv_addr.sin_port = htons(SERVER_LISTEN_PORT);
 	//IP address
 	/*struct sockaddr_in {
 	short sin_family;
@@ -235,7 +257,7 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	//A pointer to a sockaddr structure of the local address to assign to the bound socket.
 	iResult = bind(serv_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 	if (iResult != 0) {
-		printf("Could not bind server_listen_to_clients_handler socket!\n");
+		perror("Could not bind server_listen_to_clients_handler socket!\n");
 		exit(1);
 	}
 
@@ -258,18 +280,28 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	
 	while (sf.connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) {
 		printf("server_listen_to_clients_handler did accept!\n");
+		char incoming_ip_addr[20];
+		printf("The connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
+		printf("incoming_ip_addr = %s\n", incoming_ip_addr);
 
-		int err = pthread_create(&thread_id, NULL, connection_handler, (void*)&sf) != 0;
+		err = pthread_create(&thread_id, NULL, connection_handler, (void*)&sf) != 0;
 		if (err != 0) {
-			printf("Could not create thread!\n");
+			printf("Could not create thread! errno: %d \n", errno);
+			perror("Could not create thread!");
 			continue;
 		}
 		pthread_join(thread_id, NULL);
 	}
 	close(serv_socket);
+	pthread_exit(0);
 }
 
 void *client_always_listen_to_one_handler(void* _file_name) {
+	int err = pthread_detach(pthread_self());
+	if (err != 0) {
+		perror("Could not pthread_detach!");
+	}
+	
 	char* file_name = (char*)_file_name;
 
 	int iResult = 0;
@@ -280,7 +312,7 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 	//Address family (must be AF_INET)
 	serv_addr.sin_family = AF_INET;
 	//IP port
-	serv_addr.sin_port = htons(8000);
+	serv_addr.sin_port = htons(CLIENT_LISTEN_PORT);
 	//IP address
 	/*struct sockaddr_in {
 	short sin_family;
@@ -314,7 +346,7 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 	//A pointer to a sockaddr structure of the local address to assign to the bound socket.
 	iResult = bind(serv_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 	if (iResult != 0) {
-		printf("Could not bind client_always_listen_to_one_handler socket!\n");
+		perror("Could not bind client_always_listen_to_one_handler socket!\n");
 		exit(1);
 	}
 
@@ -335,14 +367,16 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 			printf("Accepting failed!\n");
 			exit(1);
 		}
-
-		printf("Got connection from %s\n", inet_ntoa(client_addr.sin_addr));
+		
+		char incoming_ip_addr[20];
+		printf("Got connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
 		
 		receive_file(connected_socket, file_name);
 		
 		close(connected_socket);
 	}
 	close(serv_socket);
+	pthread_exit(0);
 }
 
 void *connection_handler(void* connected_info) {
@@ -355,4 +389,5 @@ void *connection_handler(void* connected_info) {
 	receive_file(connected_sock, file_name);
 	
 	close(connected_sock);
+	pthread_exit(0);
 }

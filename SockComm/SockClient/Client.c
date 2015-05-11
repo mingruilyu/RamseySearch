@@ -4,7 +4,7 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "Transfer.h"
 /*
@@ -25,7 +25,11 @@ int main(int argc, char *argv[]) {
 		printf("You should input server IP address only!\n");
 		exit(1);
 	}
-	
+
+	set_port();
+
+	int err = 0;
+
 	struct broadcast server;
 	server.ipAddr = argv[1];
 	server.fileName = "DataToServer.txt";
@@ -33,18 +37,25 @@ int main(int argc, char *argv[]) {
 	char* file_from_server = "DataFromServer.txt";
 
 	pthread_t sock_recv_thread_id;
-	pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, (void*)file_from_server);
+	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, (void*)file_from_server);
+	if (err != 0) {
+		perror("Could not create client_always_listen_to_one_handler thread!");
+	}
 
 	while (1) {
 		pthread_t sock_send_thread_id;
-		pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)&server);
+		err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)&server);
+		if (err != 0) {
+			perror("Could not create send_to_one_des thread!");
+		}
 
-		int err = 0;
 		err = pthread_join(sock_send_thread_id, NULL);
 		if (err != 0) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
+			perror("sock_thread goes wrong!");
 		}
-		sleep(5);
+		sleep(4);
 	}
+
 	return 0;
 }

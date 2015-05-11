@@ -2,7 +2,7 @@ SUB_DIR =\
 SockServer \
 SockClient
 
-all: clean RECURSIVE_MAKE
+all: RECURSIVE_MAKE
 
 RECURSIVE_MAKE:
 	@for subdir in $(SUB_DIR); \

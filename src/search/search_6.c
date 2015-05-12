@@ -291,6 +291,7 @@ int main(int argc, char *argv[])
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 				//FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
 				best_count = BIGCOUNT;
+				PrintGraph(g, gsize);
 				//memory[memory_index][0] = best_i;
 				//memory[memory_index ++][1] = best_j;
 			}

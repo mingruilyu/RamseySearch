@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 		// keep flipping the outmost column until counter
 		// example is found
 		try_count = 0;
-		best_count = BIGCOUNT;	
+		//best_count = BIGCOUNT;	
 			// directed search to kill most of clique 7
 		CliqueCountCreateCache(g, gsize);
 		while(best_count != 0) {
@@ -216,8 +216,8 @@ int main(int argc, char *argv[])
 			//	exit(0);
 				//CliqueCountCreateCache(g, gsize);
 			//	if(best_count < last_best || (rand() % 100 > (70 + (best_count - best_ever)))) {
-				if(best_count < last_best || (best_count - best_ever) < 3) {
-			//	if(best_count < last_best) {
+		//		if(best_count < last_best || (best_count - best_ever) < 3) {
+				if(best_count < last_best) {
 					if(best_count < best_ever) {
 						printf("EVOLVNG!!!!!!!!!!\n");
 						PrintGraph(g, gsize);
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 				//FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
-				best_count = BIGCOUNT;
+			//	best_count = BIGCOUNT;
 			//	PrintGraph(g, gsize);
 				memory[memory_index][0] = best_i;
 				memory[memory_index ++][1] = best_j;

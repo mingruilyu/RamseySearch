@@ -8,7 +8,7 @@
 #include "time.h"
 #include "clique_count.h"
 #define MAXSIZE (541)
-#define TABOOSIZE (500)
+#define TABOOSIZE (250)
 #define BIGCOUNT (1000)
 #define THRESHOLD (10)
 /*
@@ -54,7 +54,6 @@ int create_edge_stat(int stat[120][120], bool people[120], int gsize) {
 	printf("number of edges: %d \n", count);
 	return count;
 }
-
 
 void get_hottest_edge(int stat[120][120], bool people[120], int *a, int *b) {
 	int i, j, hot_i, hot_j, count = -1, ptr = 0;
@@ -170,17 +169,17 @@ int main(int argc, char *argv[])
 					// since best_count is initialized to BIGCOUNT, we won't
 					// have 
 			best_i = -2;	
-			//edge_count = create_edge_stat(stat, people, gsize);
-			//break_flag = false;
-/*			for(i = gsize - 2; i >= 0 && !break_flag; i --) {
+			edge_count = create_edge_stat(stat, people, gsize);
+			break_flag = false;
+			for(i = gsize - 2; i >= 0 && !break_flag; i --) {
         if(people[i]) {
           for(j = i + 1; j < gsize && !break_flag; j ++) {
             if(stat[i][j] != 0) {
               //printf("edge count %d i = %d j = %d \n", edge_count, i, j);
               g[i * gsize + j] = 1 - g[i * gsize + j];
 							count = CliqueCountUseCache(g, gsize, i, j, best_count);
-			//				if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
-							if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+							if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+			//				if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 				//			if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, 100)) {
                 if(count < best_count) {
                   best_count = count;
@@ -195,8 +194,8 @@ int main(int argc, char *argv[])
             }
           }
         }
-      }*/
-			for(i = 0; i < gsize; i ++) {
+      }
+	/*		for(i = 0; i < gsize; i ++) {
 				for(j = i + 1; j < gsize; j ++) {
           g[i * gsize + j] = 1 - g[i * gsize + j];
 					count = CliqueCountUseCache(g, gsize, i, j, best_count);
@@ -209,34 +208,16 @@ int main(int argc, char *argv[])
 					}
           g[i * gsize + j] = 1 - g[i * gsize + j];
 				}
-			} 
+			} */
 
 							
-		/*	for(i = 0; i < cache_7.length && !break_flag; i ++) {
-				node = cache_7.array[i].clique_node;
-				break_flag = false;
-				for(j = 0; j < 6 && !break_flag; j ++) {
-					for(k = j + 1; k < 7; k ++) {
-							// try to flip it
-						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
-						count = CliqueCountUseCache(g, gsize, node[j], node[k], best_count);
-						if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, node[j], node[k], 100) && !FIFOFindEdgeCount(taboo_list, node[j], node[k], count)) {
-							if(count < best_count) {
-								best_count = count;
-								best_i = node[j];
-								best_j = node[k];
-							}
-						} // else printf("Already in taboo list!\n");
-						g[node[j] * gsize + node[k]] = 1 - g[node[j] * gsize + node[k]];
-					}
-				}
-			}*/
 			if(best_i == -2) {
-				printf("nothing found! terminated!");
-				exit(0);
+			//	printf("nothing found! terminated!");
+			//	exit(0);
 				//CliqueCountCreateCache(g, gsize);
-			/*	if(best_count < last_best || (rand() % 100 > (80 + (best_count - best_ever)))) {
-		//		if(best_count < last_best) {
+			//	if(best_count < last_best || (rand() % 100 > (70 + (best_count - best_ever)))) {
+				if(best_count < last_best || (best_count - best_ever) < 3) {
+			//	if(best_count < last_best) {
 					if(best_count < best_ever) {
 						printf("EVOLVNG!!!!!!!!!!\n");
 						PrintGraph(g, gsize);
@@ -261,9 +242,24 @@ int main(int argc, char *argv[])
 				printf("MUTATING!!!!!!!!!!\n");
 				rand_list_index = 0;
 				memory_index = 0;
-						// establish the random list
+				// establish the random list
 				break_flag = false;
-				while(!break_flag) {
+				rand_count = 0;
+				while(rand_count < 1) {
+					i = rand() % (gsize - 1);
+					j = rand() % (gsize - 1 - i) + i + 1;
+					if(!FIFOFindEdgeCount(rand_taboo_list, i, j, 100)) { 
+						break_flag = true;
+						g[i * gsize + j] = 1 - g[i * gsize + j];
+						FIFOInsertEdgeCount(rand_taboo_list, i, j, 100);
+						printf("MUTATED (%d, %d)\n", i, j);	
+						// add to memory
+						memory[memory_index][0] = i;
+						memory[memory_index ++][1] = j;
+						rand_count ++;
+					}
+				}
+			/*	while(!break_flag) {
 					i = rand() % cache_7.length;
 					node = cache_7.array[i].clique_node;
 					for(j = 5; j >= 0 && !break_flag; j --) {
@@ -280,8 +276,8 @@ int main(int argc, char *argv[])
 							}
 						}
 					}
-				}
-				best_count = BIGCOUNT;*/
+				}*/
+				best_count = BIGCOUNT;
 			} else {
 				printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
 							 gsize, cache_6.length, best_count, best_i, best_j, 
@@ -291,9 +287,9 @@ int main(int argc, char *argv[])
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 				//FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
 				best_count = BIGCOUNT;
-				PrintGraph(g, gsize);
-				//memory[memory_index][0] = best_i;
-				//memory[memory_index ++][1] = best_j;
+			//	PrintGraph(g, gsize);
+				memory[memory_index][0] = best_i;
+				memory[memory_index ++][1] = best_j;
 			}
 		}
 		//}

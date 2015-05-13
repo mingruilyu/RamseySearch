@@ -181,7 +181,7 @@ int search_6( int *g, int g_size, int i, int j, int stop){
 		}
 		p++;
 	}
-
+	jrb_free_tree(root);
 	if(counter > stop)
     	return(-1);
 

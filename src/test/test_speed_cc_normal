@@ -9,7 +9,7 @@ int main() {
 	PrintGraph(g, gsize);
 	i = 70, j = 80;
 	printf("Preflip (%d, %d)\n", i, j);
-	g[i * gsize + j] = 1 - g[i * gsize + j];
+/*	g[i * gsize + j] = 1 - g[i * gsize + j];
 	i = 69, j = 70;
 	printf("Preflip (%d, %d)\n", i, j);
 	g[i * gsize + j] = 1 - g[i * gsize + j];
@@ -21,13 +21,13 @@ int main() {
 	g[i * gsize + j] = 1 - g[i * gsize + j];
 	i = 70, j = 79;
 	printf("Preflip (%d, %d)\n", i, j);
-	g[i * gsize + j] = 1 - g[i * gsize + j];
+	g[i * gsize + j] = 1 - g[i * gsize + j];*/
 
 
-	i = 70, j = 76;
+//	i = 70, j = 76;
 	g[i * gsize + j] = 1 - g[i * gsize + j];
 	best_count = CliqueCount(g, gsize);
-/*	for(i = 0; i < 88; i ++) {
+	for(i = 0; i < 88; i ++) {
 		for(j = i + 1; j < 88; j ++) {
 			g[i * gsize + j] = 1 - g[i * gsize + j];
 			count = CliqueCount(g, gsize);
@@ -40,7 +40,7 @@ int main() {
 			}
 			g[i * gsize + j] = 1 - g[i * gsize + j];
 		}
-	}	*/
+	}
 //	g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 	printf("Flip (%d, %d) bestcount = %d \n", i, j, best_count);
 	free(g);

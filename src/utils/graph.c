@@ -15,8 +15,8 @@ void PrintGraph(int *g, int gsize)
 	int i;
 	int j;
 	char file_name[100];
-	sprintf(file_name, "../../CounterExamples/CE_%d", gsize);
-	FILE* fd = fopen(file_name, "a+");
+	sprintf(file_name, "../../ce", gsize);
+	FILE* fd = fopen(file_name, "w");
 	fprintf(fd,"%d-------------------\n",gsize);
 	fprintf(stdout,"%d-------------------\n",gsize);
 	for(i=0; i < gsize; i++)
@@ -24,10 +24,10 @@ void PrintGraph(int *g, int gsize)
 		for(j=0; j < gsize; j++)
 		{
 			fprintf(fd,"%d ",g[i*gsize+j]);
-			fprintf(stdout,"%d ",g[i*gsize+j]);
+			//fprintf(stdout,"%d ",g[i*gsize+j]);
 		}
 		fprintf(fd,"\n");
-		fprintf(stdout,"\n");
+		//fprintf(stdout,"\n");
 	}
 	fclose(fd);
 	return;

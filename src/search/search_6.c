@@ -175,9 +175,9 @@ int main(int argc, char *argv[])
           for(j = i + 1; j < gsize && !break_flag; j ++) {
             if(stat[i][j] != 0) {
               //printf("edge count %d i = %d j = %d \n", edge_count, i, j);
-              g[i * gsize + j] = 1 - g[i * gsize + j];
-							count = CliqueCountUseCache(g, gsize, i, j, best_count);
-							if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+              	g[i * gsize + j] = 1 - g[i * gsize + j];
+		count = CliqueCountUseCache(g, gsize, i, j, best_count);
+		if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 			//				if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 				//			if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, 100)) {
                 if(count < best_count) {

@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
 	int rand_list_index = 0;
 	int memory[500][2];
 	int memory_index = 0;
-	int best_ever = BIGCOUNT + 1;
 	int* node;
 	long clique_6;
 	int stat[120][120];
@@ -116,8 +115,8 @@ int main(int argc, char *argv[])
 		ReadGraph("../../ce", &g, &gsize);
 		PrintGraph(g, gsize);
 		CliqueCountCreateCache(g, gsize);
-		best_ever = cache_7.length;
 		best_count = BIGCOUNT;
+		last_best = BIGCOUNT;
 /*		new_g = (int *) malloc((gsize + 1) 
 															* (gsize + 1) * sizeof(int));
 		if(new_g == NULL) exit(1);
@@ -218,12 +217,9 @@ int main(int argc, char *argv[])
 			//	if(best_count < last_best || (rand() % 100 > (70 + (best_count - best_ever)))) {
 		//		if(best_count < last_best || (best_count - best_ever) < 3) {
 				if(best_count < last_best) {
-					if(best_count < best_ever) {
-						printf("EVOLVNG!!!!!!!!!!\n");
-						PrintGraph(g, gsize);
-						best_ever = best_count;
-					}
-					printf("best_count = %d, last_best = %d, best_ever = %d\n", best_count, last_best, best_ever);
+					printf("EVOLVNG!!!!!!!!!!\n");
+					PrintGraph(g, gsize);
+					printf("best_count = %d, last_best = %d\n", best_count, last_best);
 					last_best = best_count;
 					FIFODelete(taboo_list);
 					taboo_list = FIFOInitEdge(TABOOSIZE);
@@ -286,7 +282,7 @@ int main(int argc, char *argv[])
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 				//FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
-			//	best_count = BIGCOUNT;
+				best_count = BIGCOUNT;
 			//	PrintGraph(g, gsize);
 				memory[memory_index][0] = best_i;
 				memory[memory_index ++][1] = best_j;
@@ -326,7 +322,6 @@ int main(int argc, char *argv[])
 			taboo_list = FIFOInitEdge(TABOOSIZE);
 			best_count = BIGCOUNT;
 			last_best  = BIGCOUNT;
-			best_ever  = BIGCOUNT;
 		}
 	}
 //	FIFODeleteGraph(taboo_list);

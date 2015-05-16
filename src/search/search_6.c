@@ -220,11 +220,11 @@ int main(int argc, char *argv[])
 		//		if(best_count < last_best || (best_count - best_ever) < 3) {
 				if(best_count < last_best) {
 					if(best_count < best_ever) {
--						printf("EVOLVNG!!!!!!!!!!\n");
--						PrintGraph(g, gsize);
--						best_ever = best_count;
--					}
--					printf("best_count = %d, last_best = %d, best_ever = %d\n", best_count, last_best, best_ever);
+						printf("EVOLVNG!!!!!!!!!!\n");
+						PrintGraph(g, gsize);
+						best_ever = best_count;
+					}
+					printf("best_count = %d, last_best = %d, best_ever = %d\n", best_count, last_best, best_ever);
 					last_best = best_count;
 					FIFODelete(taboo_list);
 					taboo_list = FIFOInitEdge(TABOOSIZE);

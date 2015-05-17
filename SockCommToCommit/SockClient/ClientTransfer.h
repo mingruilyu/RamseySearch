@@ -17,9 +17,6 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-static int desNum = 0;
-struct broadcast* broadcast_list[100];
-
 typedef struct broadcast {
 	char ipAddr[250];
 	char fileName[250];
@@ -31,11 +28,6 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 	strcpy(bc->fileName, file_name);
 	bc->active = act;
 }
-
-struct sockandfilename {
-	int connectedSocket;
-	char *fileName;
-};
 
 void send_file(int connected_socket, char *filename) {
         char buffer[BUFFER_SIZE];

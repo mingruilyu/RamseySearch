@@ -250,10 +250,14 @@ void *server_listen_to_clients_handler(void* _file_name) {
 		int exist = 0;
 		int i;
 		for (i = 0; i < desNum; ++i) {
-			if (broadcast_list[i]->active == -1) continue;
+			//if (broadcast_list[i]->active == -1) continue;
 			char* existing_ip_addr = broadcast_list[i]->ipAddr;
 			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {
 				printf("This IP is already in the list!\n");
+				printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
+				printf("desNum = %d\n", desNum);
+				if (broadcast_list[i]->active == -1)
+					broadcast_list[i]->active = 1;
 				exist = 1;
 				break;
 			}
@@ -274,17 +278,6 @@ void *server_listen_to_clients_handler(void* _file_name) {
 
 			++desNum;
 		}
-
-		/*int is_active = *(broadcast_list))->active;
-		char* ip_addr = (*(broadcast_list))->ipAddr;
-		char* file_name = (*(broadcast_list))->fileName;
-
-		printf("is_active: %d\n", is_active);
-		printf("ip_addr: %s\n", ip_addr);
-		printf("file_name: %s\n", file_name);
-		*/
-
-
 
 		err = pthread_create(&thread_id, NULL, connection_handler, (void*)&sf) != 0;
 		if (err != 0) {

@@ -29,11 +29,13 @@ int main(int argc, char *argv[]) {
 	set_port();
 
 	int err = 0;
-
-	struct broadcast server;
-	server.ipAddr = argv[1];
-	server.fileName = "DataToServer.txt";
 	
+	Broadcast* server = (Broadcast*) malloc(sizeof(Broadcast));
+	construct_broadcast(server, argv[1], "DataToServer.txt", 1);
+	
+	printf("argv[1]: %s\n", server->ipAddr);
+	printf("fileName: %s\n", server->fileName);
+
 	char* file_from_server = "DataFromServer.txt";
 
 	pthread_t sock_recv_thread_id;
@@ -44,7 +46,7 @@ int main(int argc, char *argv[]) {
 
 	while (1) {
 		pthread_t sock_send_thread_id;
-		err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)&server);
+		err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
 		if (err != 0) {
 			perror("Could not create send_to_one_des thread!");
 		}
@@ -54,7 +56,7 @@ int main(int argc, char *argv[]) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}
-		sleep(4);
+		sleep(10);
 	}
 
 	return 0;

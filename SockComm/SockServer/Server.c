@@ -20,11 +20,15 @@ start_routine().
 */
 #include <pthread.h>
 
-extern struct broadcast* broadcast_list[20];
+extern struct broadcast* broadcast_list[100];
 
 int main(int argc, char *argv[]) {
-	struct broadcast** broadcast_list = (struct broadcast**)malloc(sizeof(struct broadcast*) * 20);
-	
+	memset(&broadcast_list, '0', sizeof(broadcast_list));
+	int p;
+	for (p = 0; p < 100; ++p) {
+		memset(&broadcast_list[p], '0', sizeof(broadcast_list[p]));
+	}
+
 	set_port();
 
 	int err = 0;
@@ -48,7 +52,7 @@ int main(int argc, char *argv[]) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}
-		sleep(4);
+		sleep(10);
 	}
 
 	return 0;

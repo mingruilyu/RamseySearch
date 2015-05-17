@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <time.h>
 #include <errno.h>
+#include <string.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -17,14 +18,21 @@ static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
 static int desNum = 0;
-struct broadcast* broadcast_list[20];
+struct broadcast* broadcast_list[100];
 
 void *connection_handler(void *);
 
-struct broadcast {
-	char *ipAddr;
-	char *fileName;
-};
+typedef struct broadcast {
+	char ipAddr[250];
+	char fileName[250];
+	int active;
+} Broadcast;
+
+void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
+	strcpy(bc->ipAddr, ip_addr);
+	strcpy(bc->fileName, file_name);
+	bc->active = act;
+}
 
 struct sockandfilename {
 	int connectedSocket;
@@ -42,7 +50,7 @@ void send_file(int connected_socket, char *filename) {
 	}
         else {
         	int file_block_length = 0;
-                printf("Entering the read while block!\n");
+                //printf("Entering the read while block!\n");
                 while ((file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp)) > 0) {
                 	printf("file_block_length = %d\n", file_block_length);
 
@@ -68,7 +76,7 @@ void receive_file(int connected_socket, char *filename) {
 		printf("Could not open to write!\n");
 	}
 	else {
-		printf("Starting to receive!\n");
+		//printf("Starting to receive!\n");
 		int length = 0;
 		while (length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) {
 			if (length < 0) {
@@ -96,10 +104,13 @@ void set_port() {
 }
 
 void *send_to_one_des(void* _des) {
-	struct broadcast des = *(struct broadcast*)_des;
+	struct broadcast* des = (struct broadcast*)_des;
 	
-	char *ip_addr = des.ipAddr;
-	char *file_name = des.fileName;
+	char* ip_addr = des->ipAddr;
+	char* file_name = des->fileName;
+
+	//printf("des->ipAddr: %s\n", ip_addr);
+	//printf("des->fileName: %s\n", file_name);
 	
 	int iResult = 0;
 
@@ -115,14 +126,14 @@ void *send_to_one_des(void* _des) {
 		printf("Could not create send_to_one_des socket!\n");
 		exit(1);
 	}
-	printf("send_to_one_des socket created!\n");
+	//printf("send_to_one_des socket created!\n");
 
 	iResult = bind(client_socket, (struct sockaddr*)&client_addr, sizeof(client_addr));
 	if (iResult != 0) {
 		perror("Could not bind send_to_one_des socket!\n");
 		exit(1);
 	}
-	printf("send_to_one_des socket bounded!\n");
+	//printf("send_to_one_des socket bounded!\n");
 
 	struct sockaddr_in server_addr;
 	memset(&server_addr, '0', sizeof(server_addr));
@@ -141,7 +152,7 @@ void *send_to_one_des(void* _des) {
 		printf("send_to_one_des could not connect!\n");
 		exit(1);
 	}
-	printf("send_to_one_des connected!\n");
+	//printf("send_to_one_des connected!\n");
 
 	send_file(client_socket, file_name);
 	
@@ -155,8 +166,13 @@ void *send_to_des(void* _des) {
 	int i;
 
 	for (i = 0; i < desNum; ++i) {
-		char *ip_addr = (*(des_list + i))->ipAddr;
-		char *file_name = (*(des_list + i))->fileName;
+		int is_active = (*(des_list + i))->active;
+		if (is_active == -1) continue;
+
+		char* ip_addr = (*(des_list + i))->ipAddr;
+		char* file_name = (*(des_list + i))->fileName;
+
+		printf("ip_addr: %s\n", ip_addr);
 		
 		int iResult = 0;
 
@@ -172,14 +188,14 @@ void *send_to_des(void* _des) {
 			printf("Could not create send_to_des socket!\n");
 			exit(1);
 		}
-		printf("send_to_des socket created!\n");
+		//printf("send_to_des socket created!\n");
 
 		iResult = bind(client_socket, (struct sockaddr*)&client_addr, sizeof(client_addr));
 		if (iResult != 0) {
 			perror("Could not bind send_to_des socket!\n");
 			exit(1);
 		}
-		printf("send_to_des socket bounded!\n");
+		//printf("send_to_des socket bounded!\n");
 
 		struct sockaddr_in server_addr;
 		memset(&server_addr, '0', sizeof(server_addr));
@@ -187,16 +203,19 @@ void *send_to_des(void* _des) {
 		server_addr.sin_port = htons(CLIENT_LISTEN_PORT);
 		
 		if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
-			printf("No.%d input IP is not correct!\n", i);
+			printf("IP is not correct!\n");
 			exit(1);
 		}
-
+		
 		socklen_t server_addr_length = sizeof(server_addr);
 
+		//printf("send_to_des tries to connect!\n");
 		iResult = connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length);
 		if (iResult != 0) {
-			printf("send_to_des could not connect!\n");
-			exit(1);
+			printf("\nsend_to_des could not connect! %s has retreated!!!\n", ip_addr);
+			(*(des_list + i))->active = -1;
+			close(client_socket);
+			continue;
 		}
 		printf("send_to_des connected!\n");
 		
@@ -269,9 +288,10 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	}
 	
 	struct sockaddr_in client_addr;
+	memset(&client_addr, '0', sizeof(client_addr));
 	socklen_t length = sizeof(client_addr);
 
-	printf("\nserver_listen_to_clients_handler starts to accept!\n");
+	//printf("\nserver_listen_to_clients_handler starts to accept!\n");
 
 	pthread_t thread_id;
 	
@@ -279,10 +299,49 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	sf.fileName = file_name;
 	
 	while (sf.connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) {
-		printf("server_listen_to_clients_handler did accept!\n");
+		//printf("server_listen_to_clients_handler did accept!\n");
 		char incoming_ip_addr[20];
-		printf("The connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
-		printf("incoming_ip_addr = %s\n", incoming_ip_addr);
+		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
+		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
+		
+		int exist = 0;
+		int i;
+		for (i = 0; i < desNum; ++i) {
+			if (broadcast_list[i]->active == -1) continue;
+			char* existing_ip_addr = broadcast_list[i]->ipAddr;
+			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {
+				printf("This IP is already in the list!\n");
+				exist = 1;
+				break;
+			}
+		}
+
+		if (exist == 0) {
+			char* broadcast_file_name = "FileNameinBroadcast.txt";
+			
+			Broadcast* broadcast_target = (Broadcast*) malloc(sizeof(Broadcast));
+			construct_broadcast(broadcast_target, incoming_ip_addr, broadcast_file_name, 1);
+
+			//printf("broadcast_target->ipAddr: %s\n", broadcast_target->ipAddr);
+			//printf("broadcast_target->fileName: %s\n", broadcast_target->fileName);
+
+			broadcast_list[desNum] = broadcast_target;
+
+			printf("broadcast_list[%d] = broadcast_target", desNum);
+
+			++desNum;
+		}
+
+		/*int is_active = *(broadcast_list))->active;
+		char* ip_addr = (*(broadcast_list))->ipAddr;
+		char* file_name = (*(broadcast_list))->fileName;
+
+		printf("is_active: %d\n", is_active);
+		printf("ip_addr: %s\n", ip_addr);
+		printf("file_name: %s\n", file_name);
+		*/
+
+
 
 		err = pthread_create(&thread_id, NULL, connection_handler, (void*)&sf) != 0;
 		if (err != 0) {
@@ -385,7 +444,7 @@ void *connection_handler(void* connected_info) {
 	int connected_sock = sock.connectedSocket;
 	char* file_name = sock.fileName;
 	
-	printf("This is connection_handler thread. Starts to receive file.\n");
+	//printf("This is connection_handler thread. Starts to receive file.\n");
 	receive_file(connected_sock, file_name);
 	
 	close(connected_sock);

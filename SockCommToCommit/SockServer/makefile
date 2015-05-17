@@ -2,12 +2,12 @@ CC = gcc
 CFLAGS = -pthread -g
 HEADER_DIR = ../Headers
 INCLUDES = -I$(HEADER_DIR)
-EXENAME = Client
+EXENAME = Server
 
 $(EXENAME): $(EXENAME).o
 	$(CC) $(CFLAGS) -o $(EXENAME) $(EXENAME).o
 
-%.o: %.c $(HEADER_DIR)/Transfer.h
+%.o: %.c ServerTransfer.h
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:

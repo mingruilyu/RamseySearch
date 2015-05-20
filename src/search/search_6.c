@@ -12,7 +12,6 @@
 #define TABOOSIZE (250)
 #define BIGCOUNT (1000)
 #define THRESHOLD (10)
-#define NEIGHBOR_SIZE (10)
 /*
  * example of very simple search for R(7, 7) counter 
  * examples starts with a small randomized graph and 
@@ -106,6 +105,7 @@ int main(int argc, char *argv[])
 															best_i, best_j,taboo_list);
 			if(count != -1) {
 				printf("EVOLVNG!!!!!!!!!!\n");
+				best_count = count;
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 				PrintGraph(g, gsize);
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, count);

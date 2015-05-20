@@ -6,16 +6,16 @@
 int edges[200][200];
 bool vertex[200];
 
-void findNeighbours(int* g, int gsize, int neighbours[][NEIGHBOR_PARAM]){
-	int i,j,k,count;
-	for(i = 0; i < NEIGHBOR_SIZE; i ++){
+void findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM]){
+	int i,j,k,count, best_count;
+	for(i = 0; i < NEIGHBOR_SIZE; i ++)
 		neighbours[i][NEIGHBOR_PARAM-1] =100000;
-	}
-	for(i = 0; i < gsize; i ++) {
-		for(j = i + 1; j < gsize; j ++) {
-			int best_count = neighbours[NEIGHBOR_SIZE-1][NEIGHBOR_PARAM-1];
-			g[i * gsize + j] = 1 - g[i * gsize + j];
-			count = CliqueCountUseCache(g, gsize, i, j, best_count);
+	i = cur_i;
+	for(j = cur_j + 1; j < gsize; j ++) {
+		best_count = neighbours[NEIGHBOR_SIZE-1][NEIGHBOR_PARAM-1];
+		g[i * gsize + j] = 1 - g[i * gsize + j];
+		count = CliqueCountUseCache(g, gsize, i, j, best_count);
+		if(count != -1) {
 			for(k=0; k < NEIGHBOR_SIZE; k++){
 				if(count < neighbours[k][NEIGHBOR_PARAM-1]){
 					shift(neighbours,k);
@@ -23,6 +23,25 @@ void findNeighbours(int* g, int gsize, int neighbours[][NEIGHBOR_PARAM]){
 					neighbours[k][0]=i;
 					neighbours[k][1]=j;
 					break;					
+				}
+			}
+		}
+		g[i * gsize + j] = 1 - g[i * gsize + j];
+	}
+	for(i = cur_i+1; i < gsize; i ++) {
+		for(j = i + 1; j < gsize; j ++) {
+			best_count = neighbours[NEIGHBOR_SIZE-1][NEIGHBOR_PARAM-1];
+			g[i * gsize + j] = 1 - g[i * gsize + j];
+			count = CliqueCountUseCache(g, gsize, i, j, best_count);
+			if(count != -1) {
+				for(k=0; k < NEIGHBOR_SIZE; k++){
+					if(count < neighbours[k][NEIGHBOR_PARAM-1]){
+						shift(neighbours,k);
+						neighbours[k][2]=count;
+						neighbours[k][0]=i;
+						neighbours[k][1]=j;
+						break;					
+					}
 				}
 			}
 			g[i * gsize + j] = 1 - g[i * gsize + j];
@@ -69,7 +88,6 @@ int create_edge_stat( int gsize) {
 
 int recursiveSearch(int* g, int gsize, int level, int best_ever,
                     int cur_i, int cur_j, void *taboo_list) {
-    if(level == 0) return -1;
     int neighbor[NEIGHBOR_SIZE][3];
     int k, nb_i, nb_j, i, j, best_i, best_j, best_count, edge_count, count;
     int new_i, new_j;
@@ -77,6 +95,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     // flip current edge
     g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
     CliqueCountCreateCache(g, gsize);
+		printf("RECURSION in level %d edge (%d, %d) best_ever %d current_count %d \n", level, cur_i, cur_j, best_ever, cache_7.length);
     //check whether this flip itself will reduce clique 7 count
     if(cache_7.length < best_ever) {
         g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
@@ -117,7 +136,8 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
         return best_count;
     }
     
-    findNeighbours( g, gsize, neighbor);
+    if(level == 0) return -1;
+    findNeighbours( g, gsize, cur_i, cur_j, neighbor);
     // recursively check neighbor one by one
     for(k = 0; k < NEIGHBOR_SIZE; k ++) {
         nb_i = neighbor[k][0];

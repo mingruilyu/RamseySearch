@@ -6,7 +6,7 @@
 int edges[200][200];
 bool vertex[200];
 
-int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM]){
+int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM], void *taboo_list){
 	int i,j,k,count, best_count,counter;
 	for(i = 0; i < NEIGHBOR_SIZE; i ++)
 		neighbours[i][NEIGHBOR_PARAM-1] =100000;
@@ -15,7 +15,7 @@ int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEI
 		best_count = neighbours[NEIGHBOR_SIZE-1][NEIGHBOR_PARAM-1];
 		g[i * gsize + j] = 1 - g[i * gsize + j];
 		count = CliqueCountUseCache(g, gsize, i, j, best_count);
-		if(count != -1) {
+		if(count != -1 &&  !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 			for(k=0; k < NEIGHBOR_SIZE; k++){
 				if(count < neighbours[k][NEIGHBOR_PARAM-1]){
 					counter++;
@@ -34,7 +34,7 @@ int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEI
 			best_count = neighbours[NEIGHBOR_SIZE-1][NEIGHBOR_PARAM-1];
 			g[i * gsize + j] = 1 - g[i * gsize + j];
 			count = CliqueCountUseCache(g, gsize, i, j, best_count);
-			if(count != -1) {
+			if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 				for(k=0; k < NEIGHBOR_SIZE; k++){
 					if(count < neighbours[k][NEIGHBOR_PARAM-1]){
 						counter++;
@@ -84,7 +84,7 @@ int create_edge_stat( int gsize) {
 			}
 		}		
 	}
-	printf("number of edges: %d \n", count);
+	//printf("number of edges: %d \n", count);
 	return count;
 }
 
@@ -98,7 +98,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     // flip current edge
     g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
     CliqueCountCreateCache(g, gsize);
-		printf("RECURSION in level %d edge (%d, %d) best_ever %d current_count %d \n", level, cur_i, cur_j, best_ever, cache_7.length);
+		printf(" RECURSION gsize %d in level %d edge (%d, %d) best_ever %d current_count %d \n", gsize, level, cur_i, cur_j, best_ever, cache_7.length);
     //check whether this flip itself will reduce clique 7 count
     if(cache_7.length < best_ever) {
         g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
@@ -140,7 +140,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     }
     
     if(level == 0) return -1;
-    int neighbourCounter = findNeighbours( g, gsize, cur_i, cur_j, neighbor);
+    int neighbourCounter = findNeighbours( g, gsize, cur_i, cur_j, neighbor,taboo_list );
     // recursively check neighbor one by one
     for(k = 0; k < neighbourCounter; k ++) {
         nb_i = neighbor[k][0];

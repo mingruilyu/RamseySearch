@@ -8,6 +8,7 @@ bool vertex[200];
 
 int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM], void *taboo_list){
 	int i,j,k,count, best_count,counter;
+	counter=0;
 	for(i = 0; i < NEIGHBOR_SIZE; i ++)
 		neighbours[i][NEIGHBOR_PARAM-1] =100000;
 	i = cur_i;

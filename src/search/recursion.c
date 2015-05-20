@@ -6,8 +6,8 @@
 int edges[200][200];
 bool vertex[200];
 
-void findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM]){
-	int i,j,k,count, best_count;
+int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM]){
+	int i,j,k,count, best_count,counter;
 	for(i = 0; i < NEIGHBOR_SIZE; i ++)
 		neighbours[i][NEIGHBOR_PARAM-1] =100000;
 	i = cur_i;
@@ -18,6 +18,7 @@ void findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NE
 		if(count != -1) {
 			for(k=0; k < NEIGHBOR_SIZE; k++){
 				if(count < neighbours[k][NEIGHBOR_PARAM-1]){
+					counter++;
 					shift(neighbours,k);
 					neighbours[k][2]=count;
 					neighbours[k][0]=i;
@@ -36,6 +37,7 @@ void findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NE
 			if(count != -1) {
 				for(k=0; k < NEIGHBOR_SIZE; k++){
 					if(count < neighbours[k][NEIGHBOR_PARAM-1]){
+						counter++;
 						shift(neighbours,k);
 						neighbours[k][2]=count;
 						neighbours[k][0]=i;
@@ -47,6 +49,7 @@ void findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NE
 			g[i * gsize + j] = 1 - g[i * gsize + j];
 		}
 	}
+	return counter;
 }
 void shift(int neighbours[][NEIGHBOR_PARAM], int k){
 	int i = NEIGHBOR_SIZE-1;
@@ -137,9 +140,9 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     }
     
     if(level == 0) return -1;
-    findNeighbours( g, gsize, cur_i, cur_j, neighbor);
+    int neighbourCounter = findNeighbours( g, gsize, cur_i, cur_j, neighbor);
     // recursively check neighbor one by one
-    for(k = 0; k < NEIGHBOR_SIZE; k ++) {
+    for(k = 0; k < neighbourCounter; k ++) {
         nb_i = neighbor[k][0];
         nb_j = neighbor[k][1];
         count = recursiveSearch(g, gsize, level - 1,

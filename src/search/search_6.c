@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
 
 	if(taboo_list == NULL) exit(1);
 	// find a start point
+	CliqueCountCreateCache(g, gsize);
 	best_count = BIGCOUNT;
 	for(i = 0; i < gsize; i ++) {
 		for(j = i + 1; j < gsize; j ++) {
@@ -106,8 +107,9 @@ int main(int argc, char *argv[])
 															best_i, best_j)
 			if(count != -1) {
 				printf("EVOLVNG!!!!!!!!!!\n");
+				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 				PrintGraph(g, gsize);
-				FIFOInsertEdgeCount(taboo_list, new_i, new_j, best_count);
+				FIFOInsertEdgeCount(taboo_list, best_i, best_j, count);
 				printf("best_count = %d, edge(%d, %d) \n", 
 							 best_count, new_i, new_j, g[new_i * gsize + new_j]);
 			} else {
@@ -175,7 +177,7 @@ int main(int argc, char *argv[])
 
 int recursiveSearch(int* g, int gsize, int level, int best_ever,
 										 int cur_i, int cur_j) {
-	if(level == 0) return false;
+	if(level == 0) return -1;
 	int neighbor[NEIGHBOR_SIZE][3];
 	int k, nb_i, nb_j, i, j, best_i, best_j, best_count, edge_count, count;
 	int new_i, new_j;

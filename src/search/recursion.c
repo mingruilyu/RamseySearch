@@ -117,7 +117,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
         return best_count;
     }
     
-    findNeighbours(neighbor, g, gsize);
+    findNeighbours( g, gsize, neighbor);
     // recursively check neighbor one by one
     for(k = 0; k < NEIGHBOR_SIZE; k ++) {
         nb_i = neighbor[k][0];

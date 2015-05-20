@@ -50,7 +50,9 @@ int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEI
 			g[i * gsize + j] = 1 - g[i * gsize + j];
 		}
 	}
-	return counter;
+	if(counter < NEIGHBOR_SIZE)
+		return counter;
+	return NEIGHBOR_SIZE;
 }
 void shift(int neighbours[][NEIGHBOR_PARAM], int k){
 	int i = NEIGHBOR_SIZE-1;

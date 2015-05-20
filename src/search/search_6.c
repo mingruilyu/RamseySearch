@@ -11,6 +11,7 @@
 #define TABOOSIZE (250)
 #define BIGCOUNT (1000)
 #define THRESHOLD (10)
+#define NEIGHBOR_SIZE (10)
 /*
  * example of very simple search for R(7, 7) counter 
  * examples starts with a small randomized graph and 
@@ -166,9 +167,9 @@ int main(int argc, char *argv[])
 				backtrack_flag = false;
 				break;
 			}
-					// do the second round of clean up by breaking the ties
-					// since best_count is initialized to BIGCOUNT, we won't
-					// have 
+			// do the second round of clean up by breaking the ties
+			// since best_count is initialized to BIGCOUNT, we won't
+			// have 
 			best_i = -2;	
 			edge_count = create_edge_stat(stat, people, gsize);
 			break_flag = false;
@@ -177,9 +178,9 @@ int main(int argc, char *argv[])
           for(j = i + 1; j < gsize && !break_flag; j ++) {
             if(stat[i][j] != 0) {
               //printf("edge count %d i = %d j = %d \n", edge_count, i, j);
-              	g[i * gsize + j] = 1 - g[i * gsize + j];
-		count = CliqueCountUseCache(g, gsize, i, j, best_count);
-		if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+              g[i * gsize + j] = 1 - g[i * gsize + j];
+							count = CliqueCountUseCache(g, gsize, i, j, best_count);
+							if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 			//				if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 				//			if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, 100)) {
                 if(count < best_count) {
@@ -335,7 +336,37 @@ int main(int argc, char *argv[])
 	return(0);
 }
 
-
+bool recursiveSearch(int* g, int gsize, int level, int best_count,
+										 int i, int j, int* new_i, int* new_j) {
+	if(level == 0) return false;
+	// flip it
+	int neighbor[NEIGHBOR_SIZE][2];
+	int k, nb_i, nb_j;
+	bool to_return = false;
+	CliqueCountCreateCache(g, gsize);
+	getNeighbors(neighbor, g, gsize);
+	for(k = 0; k < NEIGHBOR_SIZE; k ++) {
+		nb_i = neighbor[k][0];
+		nb_j = neighbor[k][1];
+		g[nb_i * gsize + nb_j] = 1 - g[nb_i * gsize + nb_j];
+		create_edge_stat(stat, people, gsize) {
+		if(count != -1) {
+			to_return = true;
+			*new_i = nb_i;
+			*new_j = nb_j;
+			break;
+		}
+		if(recursiveSearch(g, gsize, level - 1, best_count, 
+										nb_i, nb_j, new_i, new_j)) {
+			to_return = true;
+			*new_i = nb_i;
+			*new_j = nb_j;
+			break;
+		}
+		g[nb_i * gsize + nb_j] = 1 - g[nb_i * gsize + nb_j];
+	}		
+	return to_return;	
+}
 
 
 

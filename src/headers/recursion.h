@@ -1,6 +1,6 @@
-#define NEIGHBOR_SIZE 4
+#define NEIGHBOR_SIZE 5
 #define NEIGHBOR_PARAM 3
-#define RECURSION_DEPTH 4
+#define RECURSION_DEPTH 7
 
 typedef enum {false, true} bool;
 

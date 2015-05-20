@@ -68,7 +68,7 @@ int create_edge_stat( int gsize) {
 
 
 int recursiveSearch(int* g, int gsize, int level, int best_ever,
-                    int cur_i, int cur_j) {
+                    int cur_i, int cur_j, void *taboo_list) {
     if(level == 0) return -1;
     int neighbor[NEIGHBOR_SIZE][3];
     int k, nb_i, nb_j, i, j, best_i, best_j, best_count, edge_count, count;
@@ -111,6 +111,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
         // of this function to flip the i, j
         g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
         g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
+        FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
         printf("best_count = %d, edge(%d, %d) \n",
                best_count, best_i, best_j, g[best_i * gsize + best_j]);
         return best_count;
@@ -122,9 +123,10 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
         nb_i = neighbor[k][0];
         nb_j = neighbor[k][1];
         count = recursiveSearch(g, gsize, level - 1,
-                                best_ever, nb_i, nb_j);
+                                best_ever, nb_i, nb_j,taboo_list);
         if(count != -1) {
             to_return = count;
+            FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
             g[nb_i * gsize + nb_j] = 1 - g[nb_i * gsize + nb_j];
             break;
         }

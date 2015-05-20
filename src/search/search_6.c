@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		best_count = cache_7.length;
 		while(best_count != 0) {
 			count = recursiveSearch(g, gsize, RECURSION_DEPTH, best_count, 
-															best_i, best_j);
+															best_i, best_j,taboo_list);
 			if(count != -1) {
 				printf("EVOLVNG!!!!!!!!!!\n");
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];

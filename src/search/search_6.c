@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		ReadGraph("../../ce", &g, &gsize);
-		PrintGraph(g, gsize);
+		//PrintGraph(g, gsize);
 		CliqueCountCreateCache(g, gsize);
 		best_ever = cache_7.length;
 		best_count = BIGCOUNT;
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 			//	FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
 				best_count = BIGCOUNT;
-				PrintGraph(g, gsize);
+			//	PrintGraph(g, gsize);
 				//memory[memory_index][0] = best_i;
 				//memory[memory_index ++][1] = best_j;
 			}
@@ -301,7 +301,10 @@ int main(int argc, char *argv[])
 		// if we have a counter example.
 		if(!backtrack_flag && !regenerate_flag)	{
 			printf("Eureka! Counter-example found!\n");
-			PrintGraph(g, gsize);
+			if(gsize == 101) {
+				PrintGraph(g, gsize);
+				return (0);
+			}
 			// make a new graph one size bigger
 			new_g = (int *) malloc((gsize + 1) 
 															* (gsize + 1) * sizeof(int));

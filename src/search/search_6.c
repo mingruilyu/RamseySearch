@@ -303,6 +303,7 @@ int main(int argc, char *argv[])
 			printf("Eureka! Counter-example found!\n");
 			if(gsize == 101) {
 				PrintGraph(g, gsize);
+				PrintGraphCopy(g, gsize, 0);
 				return (0);
 			}
 			// make a new graph one size bigger

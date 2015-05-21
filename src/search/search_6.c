@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 			CliqueCountCreateCache(g, gsize);
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(cache_7.length < 10) {
+			if(cache_7.length == 0) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
 				break;

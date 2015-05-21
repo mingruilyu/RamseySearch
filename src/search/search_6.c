@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
 		// if we have a counter example.
 		if(!backtrack_flag && !regenerate_flag)	{
 			printf("Eureka! Counter-example found!\n");
-			if(gsize == 100) {
+			if(gsize == 101) {
 				PrintGraphCopy(g, gsize, graph_count ++);
 				gsize = 8;
 				free(g);

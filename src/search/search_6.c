@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
 	int hot_i, hot_j;
 	int edge_count;
 	best_count = BIGCOUNT;
+	int graph_count = 0;
 	int best_ever = BIGCOUNT + 1;
 	if(argc == 1) { 
 		// start with graph of size 8
@@ -105,16 +106,18 @@ int main(int argc, char *argv[])
 		new_g = g;
 		// start out with a random matrix
 		for(i = 0; i < gsize; i ++) {
-			for(j = i + 1; j < gsize; j ++) {
+			for(j = i; j < gsize; j ++) {
 				rand_no = rand() % 100;
-				if(rand_no > 50) g[i * gsize + j] = 1; 
-			
-				else new_g[i * gsize + j] = 0; 
+				if(rand_no > 50)
+					g[i * gsize + j] = 1; 
+				else
+					g[i * gsize + j] = 0; 
+				g[j * gsize + i] = 0;	
 			}
 		}
 	} else {
 		ReadGraph("../../ce", &g, &gsize);
-		PrintGraph(g, gsize);
+		//PrintGraph(g, gsize);
 		CliqueCountCreateCache(g, gsize);
 		best_count = BIGCOUNT;
 		last_best = BIGCOUNT;
@@ -149,7 +152,7 @@ int main(int argc, char *argv[])
 
 	if(taboo_list == NULL) exit(1);
 		// while we do not have a publishable result
-	while(gsize < 206) {
+	while(true) {
 		// keep flipping the outmost column until counter
 		// example is found
 		try_count = 0;
@@ -161,7 +164,7 @@ int main(int argc, char *argv[])
 			CliqueCountCreateCache(g, gsize);
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(cache_7.length < 10) {
+			if(cache_7.length == 0) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
 				break;
@@ -221,7 +224,7 @@ int main(int argc, char *argv[])
 				if(best_count < last_best) {
 					if(best_count < best_ever) {
 						printf("EVOLVNG!!!!!!!!!!\n");
-						PrintGraph(g, gsize);
+						//PrintGraph(g, gsize);
 						best_ever = best_count;
 					}
 					printf("best_count = %d, last_best = %d, best_ever = %d\n", best_count, last_best, best_ever);
@@ -298,36 +301,55 @@ int main(int argc, char *argv[])
 		// if we have a counter example.
 		if(!backtrack_flag && !regenerate_flag)	{
 			printf("Eureka! Counter-example found!\n");
-			PrintGraph(g, gsize);
-			// make a new graph one size bigger
-			new_g = (int *) malloc((gsize + 1) 
+			if(gsize == 98) {
+				PrintGraphCopy(g, gsize, graph_count ++);
+				gsize = 8;
+				free(g);
+				g = (int *) malloc(gsize * gsize * sizeof(int));
+				if(g == NULL) exit(1);
+				new_g = g;
+		// start out with a random matrix
+				for(i = 0; i < gsize; i ++) {
+					for(j = i; j < gsize; j ++) {
+						rand_no = rand() % 100;
+						if(rand_no > 50) g[i * gsize + j] = 1; 
+						else g[i * gsize + j] = 0; 
+						g[j * gsize + i] = 0;	
+					}
+				}
+			} else {
+				// make a new graph one size bigger
+				new_g = (int *) malloc((gsize + 1) 
 															* (gsize + 1) * sizeof(int));
-			if(new_g == NULL) exit(1);
-			// copy the old graph into the new graph leaving 
-			// the last row and last column alone
-			CopyGraph(g, gsize, new_g, gsize + 1);
-			// throw away the old graph and make new one 
-			free(g);
-			g = new_g;
-			// randomly assigned value for last column
-			for(i = 0; i < gsize + 1; i ++) {
-				rand_no = rand() % 100;
-				if(rand_no > 50) {
-					new_g[i * (gsize + 1) + gsize] = 1; // last column
-					new_g[gsize * (gsize + 1) + i] = 1;	
+				if(new_g == NULL) exit(1);
+				// copy the old graph into the new graph leaving 
+				// the last row and last column alone
+				CopyGraph(g, gsize, new_g, gsize + 1);
+				// throw away the old graph and make new one 
+				free(g);
+				g = new_g;
+				// randomly assigned value for last column
+				for(i = 0; i < gsize + 1; i ++) {
+					rand_no = rand() % 100;
+					if(rand_no > 50) {
+						new_g[i * (gsize + 1) + gsize] = 1; // last column
+						new_g[gsize * (gsize + 1) + i] = 1;	
+					}
+					else {
+						new_g[i * (gsize + 1) + gsize] = 0; // last column
+						new_g[gsize * (gsize + 1) + i] = 0;	
+					}
 				}
-				else {
-					new_g[i * (gsize + 1) + gsize] = 0; // last column
-					new_g[gsize * (gsize + 1) + i] = 0;	
-				}
+				gsize = gsize + 1;
+				// reset the taboo list for the new graph
+				best_count = BIGCOUNT;
+				last_best  = BIGCOUNT;
+				best_ever  = BIGCOUNT;
 			}
-			gsize = gsize + 1;
-			// reset the taboo list for the new graph
 			FIFODelete(taboo_list);
 			taboo_list = FIFOInitEdge(TABOOSIZE);
-			best_count = BIGCOUNT;
-			last_best  = BIGCOUNT;
-			best_ever  = BIGCOUNT;
+			FIFODelete(rand_taboo_list);
+			rand_taboo_list = FIFOInitEdge(TABOOSIZE);
 		}
 	}
 //	FIFODeleteGraph(taboo_list);

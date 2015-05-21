@@ -6,7 +6,28 @@
 
 
 #define MAXSIZE (541)
-
+void PrintGraphCopy(int *g, int gsize, int graph_count)
+{
+	int i;
+	int j;
+	char file_name[100];
+	sprintf(file_name, "../../CounterExamples/ce_%d_%d", gsize, graph_count);
+	FILE* fd = fopen(file_name, "w");
+	fprintf(fd,"%d-------------------\n",gsize);
+	fprintf(stdout,"%d-------------------\n",gsize);
+	for(i=0; i < gsize; i++)
+	{
+		for(j=0; j < gsize; j++)
+		{
+			fprintf(fd,"%d ",g[i*gsize+j]);
+			//fprintf(stdout,"%d ",g[i*gsize+j]);
+		}
+		fprintf(fd,"\n");
+		//fprintf(stdout,"\n");
+	}
+	fclose(fd);
+	return;
+}
 /*
  * prints in the right format for the read routine
  */

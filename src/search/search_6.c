@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	int last_best = 10000;
 	int rand_list[5000][2];
 	int rand_list_index = 0;
-	int memory[500][2];
+	int memory[5000][2];
 	int memory_index = 0;
 	int* node;
 	long clique_6;
@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
 		// if we have a counter example.
 		if(!backtrack_flag && !regenerate_flag)	{
 			printf("Eureka! Counter-example found!\n");
-			if(gsize == 98) {
+			if(gsize == 100) {
 				PrintGraphCopy(g, gsize, graph_count ++);
 				gsize = 8;
 				free(g);
@@ -317,6 +317,7 @@ int main(int argc, char *argv[])
 						g[j * gsize + i] = 0;	
 					}
 				}
+				memory_index = 0;
 			} else {
 				// make a new graph one size bigger
 				new_g = (int *) malloc((gsize + 1) 
@@ -342,6 +343,7 @@ int main(int argc, char *argv[])
 				}
 				gsize = gsize + 1;
 				// reset the taboo list for the new graph
+				memory_index = 0;
 				best_count = BIGCOUNT;
 				last_best  = BIGCOUNT;
 				best_ever  = BIGCOUNT;

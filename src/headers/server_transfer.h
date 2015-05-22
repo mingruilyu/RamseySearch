@@ -30,8 +30,8 @@ void *server_listen_to_clients_handler(void* _file_name);
 
 extern struct broadcast* broadcast_list[100];
 extern int active_count;
-extern int new_graph_count;
-extern int collect_max;
+extern int collected_graph_count;
 extern int send_count;
-
+extern int collect_count;
+extern int gsize;
 #endif

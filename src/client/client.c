@@ -21,8 +21,10 @@ start_routine().
 */
 #include <pthread.h>
 
-bool recv_flag;
+bool recv_flag = false;
 bool first_connection = true;
+int new_graph_count = 0;
+int one_more_flag = false;
 
 int main(int argc, char *argv[]) {
 	if (argc != 2) {
@@ -32,28 +34,36 @@ int main(int argc, char *argv[]) {
 
 	set_port();
 
-	int err = 0;
-
+	int err = 0, gsize;
+	int *g;
 	Broadcast* server = (Broadcast*)malloc(sizeof(Broadcast));
 	construct_broadcast(server, argv[1], "DataToServer.txt", 1);
 
 	printf("argv[1]: %s\n", server->ipAddr);
 	printf("fileName: %s\n", server->fileName);
-
-	char* file_from_server = "DataFromServer.txt";
-
+	// create a listener thread
 	pthread_t sock_recv_thread_id;
-	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, (void*)file_from_server);
+	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
+	if (err != 0) perror("Could not create client_always_listen_to_one_handler thread!");
+
+	// init a connection with server
+	pthread_t sock_send_thread_id;
+	err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
+	if (err != 0) perror("Could not create send_to_one_des thread!");
+
+	err = pthread_join(sock_send_thread_id, NULL);
 	if (err != 0) {
-		perror("Could not create client_always_listen_to_one_handler thread!");
+		printf("sock_thread goes wrong! %s \n", strerror(err));
+		perror("sock_thread goes wrong!");
 	}
 
 	while (1) {
-		pthread_t sock_send_thread_id;
-
-		if (recv_flag) {
-			recv_flag = 0;
+		if (recv_flag || one_more_flag) {
+			if (one_more_flag) one_more_flag = false;
+			else recv_flag = false;
+			g = load_graph(&gsize);
 			if (search(g, gsize, &recv_flag) == 0) {
+				one_more_flag = true;
 				err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
 				if (err != 0) perror("Could not create send_to_one_des thread!");
 

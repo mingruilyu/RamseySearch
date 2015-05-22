@@ -31,25 +31,26 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 
 
 void send_file(int connected_socket) {
-        char buffer[BUFFER_SIZE];
-		char file_name[250];
+        char buffer[BUFFER_SIZE], file_name[250];
+		int file_block_length = 0;
         memset(buffer, '0', sizeof(buffer));
-		sprintf(filename, "../../file/CE_%d/%d", gsize, (send_count ++) % collect_max) ;
-		FILE * fp = fopen(filename, "w");
+		sprintf(filename, "../../file/server/CE_%d/%d", gsize - 1, (send_count ++) % collected_graph_count) ;
+		FILE * fp = fopen(filename, "r");
 		if (fp == NULL) {
-			printf("Could not open to write!\n");
+			printf("Could not open to read!\n");
 			return;
 		}
         else {
-        	int file_block_length = 0;
+        	file_block_length = 0;
                 //printf("Entering the read while block!\n");
-                while ((file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp)) > 0) {
-                	printf("file_block_length = %d\n", file_block_length);
-					if (send(connected_socket, buffer, file_block_length, 0) < 0) {
-                       	printf("Sending file failed!\n");
-						break;
-					}
-					memset(buffer, '0', sizeof(buffer));
+			while ((file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp)) > 0) {
+				printf("file_block_length = %d\n", file_block_length);
+				if (send(connected_socket, buffer, file_block_length, 0) < 0) {
+					printf("Sending file failed!\n");
+					break;
+				}
+				memset(buffer, '0', sizeof(buffer));
+			}
 		}
 		fclose(fp);
 		printf("File transmitted!\n\n");
@@ -65,30 +66,28 @@ void send_check(int connected_socket) {
 	printf("check signal transmitted!\n\n");
 }
 
-
 void receive_file(int connected_socket) {
-	char buffer[BUFFER_SIZE];
-	char filename[250];
+	char buffer[BUFFER_SIZE], filename[250];
+	int written_length;
 	memset(buffer, '0', sizeof(buffer));
-
+	
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
 	if (length < 0) {
 		printf("Receiving data failed!\n");
 		return;
 	}
 	else if (buffer[0] == 'c') {
-		sprinf(filename, "../../file/CE_%d/%d", gsize - 1, (send_count ++) % collect_max);
-		send_file(connected_socket, )
+		send_file(connected_socket);
 		return;
 	}
 	else {
-		sprintf(filename, "../../file/CE_%d/%d", gsize, new_graph_count);
+		sprintf(filename, "../../file/server/CE_%d/%d", gsize, collect_count ++);
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
 			printf("Could not open to write!\n");
 			return;
 		}
-		int written_length = fwrite(buffer, sizeof(char), length, fp);
+		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
 		while (length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) {
@@ -293,6 +292,7 @@ void *server_listen_to_clients_handler(void* _file_name) {
 
 	printf("server_listen_to_clients_handler starts to listen!\n");
 	//If no error occurs, listen returns zero.
+	//TODO: Listen to 20? OK or not
 	if (listen(serv_socket, 20)) {
 		printf("server_listen_to_clients_handler listening failed!\n");
 		exit(1);
@@ -315,8 +315,7 @@ void *server_listen_to_clients_handler(void* _file_name) {
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
 		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
 		
-		int exist = 0;
-		int i;
+		int exist = 0, i;
 		for (i = 0; i < desNum; ++i) {
 			//if (broadcast_list[i]->active == -1) continue;
 			char* existing_ip_addr = broadcast_list[i]->ipAddr;
@@ -332,14 +331,8 @@ void *server_listen_to_clients_handler(void* _file_name) {
 		}
 
 		if (exist == 0) {
-			char server_receive_file_name[200];
-			sprintf(server_receive_file_name, "../../file/server/DataToClient_%d.txt", counter++);
-			
-			char broadcast_file_name[200];
-			sprintf(broadcast_file_name, "../../file/server/DataToClient_%d.txt", counter++);
+			char broadcast_file_name[5] = "\0";
 
-
-			
 			Broadcast* broadcast_target = (Broadcast*) malloc(sizeof(Broadcast));
 			construct_broadcast(broadcast_target, incoming_ip_addr, broadcast_file_name, 1);
 

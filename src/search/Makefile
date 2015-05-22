@@ -4,8 +4,6 @@ CFLAGS = -g -Wall
 
 HEADER_DIR = ../headers
 
-LOG_DIR = ../../CounterExamples
-
 BUILD_DIR = ../../build
 
 OBJ_DIR = $(BUILD_DIR)/obj
@@ -20,17 +18,10 @@ SRCS = $(shell ls *.c)
 
 OBJS = $(SRCS:.c=.o)
 
-OBJS_BUILD = $(shell ls $(OBJ_DIR)/*.o)
-
-APP = prog
-
-all: dirs $(APP)
-
-$(APP): $(OBJS)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/$(APP) $(OBJS_BUILD) 
+all: dirs $(OBJS)
 
 dirs:
-	$(MKDIR) $(OUT_DIR)	$(OBJ_DIR) $(BIN_DIR)
+	$(MKDIR) $(OBJ_DIR) $(BIN_DIR)
 
 %.o: %.c $(HEADER_DIR)/*.h 
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -c $< -o $(OBJ_DIR)/$@

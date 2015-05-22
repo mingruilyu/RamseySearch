@@ -78,8 +78,8 @@ int main(int argc, char* argv[]) {
 			sleep(5);
 			printf("current active computers: %d\n", active_count);
 			printf("current received graphs: %d\n", collect_count);
-			printf("currently waiting for %d graphs: %d\n", collected_graph_count);
-			printf("current maximum counterexample %d", gsize - 1);
+			printf("currently waiting for %d graphs\n", collected_graph_count);
+			printf("current maximum counterexample %d\n", gsize - 1);
 		}
 	}
 

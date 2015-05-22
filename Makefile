@@ -1,22 +1,18 @@
 SERVER_SRC_DIRS=\
 src/utils \
 src/search \
-src/communication \
 src/server
 
 CLIENT_SRC_DIRS=\
 src/utils \
 src/search \
-src/communication \
 src/client
  
 SRC_DIRS=\
 src/utils \
 src/search \
-src/communication \
 src/server \
 src/client
-
 
 all: multimake_server
 

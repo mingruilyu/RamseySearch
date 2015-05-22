@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
 			if(cache_7.length == 0) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
+				PrintGraphCopy(g, gsize, 0);
 				break;
 			}
 					// do the second round of clean up by breaking the ties
@@ -291,7 +292,7 @@ int main(int argc, char *argv[])
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 			//	FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
 				best_count = BIGCOUNT;
-			//	PrintGraph(g, gsize);
+				PrintGraph(g, gsize);
 				//memory[memory_index][0] = best_i;
 				//memory[memory_index ++][1] = best_j;
 			}
@@ -301,7 +302,7 @@ int main(int argc, char *argv[])
 		// if we have a counter example.
 		if(!backtrack_flag && !regenerate_flag)	{
 			printf("Eureka! Counter-example found!\n");
-			if(gsize == 101) {
+			if(gsize == 110) {
 				PrintGraph(g, gsize);
 				PrintGraphCopy(g, gsize, 0);
 				return (0);

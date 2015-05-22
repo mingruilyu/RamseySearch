@@ -19,9 +19,9 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-static int counter = 0;
-
 static int desNum = 0;
+
+void *connection_handler(void*);
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
@@ -30,7 +30,7 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 }
 
 void send_file(int connected_socket) {
-        char buffer[BUFFER_SIZE], file_name[250];
+        char buffer[BUFFER_SIZE], filename[250];
 		int file_block_length = 0;
         memset(buffer, '0', sizeof(buffer));
 		sprintf(filename, "../../file/server/CE_%d/%d", gsize - 1, (send_count ++) % collected_graph_count) ;
@@ -53,7 +53,6 @@ void send_file(int connected_socket) {
 		}
 		fclose(fp);
 		printf("File transmitted!\n\n");
-	}
 }
 
 void send_check(int connected_socket) {
@@ -89,11 +88,12 @@ void receive_file(int connected_socket) {
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
-		while (length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) {
+		while ((length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) != 0) {
 			if (length < 0) {
 				printf("Receiving data failed!\n");
 				break;
 			}
+			if
 			written_length = fwrite(buffer, sizeof(char), length, fp);
 			if (written_length < length) printf("File writing failed!\n");
 			memset(buffer, '0', BUFFER_SIZE);
@@ -113,7 +113,6 @@ void *send_to_one_des(void* _des) {
 	struct broadcast* des = (struct broadcast*)_des;
 
 	char* ip_addr = des->ipAddr;
-	char* file_name = des->fileName;
 
 	//printf("des->ipAddr: %s\n", ip_addr);
 	//printf("des->fileName: %s\n", file_name);
@@ -307,7 +306,7 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	struct sockandfilename sf;
 	sf.fileName = file_name;
 	
-	while (sf.connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) {
+	while ((sf.connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) != 0) {
 		//printf("server_listen_to_clients_handler did accept!\n");
 		char incoming_ip_addr[20];
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
@@ -360,7 +359,6 @@ void *connection_handler(void* connected_info) {
 	struct sockandfilename sock = *(struct sockandfilename*)connected_info;
 	
 	int connected_sock = sock.connectedSocket;
-	char* file_name = sock.fileName;
 	
 	//printf("This is connection_handler thread. Starts to receive file.\n");
 	receive_file(connected_sock);

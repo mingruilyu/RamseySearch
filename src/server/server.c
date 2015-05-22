@@ -8,10 +8,13 @@
 
 #include "server_transfer.h"
 #include "search.h"
+
 extern int desNum;
-extern int active_count;
+int active_count;
 int send_count;
 int collect_max = 10;
+int new_graph_count;
+int gsize;
 /*
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 void *(*start_routine) (void *), void *arg);
@@ -25,7 +28,7 @@ start_routine().
 */
 #include <pthread.h>
 
-extern struct broadcast* broadcast_list[100];
+struct broadcast* broadcast_list[100];
 
 int main(int argc, char *argv[]) {
 	// initialize server
@@ -41,6 +44,7 @@ int main(int argc, char *argv[]) {
 	int graph_count = 0;
 	int max_graph_no = 40;
 	char file_name[250];
+	char dir_name[250];
 	char* file_from_client = "DataFromClient.txt";
 	pthread_t sock_recv_thread_id;
 	err = pthread_create(&sock_recv_thread_id, NULL, server_listen_to_clients_handler, (void*)file_from_client);
@@ -60,12 +64,15 @@ int main(int argc, char *argv[]) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}*/
-		if (collect_count >= collect_max) {
-			broadcast_graph();
+		if (collect_count >= active_count + 1) {
+			collect_max = collect_count;
+			gsize++;
+			sprinf(dir_name, "../../file/CE_%d", gsize);
+			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			collect_count = 0;
-			collect_max = 
+			broadcast_graph();
 		}
-		max_graph_no = active_count;
+		else sleep(10);
 	}
 
 	return 0;
@@ -78,10 +85,7 @@ void broadcast_graph() {
 		if (is_active == -1) continue;
 
 		char* ip_addr = (*(broadcast_list + i))->ipAddr;
-		//char* file_name = (*(des_list + i))->fileName;
-		sprintf(file_name, "../../file/server/CE_%d/%d", gsize, send_count % collect_max);
-		send_count++;
-
+	
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
 		construct_broadcast(tmp, ip_addr, file_name, 1);
 
@@ -115,6 +119,7 @@ void *broadcast_handler() {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}
+		sleep(10);
 	}
 	pthread_exit(0);
 }

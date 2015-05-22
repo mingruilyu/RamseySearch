@@ -7,6 +7,7 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <arpa/inet.h>
 
 #include <pthread.h>
@@ -21,9 +22,6 @@ static int CLIENT_LISTEN_PORT = -1;
 static int counter = 0;
 
 static int desNum = 0;
-struct broadcast* broadcast_list[100];
-
-static int active_counter = 0;
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
@@ -32,60 +30,77 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 }
 
 
-void send_file(int connected_socket, char *filename) {
+void send_file(int connected_socket) {
         char buffer[BUFFER_SIZE];
+		char file_name[250];
         memset(buffer, '0', sizeof(buffer));
-
-        FILE *fp;
-        fp = fopen(filename, "r");
-        if (fp == NULL) {
-        	printf("Could not open to read!\n");
-	}
+		sprintf(filename, "../../file/CE_%d/%d", gsize, (send_count ++) % collect_max) ;
+		FILE * fp = fopen(filename, "w");
+		if (fp == NULL) {
+			printf("Could not open to write!\n");
+			return;
+		}
         else {
         	int file_block_length = 0;
                 //printf("Entering the read while block!\n");
                 while ((file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp)) > 0) {
                 	printf("file_block_length = %d\n", file_block_length);
-
-                        if (send(connected_socket, buffer, file_block_length, 0) < 0) {
-                        	printf("Sending file failed!\n");
-                                break;
-                        }
-
-                        memset(buffer, '0', sizeof(buffer));
+					if (send(connected_socket, buffer, file_block_length, 0) < 0) {
+                       	printf("Sending file failed!\n");
+						break;
+					}
+					memset(buffer, '0', sizeof(buffer));
 		}
-			fclose(fp);
-			printf("File transmitted!\n\n");
+		fclose(fp);
+		printf("File transmitted!\n\n");
 	}
 }
 
-void receive_file(int connected_socket, char *filename) {
+void send_check(int connected_socket) {
 	char buffer[BUFFER_SIZE];
 	memset(buffer, '0', sizeof(buffer));
+	buffer[0] = 'c';
+	if (send(connected_socket, buffer, 1, 0) < 0)
+		printf("Sending check signal failed!\n");
+	printf("check signal transmitted!\n\n");
+}
 
-	FILE *fp;
-	fp = fopen(filename, "w");
-	if (fp == NULL) {
-		printf("Could not open to write!\n");
+
+void receive_file(int connected_socket) {
+	char buffer[BUFFER_SIZE];
+	char filename[250];
+	memset(buffer, '0', sizeof(buffer));
+
+	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+	if (length < 0) {
+		printf("Receiving data failed!\n");
+		return;
+	}
+	else if (buffer[0] == 'c') {
+		sprinf(filename, "../../file/CE_%d/%d", gsize - 1, (send_count ++) % collect_max);
+		send_file(connected_socket, )
+		return;
 	}
 	else {
-		//printf("Starting to receive!\n");
-		int length = 0;
+		sprintf(filename, "../../file/CE_%d/%d", gsize, new_graph_count);
+		FILE * fp = fopen(filename, "w");
+		if (fp == NULL) {
+			printf("Could not open to write!\n");
+			return;
+		}
+		int written_length = fwrite(buffer, sizeof(char), length, fp);
+		if (written_length < length) printf("File writing failed!\n");
+		memset(buffer, '0', BUFFER_SIZE);
 		while (length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) {
 			if (length < 0) {
 				printf("Receiving data failed!\n");
 				break;
 			}
-
-			int written_length = fwrite(buffer, sizeof(char), length, fp);
-			if (written_length < length) {
-				printf("File writing failed!\n");
-				break;
-			}
+			written_length = fwrite(buffer, sizeof(char), length, fp);
+			if (written_length < length) printf("File writing failed!\n");
 			memset(buffer, '0', BUFFER_SIZE);
 		}
 		fclose(fp);
-
 		printf("File receiveing finished!\n\n");
 	}
 }
@@ -147,7 +162,7 @@ void *send_to_one_des(void* _des) {
 	}
 	//printf("send_to_one_des connected!\n");
 
-	send_file(client_socket, file_name);
+	send_file(client_socket);
 
 	close(client_socket);
 	pthread_exit(0);
@@ -215,7 +230,7 @@ void *send_to_des(void* _des) {
 		++active_count;
 		printf("send_to_des connected!\n");
 		
-		send_file(client_socket, file_name);
+		send_check(client_socket);
 
 		close(client_socket);
 	}
@@ -357,7 +372,7 @@ void *connection_handler(void* connected_info) {
 	char* file_name = sock.fileName;
 	
 	//printf("This is connection_handler thread. Starts to receive file.\n");
-	receive_file(connected_sock, file_name);
+	receive_file(connected_sock);
 	
 	close(connected_sock);
 	pthread_exit(0);

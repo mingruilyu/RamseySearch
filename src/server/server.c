@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <unistd.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -68,7 +69,7 @@ int main(int argc, char* argv[]) {
 		if (collect_count == active_count + 1) {
 			collected_graph_count = collect_count;
 			gsize++;
-			sprint(dir_name, "../../file/server/CE_%d", gsize);
+			sprintf(dir_name, "../../file/server/CE_%d", gsize);
 			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			collect_count = 0;
 			broadcast_graph();

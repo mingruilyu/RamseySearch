@@ -10,18 +10,10 @@
 #include <arpa/inet.h>
 
 #include <pthread.h>
-
-#define BUFFER_SIZE 1024
-#define PORT 8000
+#include "client_transfer.h"
 
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
-
-typedef struct broadcast {
-	char ipAddr[250];
-	char fileName[250];
-	int active;
-} Broadcast;
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);

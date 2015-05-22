@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 
 #include <pthread.h>
+#include "server_transfer.h"
 
 #define BUFFER_SIZE 1024
 #define PORT 8000
@@ -17,16 +18,10 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
+static int counter = 0;
+
 static int desNum = 0;
 struct broadcast* broadcast_list[100];
-
-void *connection_handler(void *);
-
-typedef struct broadcast {
-	char ipAddr[250];
-	char fileName[250];
-	int active;
-} Broadcast;
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
@@ -34,10 +29,6 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 	bc->active = act;
 }
 
-struct sockandfilename {
-	int connectedSocket;
-	char *fileName;
-};
 
 void send_file(int connected_socket, char *filename) {
         char buffer[BUFFER_SIZE];
@@ -264,7 +255,13 @@ void *server_listen_to_clients_handler(void* _file_name) {
 		}
 
 		if (exist == 0) {
-			char* broadcast_file_name = "FileNameinBroadcast.txt";
+			char server_receive_file_name[200];
+			sprintf(server_receive_file_name, "../../file/server/DataToClient_%d.txt", counter++);
+			
+			char broadcast_file_name[200];
+			sprintf(broadcast_file_name, "../../file/server/DataToClient_%d.txt", counter++);
+
+
 			
 			Broadcast* broadcast_target = (Broadcast*) malloc(sizeof(Broadcast));
 			construct_broadcast(broadcast_target, incoming_ip_addr, broadcast_file_name, 1);

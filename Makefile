@@ -10,6 +10,14 @@ src/search \
 src/communication \
 src/client
  
+SRC_DIRS=\
+src/utils \
+src/search \
+src/communication \
+src/server \
+src/client
+
+
 all: multimake_server
 
 server: multimake_server

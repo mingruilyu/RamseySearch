@@ -20,6 +20,8 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
+static int desNum = 0;
+
 void *connection_handler(void*);
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {

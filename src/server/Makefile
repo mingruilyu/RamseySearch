@@ -25,13 +25,13 @@ APP = prog
 all: dirs $(APP)
 
 $(APP): $(OBJS)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/$(APP) $(OBJS_BUILD) 
+	$(CC) $(CFLAGS) $(CLIBS) -o $(BIN_DIR)/$(APP) $(OBJS_BUILD) 
 
 dirs:
 	$(MKDIR) $(OUT_DIR)	$(OBJ_DIR) $(BIN_DIR)
 
 %.o: %.c $(HEADER_DIR)/*.h 
-	$(CC) $(CFLAGS) $(INCLUDES) $(CLIBS) -c $< -o $(OBJ_DIR)/$@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $(OBJ_DIR)/$@
 
 clean:
 	rm -rf $(BUILD_DIR)

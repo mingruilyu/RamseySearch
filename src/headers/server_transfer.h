@@ -35,4 +35,5 @@ extern int collected_graph_count;
 extern int send_count;
 extern int collect_count;
 extern int gsize;
+extern int desNum = 0;
 #endif

@@ -12,7 +12,7 @@
 #include "server_transfer.h"
 #include "search.h"
 
-extern int desNum;
+int desNum;
 int active_count = 0;
 int send_count = 0;
 int collect_count = 0;

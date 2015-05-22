@@ -22,7 +22,7 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 }
 
 void send_file(int connected_socket) {
-	char buffer[BUFFER_SIZE], file_name[250];
+	char buffer[BUFFER_SIZE], filename[250];
 
 	memset(buffer, '0', sizeof(buffer));
 	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count ++);
@@ -57,7 +57,7 @@ void send_check(int connected_socket) {
 	printf("check signal transmitted!\n\n");
 }
 
-void receive_file(int connected_socket, char *filename) {
+void receive_file(int connected_socket) {
 	char buffer[BUFFER_SIZE], filename[250];
 	int written_length;
 	memset(buffer, '0', sizeof(buffer));
@@ -104,7 +104,6 @@ void *send_to_one_des(void* _des) {
 	struct broadcast* des = (struct broadcast*)_des;
 	
 	char* ip_addr = des->ipAddr;
-	char* file_name = des->fileName;
 
 	//printf("des->ipAddr: %s\n", ip_addr);
 	//printf("des->fileName: %s\n", file_name);

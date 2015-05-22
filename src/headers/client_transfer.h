@@ -12,9 +12,11 @@ typedef struct broadcast {
 } Broadcast;
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act);
 
-void send_file(int connected_socket, char *filename);
+void send_file(int connected_socket);
 
-void receive_file(int connected_socket, char *filename);
+void send_check(int connected_socket);
+
+void receive_file(int connected_socket);
 
 void set_port();
 

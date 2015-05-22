@@ -29,7 +29,6 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 	bc->active = act;
 }
 
-
 void send_file(int connected_socket) {
         char buffer[BUFFER_SIZE], file_name[250];
 		int file_block_length = 0;
@@ -179,7 +178,6 @@ void *send_to_des(void* _des) {
 		if (is_active == -1) continue;
 
 		char* ip_addr = (*(des_list + i))->ipAddr;
-		char* file_name = (*(des_list + i))->fileName;
 
 		printf("ip_addr: %s\n", ip_addr);
 		

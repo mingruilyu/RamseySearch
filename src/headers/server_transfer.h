@@ -12,6 +12,8 @@ struct sockandfilename {
 	char *fileName;
 };
 
+typedef enum {false, true} bool;
+
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act);
 
 void send_file(int connected_socket, char *filename);
@@ -20,10 +22,16 @@ void receive_file(int connected_socket, char *filename);
 
 void set_port();
 
+void *send_to_one_des(void* _des);
+
 void *send_to_des(void* _des);
 
 void *server_listen_to_clients_handler(void* _file_name);
 
-
+extern struct broadcast* broadcast_list[100];
+extern int active_count;
+extern int new_graph_count;
+extern int collect_max;
+extern int send_count;
 
 #endif

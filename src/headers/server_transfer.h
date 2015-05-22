@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #ifndef SERVER_TRANSFER_H
 #define SERVER_TRANSFER_H
 
@@ -11,8 +12,6 @@ struct sockandfilename {
 	int connectedSocket;
 	char *fileName;
 };
-
-typedef enum {false, true} bool;
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act);
 

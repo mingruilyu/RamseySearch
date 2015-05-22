@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 
+#include <pthread.h>
 #include "server_transfer.h"
 #include "search.h"
 
@@ -26,7 +27,6 @@ process.  The new thread starts execution by invoking
 start_routine(); arg is passed as the sole argument of
 start_routine().
 */
-#include <pthread.h>
 
 struct broadcast* broadcast_list[100];
 

@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #ifndef CLIENT_TRANSFER_H
 #define CLIENT_TRANSFER_H
 
@@ -9,7 +10,6 @@ typedef struct broadcast {
 	char fileName[250];
 	int active;
 } Broadcast;
-typedef enum { false, true } bool;
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act);
 
 void send_file(int connected_socket, char *filename);

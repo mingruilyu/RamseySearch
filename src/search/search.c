@@ -7,6 +7,7 @@
 #include "time.h"
 #include "clique_count.h"
 #include "search.h"
+#include "graph.h"
 #define TABOOSIZE (500)
 #define BIGCOUNT (1000)
 #define THRESHOLD (10)
@@ -18,7 +19,6 @@
  * uses a taboo list of size #TABOOSIZE# to hold and 
  * encoding of and edge (i, j) + clique_count
  */
-typedef enum {false, true} bool;
 
 int search(int *g, int gsize, int new_graph_count, bool *recv_flag) {
 	int count, i, j, best_count = BIGCOUNT, best_i, best_j;
@@ -30,7 +30,7 @@ int search(int *g, int gsize, int new_graph_count, bool *recv_flag) {
 		if(cache_7.length == 0) {
 			printf("Eureka! Counter-example found!\n");
 			FIFODelete(taboo_list);
-			PrintGraphNew(g, gsize, new_count ++);
+			PrintGraphNew(g, gsize, new_graph_count ++);
 			free(g);
 			return (0);
 		}
@@ -61,12 +61,13 @@ int search(int *g, int gsize, int new_graph_count, bool *recv_flag) {
 		best_count = BIGCOUNT;
 		PrintGraph(g, gsize);
 	}
+	return (0);
 }
 
 int *load_graph(int* gsize) {
-	int* new_g, *g;
-	ReadGraph("../../file/client/old_graph", &g, *gsize);
-	new_g = (int *) malloc((*gsize + 1) * (gsize + 1) * sizeof(int));
+	int* new_g, *g, i;
+	ReadGraph("../../file/client/old_graph", &g, gsize);
+	new_g = (int *) malloc((*gsize + 1) * (*gsize + 1) * sizeof(int));
 	// copy the old graph into the new graph leaving 
 	// the last row and last column alone
 	CopyGraph(g, *gsize, new_g, *gsize + 1);

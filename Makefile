@@ -1,17 +1,29 @@
-SRC_DIRS=\
+SERVER_SRC_DIRS=\
 src/utils \
-src/search 
+src/search \
+src/communication \
+src/server
 
-MKDIR = mkdir -p
-LOG_DIR = CounterExamples
+CLIENT_SRC_DIRS=\
+src/utils \
+src/search \
+src/communication \
+src/client
+ 
+all: multimake_server
 
-all: multimake dirs
+server: multimake_server
 
-dirs:
-	$(MKDIR) $(LOG_DIR)
+client: multimake_client
+ 
+multimake_client:
+	@for d in $(CLIENT_SRC_DIRS);  \
+	do          \
+		make -C $$d;    \
+	done;       \
 
-multimake:
-	@for d in $(SRC_DIRS);  \
+multimake_server:
+	@for d in $(SERVER_SRC_DIRS);  \
 	do          \
 		make -C $$d;    \
 	done;       \

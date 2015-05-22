@@ -4,6 +4,7 @@
 #include <time.h>
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -93,7 +94,7 @@ void receive_file(int connected_socket) {
 				printf("Receiving data failed!\n");
 				break;
 			}
-			if
+
 			written_length = fwrite(buffer, sizeof(char), length, fp);
 			if (written_length < length) printf("File writing failed!\n");
 			memset(buffer, '0', BUFFER_SIZE);

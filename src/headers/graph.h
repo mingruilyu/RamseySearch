@@ -2,6 +2,7 @@
 #define GRAPH_UTILS_H
 
 void PrintGraph(int *g, int gsize);
+void PrintGraphNew(int *g, int gsize, int new_graph_count);
 void PrintGraphCopy(int *g, int gsize, int graph_count);
 int ReadGraph(char *fname, int **g, int *gsize);
 void* DegradeGraph(int *old_g, int o_gsize);

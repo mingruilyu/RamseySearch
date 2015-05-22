@@ -6,7 +6,7 @@
 #include "fifo.h"	/* for taboo list */
 #include "time.h"
 #include "clique_count.h"
-
+#include "search.h"
 #define TABOOSIZE (500)
 #define BIGCOUNT (1000)
 #define THRESHOLD (10)
@@ -20,20 +20,18 @@
  */
 typedef enum {false, true} bool;
 
-int search(int *g, int gsize) {
-	int count, i, j, rand_no, best_count, best_i, best_j;
+int search(int *g, int gsize, int new_graph_count, bool *recv_flag) {
+	int count, i, j, best_count = BIGCOUNT, best_i, best_j;
 	void *taboo_list = FIFOInitEdge(TABOOSIZE);
-	best_count = BIGCOUNT;	
-			// directed search to kill most of clique 7
-	CliqueCountCreateCache(g, gsize);
-	while(true) {
+	while(!*recv_flag) {
 		CliqueCountCreateCache(g, gsize);
 		// see how many clique 7 we have left. If there are still 
 		// a lot, we will need to clean it up.
 		if(cache_7.length == 0) {
 			printf("Eureka! Counter-example found!\n");
-			backtrack_flag = false;
 			FIFODelete(taboo_list);
+			PrintGraphNew(g, gsize, new_count ++);
+			free(g);
 			return (0);
 		}
 		// do the second round of clean up by breaking the ties
@@ -67,7 +65,7 @@ int search(int *g, int gsize) {
 
 int *load_graph(int* gsize) {
 	int* new_g, *g;
-	ReadGraph("../../ce", &g, *gsize);
+	ReadGraph("../../file/client/old_graph", &g, *gsize);
 	new_g = (int *) malloc((*gsize + 1) * (gsize + 1) * sizeof(int));
 	// copy the old graph into the new graph leaving 
 	// the last row and last column alone

@@ -78,11 +78,13 @@ void receive_file(int connected_socket) {
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
-		while (length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) {
+		while (true) {
+			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
 			if (length < 0) {
 				printf("Receiving data failed!\n");
 				break;
 			}
+			if (length == 0) break;
 			written_length = fwrite(buffer, sizeof(char), length, fp);
 			if (written_length < length) printf("File writing failed!\n");
 			memset(buffer, '0', BUFFER_SIZE);
@@ -149,7 +151,7 @@ void *send_to_one_des(void* _des) {
 		exit(1);
 	}
 	//printf("send_to_one_des connected!\n");
-	if (first_connetcion == true)
+	if (first_connection == true)
 		send_check(client_socket);
 	else
 		send_file(client_socket);
@@ -163,8 +165,6 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 	if (err != 0) {
 		perror("Could not pthread_detach!");
 	}
-	
-	char* file_name = (char*)_file_name;
 
 	int iResult = 0;
 

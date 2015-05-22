@@ -4,6 +4,7 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <arpa/inet.h>
 
 #include <pthread.h>
@@ -30,10 +31,13 @@ start_routine().
 
 struct broadcast* broadcast_list[100];
 
+void broadcast_graph();
+void *broadcast_handler();
+
 int main(int argc, char* argv[]) {
 	
 	char dir_name[250];
-	int p, err = 0, i;
+	int p, err = 0;
 
 	// initialize server
 	memset(&broadcast_list, '0', sizeof(broadcast_list));
@@ -64,7 +68,7 @@ int main(int argc, char* argv[]) {
 		if (collect_count == active_count + 1) {
 			collected_graph_count = collect_count;
 			gsize++;
-			sprinf(dir_name, "../../file/server/CE_%d", gsize);
+			sprint(dir_name, "../../file/server/CE_%d", gsize);
 			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			collect_count = 0;
 			broadcast_graph();

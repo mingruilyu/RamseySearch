@@ -12,7 +12,7 @@
 #include "server_transfer.h"
 #include "search.h"
 
-int desNum;
+int desNum = 0;
 int active_count = 0;
 int send_count = 0;
 int collect_count = 0;
@@ -74,7 +74,13 @@ int main(int argc, char* argv[]) {
 			collect_count = 0;
 			broadcast_graph();
 		}
-		else sleep(10);
+		else {
+			sleep(5);
+			printf("current active computers: %d\n", active_count);
+			printf("current received graphs: %d\n", collect_count);
+			printf("currently waiting for %d graphs: %d\n", collected_graph_count);
+			printf("current maximum counterexample %d", gsize - 1);
+		}
 	}
 
 	return 0;

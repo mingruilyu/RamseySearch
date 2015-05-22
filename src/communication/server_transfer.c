@@ -23,6 +23,8 @@ static int counter = 0;
 static int desNum = 0;
 struct broadcast* broadcast_list[100];
 
+static int active_counter = 0;
+
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
 	strcpy(bc->fileName, file_name);
@@ -94,10 +96,69 @@ void set_port() {
 	CLIENT_LISTEN_PORT = PORT + 1;
 }
 
+void *send_to_one_des(void* _des) {
+	struct broadcast* des = (struct broadcast*)_des;
+
+	char* ip_addr = des->ipAddr;
+	char* file_name = des->fileName;
+
+	//printf("des->ipAddr: %s\n", ip_addr);
+	//printf("des->fileName: %s\n", file_name);
+
+	int iResult = 0;
+
+	struct sockaddr_in client_addr;
+	memset(&client_addr, '0', sizeof(client_addr));
+	client_addr.sin_family = AF_INET;
+	client_addr.sin_port = htons(0);
+	client_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	int client_socket = 0;
+	client_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (client_socket < 0) {
+		printf("Could not create send_to_one_des socket!\n");
+		exit(1);
+	}
+	//printf("send_to_one_des socket created!\n");
+
+	iResult = bind(client_socket, (struct sockaddr*)&client_addr, sizeof(client_addr));
+	if (iResult != 0) {
+		perror("Could not bind send_to_one_des socket!\n");
+		exit(1);
+	}
+	//printf("send_to_one_des socket bounded!\n");
+
+	struct sockaddr_in server_addr;
+	memset(&server_addr, '0', sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
+
+	if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
+		printf("Input IP is not correct!\n");
+		exit(1);
+	}
+
+	socklen_t server_addr_length = sizeof(server_addr);
+
+	iResult = connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length);
+	if (iResult != 0) {
+		printf("send_to_one_des could not connect!\n");
+		exit(1);
+	}
+	//printf("send_to_one_des connected!\n");
+
+	send_file(client_socket, file_name);
+
+	close(client_socket);
+	pthread_exit(0);
+}
+
 void *send_to_des(void* _des) {
 	struct broadcast** des_list = (struct broadcast **)_des;
 
 	int i;
+
+	active_count = 0;
 
 	for (i = 0; i < desNum; ++i) {
 		int is_active = (*(des_list + i))->active;
@@ -151,6 +212,7 @@ void *send_to_des(void* _des) {
 			close(client_socket);
 			continue;
 		}
+		++active_count;
 		printf("send_to_des connected!\n");
 		
 		send_file(client_socket, file_name);

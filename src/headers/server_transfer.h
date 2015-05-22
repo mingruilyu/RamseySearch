@@ -20,6 +20,8 @@ void receive_file(int connected_socket, char *filename);
 
 void set_port();
 
+void *send_to_one_des(void* _des);
+
 void *send_to_des(void* _des);
 
 void *server_listen_to_clients_handler(void* _file_name);

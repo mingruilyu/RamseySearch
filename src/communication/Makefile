@@ -2,6 +2,8 @@ CC = gcc
 
 CFLAGS = -g -Wall 
 
+CLIBS = -pthread
+
 HEADER_DIR = ../headers
 
 BUILD_DIR = ../../build
@@ -31,7 +33,7 @@ dirs:
 	$(MKDIR) $(OUT_DIR)	$(OBJ_DIR) $(BIN_DIR)
 
 %.o: %.c $(HEADER_DIR)/*.h 
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -c $< -o $(OBJ_DIR)/$@
+	$(CC) $(CFLAGS) $(INCLUDES) $(CLIBS) -c $< -o $(OBJ_DIR)/$@
 
 clean:
 	rm -rf $(BUILD_DIR)

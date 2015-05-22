@@ -22,13 +22,13 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_na
 }
 
 void send_file(int connected_socket) {
-	char buffer[BUFFER_SIZE];
-	char file_name[250];
+	char buffer[BUFFER_SIZE], file_name[250];
+
 	memset(buffer, '0', sizeof(buffer));
-	sprintf(filename, "../../file/CE_%d/%d", gsize, (send_count++) % collect_max);
-	FILE * fp = fopen(filename, "w");
+	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count ++);
+	FILE * fp = fopen(filename, "r");
 	if (fp == NULL) {
-		printf("Could not open to write!\n");
+		printf("Could not open to read!\n");
 		return;
 	}
 	else {
@@ -58,8 +58,8 @@ void send_check(int connected_socket) {
 }
 
 void receive_file(int connected_socket, char *filename) {
-	char buffer[BUFFER_SIZE];
-	char filename[250];
+	char buffer[BUFFER_SIZE], filename[250];
+	int written_length;
 	memset(buffer, '0', sizeof(buffer));
 
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
@@ -75,7 +75,7 @@ void receive_file(int connected_socket, char *filename) {
 			printf("Could not open to write!\n");
 			return;
 		}
-		int written_length = fwrite(buffer, sizeof(char), length, fp);
+		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
 		while (length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) {
@@ -88,6 +88,8 @@ void receive_file(int connected_socket, char *filename) {
 			memset(buffer, '0', BUFFER_SIZE);
 		}
 		fclose(fp);
+		recv_flag = true;
+		new_graph_count = 0;
 		printf("File receiveing finished!\n\n");
 	}
 }
@@ -232,8 +234,7 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 		char incoming_ip_addr[20];
 		printf("Got connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
 		
-		receive_file(connected_socket, file_name);
-		
+		receive_file(connected_socket);
 		close(connected_socket);
 	}
 	close(serv_socket);

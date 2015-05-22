@@ -10,11 +10,11 @@
 #include "search.h"
 
 extern int desNum;
-int active_count;
-int send_count;
-int collect_max = 10;
-int new_graph_count;
-int gsize;
+int active_count = 0;
+int send_count = 0;
+int collect_count = 0;
+int collected_graph_count = 10;
+int gsize = 104;
 /*
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 void *(*start_routine) (void *), void *arg);
@@ -30,26 +30,23 @@ start_routine().
 
 struct broadcast* broadcast_list[100];
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
+	
+	char dir_name[250];
+	int p, err = 0, i;
+
 	// initialize server
 	memset(&broadcast_list, '0', sizeof(broadcast_list));
-	int p;
-	for (p = 0; p < 100; ++ p) 
+	for (p = 0; p < 100; ++ p)
 		memset(&broadcast_list[p], '0', sizeof(broadcast_list[p]));
-
 	set_port();
-
-	int err = 0;
-	int i;
-	int graph_count = 0;
-	int max_graph_no = 40;
-	char file_name[250];
-	char dir_name[250];
-	char* file_from_client = "DataFromClient.txt";
+	// create a listener thread
 	pthread_t sock_recv_thread_id;
-	err = pthread_create(&sock_recv_thread_id, NULL, server_listen_to_clients_handler, (void*)file_from_client);
+	err = pthread_create(&sock_recv_thread_id, NULL, server_listen_to_clients_handler, NULL);
 	if (err != 0) perror("Could not create server_listen_to_clients_handler thread!");
 
+
+	// create regular check broadcast thread
 	pthread_t broadcast_thread_id;
 	err = pthread_create(&broadcast_thread_id, NULL, broadcast_handler, NULL);
 	if (err != 0) perror("Could not create broadcast_handler thread!");
@@ -64,10 +61,10 @@ int main(int argc, char *argv[]) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}*/
-		if (collect_count >= active_count + 1) {
-			collect_max = collect_count;
+		if (collect_count == active_count + 1) {
+			collected_graph_count = collect_count;
 			gsize++;
-			sprinf(dir_name, "../../file/CE_%d", gsize);
+			sprinf(dir_name, "../../file/server/CE_%d", gsize);
 			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			collect_count = 0;
 			broadcast_graph();
@@ -87,7 +84,7 @@ void broadcast_graph() {
 		char* ip_addr = (*(broadcast_list + i))->ipAddr;
 	
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
-		construct_broadcast(tmp, ip_addr, file_name, 1);
+		construct_broadcast(tmp, ip_addr, "\0", 1);
 
 		printf("ip_addr: %s\n", ip_addr);
 

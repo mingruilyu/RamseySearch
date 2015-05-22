@@ -24,5 +24,7 @@ void *client_always_listen_to_one_handler(void* _file_name);
 
 extern bool recv_flag;
 extern bool first_connection;
+extern int new_graph_count;
+extern int one_more_flag;
 
 #endif

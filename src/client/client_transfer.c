@@ -26,15 +26,17 @@ int send_file(char* ip_addr) {
 	if (fp == NULL) {
 		perror("Could not open to read!\n");
 		return -1;
-	}
-	else {
+	} else {
 		connected_socket = create_connection(ip_addr);	
 		file_block_length = 0;
 		//printf("Entering the read while block!\n");
 		while (1) {
 			file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
-			if(file_block_length <= 0) {
+			if(file_block_length == 0) {
+				if(feof(fp)) break;
 				perror("fread error!\n");
+				fclose(fp);
+				close(connected_socket);
 				return -1;
 			} 
 			printf("file_block_length = %d\n", file_block_length);
@@ -42,8 +44,10 @@ int send_file(char* ip_addr) {
 			printf("buffer:  %s \n", buffer);
 			
 			//if (send(connected_socket, buffer, file_block_length, 0) < 0) {
-			if (send(connected_socket, buffer, file_block_length, 0) < 0) {
+			if(send(connected_socket, buffer, file_block_length, 0) < 0) {
 				perror("Sending file failed!\n");
+				fclose(fp);
+				close(connected_socket);
 				return -1;
 			}
 		}

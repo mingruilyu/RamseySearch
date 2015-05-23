@@ -71,7 +71,9 @@ int main(int argc, char *argv[]) {
 					printf("sock_thread goes wrong! %s \n", strerror(err));
 					perror("sock_thread goes wrong!");
 				}*/
-				send_file(ip_addr);
+				if(send_file(ip_addr) != 0) {
+					printf("Failed to send graph!\n");
+				}
 			}
 		}
 		else sleep(10);

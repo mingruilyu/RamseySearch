@@ -16,7 +16,7 @@ int desNum = 0;
 int active_count = 0;
 int send_count = 0;
 int collect_count = 0;
-int collected_graph_count = 10;
+int collected_graph_count = 2;
 int gsize = 103;
 /*
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
@@ -78,7 +78,8 @@ int main(int argc, char* argv[]) {
 			sleep(5);
 			printf("current active computers: %d\n", active_count);
 			printf("current received graphs: %d\n", collect_count);
-			printf("currently waiting for %d graphs\n", collected_graph_count);
+			printf("currently waiting for %d graphs\n", active_count + 1);
+			printf("number of last ce %d\n", collected_graph_count);
 			printf("current maximum counterexample %d\n", gsize - 1);
 		}
 	}

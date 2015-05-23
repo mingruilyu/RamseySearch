@@ -29,6 +29,7 @@ void send_file(int connected_socket) {
         char buffer[BUFFER_SIZE], filename[250];
 		int file_block_length = 0;
         memset(buffer, '0', sizeof(buffer));
+		printf("sending graph %d\n", send_count % collected_graph_count);
 		sprintf(filename, "../../file/server/CE_%d/%d", gsize - 1, (send_count ++) % collected_graph_count) ;
 		printf("reading file %s\n", filename);
 		FILE * fp = fopen(filename, "r");

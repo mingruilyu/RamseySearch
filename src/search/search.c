@@ -61,7 +61,7 @@ int search(int *g, int gsize, int new_graph_count, bool *recv_flag) {
 		best_count = BIGCOUNT;
 		PrintGraph(g, gsize);
 	}
-	return (0);
+	return (-1);
 }
 
 int *load_graph(int* gsize) {

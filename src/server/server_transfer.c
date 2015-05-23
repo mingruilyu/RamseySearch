@@ -135,7 +135,13 @@ void *send_to_one_des(void* _des) {
 
 	int iResult = 0;
 
-	struct sockaddr_in client_addr;
+	int client_socket = 0;
+	client_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (client_socket < 0) {
+		printf("Could not create send_to_one_des socket!\n");
+		exit(1);
+	}
+/*	struct sockaddr_in client_addr;
 	memset(&client_addr, '0', sizeof(client_addr));
 	client_addr.sin_family = AF_INET;
 	client_addr.sin_port = htons(0);
@@ -154,7 +160,7 @@ void *send_to_one_des(void* _des) {
 		perror("Could not bind send_to_one_des socket!\n");
 		exit(1);
 	}
-	//printf("send_to_one_des socket bounded!\n");
+	//printf("send_to_one_des socket bounded!\n");*/
 
 	struct sockaddr_in server_addr;
 	memset(&server_addr, '0', sizeof(server_addr));

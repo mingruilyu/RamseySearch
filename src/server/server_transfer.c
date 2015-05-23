@@ -22,9 +22,9 @@ static int CLIENT_LISTEN_PORT = -1;
 
 void *connection_handler(void*);
 
-void construct_broadcast(Broadcast* bc, const char* ip_addr, int sock, int act) {
+void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
-	bc->socket = sock;
+	strcpy(bc->fileName, file_name);
 	bc->active = act;
 }
 
@@ -309,9 +309,10 @@ void *server_listen_to_clients_handler(void* _file_name) {
 
 	pthread_t thread_id;
 	
-	int connectedSocket;
+	struct sockandfilename sf;
+	sf.fileName = file_name;
 	
-	while ((connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) != 0) {
+	while ((sf.connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) != 0) {
 		//printf("server_listen_to_clients_handler did accept!\n");
 		char incoming_ip_addr[20];
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
@@ -336,7 +337,7 @@ void *server_listen_to_clients_handler(void* _file_name) {
 			char broadcast_file_name[5] = "\0";
 
 			Broadcast* broadcast_target = (Broadcast*) malloc(sizeof(Broadcast));
-			construct_broadcast(broadcast_target, incoming_ip_addr, connectedSocket, 1);
+			construct_broadcast(broadcast_target, incoming_ip_addr, broadcast_file_name, 1);
 
 			//printf("broadcast_target->ipAddr: %s\n", broadcast_target->ipAddr);
 			//printf("broadcast_target->fileName: %s\n", broadcast_target->fileName);

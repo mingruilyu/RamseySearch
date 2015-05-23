@@ -30,7 +30,7 @@ int search(int *g, int gsize, int new_graph_count, bool *recv_flag) {
 		if(cache_7.length == 0) {
 			printf("Eureka! Counter-example found!\n");
 			FIFODelete(taboo_list);
-			PrintGraphNew(g, gsize, new_graph_count ++);
+			PrintGraphNew(g, gsize, new_graph_count);
 			free(g);
 			return (0);
 		}

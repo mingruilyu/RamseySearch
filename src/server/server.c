@@ -11,11 +11,11 @@
 #include <pthread.h>
 #include "server_transfer.h"
 #include "search.h"
-
+#define GRAPH_COLLECT_NO 3
 int desNum = 0;
 int active_count = 0;
 int send_count = 0;
-int collect_count = 1;
+int collect_count = 0;
 int collected_graph_count = 2;
 int gsize = 80;
 /*
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 	
 	char dir_name[250];
 	int p, err = 0;
-
+	bool start_flag = true;
 	// initialize server
 	memset(&broadcast_list, '0', sizeof(broadcast_list));
 	for (p = 0; p < 100; ++ p)
@@ -66,8 +66,9 @@ int main(int argc, char* argv[]) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}*/
-		if (collect_count == active_count + 1) {
-			collected_graph_count = collect_count;
+		if (collect_count == GRAPH_COLLECT_NO || start_flag) {
+			if(start_flag) start_flag = false;
+			else collected_graph_count = collect_count;
 			sprintf(dir_name, "../../file/server/CE_%d",  ++ gsize);
 			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			collect_count = 0;
@@ -77,7 +78,7 @@ int main(int argc, char* argv[]) {
 			sleep(5);
 			printf("current active computers: %d\n", active_count);
 			printf("current received graphs: %d\n", collect_count);
-			printf("currently waiting for %d graphs\n", active_count + 1);
+			printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
 			printf("number of last ce %d\n", collected_graph_count);
 			printf("current maximum counterexample %d\n", gsize - 1);
 		}

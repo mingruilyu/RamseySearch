@@ -22,6 +22,8 @@ void set_port();
 
 void *client_always_listen_to_one_handler();
 
+int create_connection(Broadcast*);
+
 extern bool recv_flag;
 extern bool first_connection;
 extern int new_graph_count;

@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
 	construct_broadcast(server, argv[1], 1);
 
 	printf("argv[1]: %s\n", server->ipAddr);
-	printf("fileName: %s\n", server->fileName);
 	// create a listener thread
 	pthread_t sock_recv_thread_id;
 	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
@@ -59,7 +58,7 @@ int main(int argc, char *argv[]) {
 	}*/
 	socketfd = create_connect(server);
 	send_check(socketfd);
-	recv_file(socketfd);
+	receive_file(socketfd);
 
 	while (1) {
 		if (recv_flag || one_more_flag) {

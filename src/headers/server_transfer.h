@@ -28,6 +28,8 @@ void *send_to_des(void* _des);
 
 void *server_listen_to_clients_handler();
 
+int create_connection(Broadcast*);
+
 extern struct broadcast* broadcast_list[100];
 extern int active_count;
 extern int collected_graph_count;

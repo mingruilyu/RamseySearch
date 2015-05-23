@@ -20,8 +20,6 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-int create_connection(Broadcast* des);
-
 void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	strcpy(bc->ipAddr, ip_addr);
 	bc->active = act;
@@ -328,8 +326,6 @@ void *server_listen_to_clients_handler() {
 		}
 
 		if (exist == 0) {
-			char broadcast_file_name[5] = "\0";
-
 			Broadcast* broadcast_target = (Broadcast*) malloc(sizeof(Broadcast));
 			construct_broadcast(broadcast_target, incoming_ip_addr, 1);
 

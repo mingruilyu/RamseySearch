@@ -308,7 +308,7 @@ void *server_listen_to_clients_handler() {
 	
 	while (1) {
 		connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length);
-		if (connectedSocket != 0) {
+		if (connectedSocket == 0) {
 			perror("accept error :");
 			break;
 		}

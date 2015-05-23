@@ -131,8 +131,6 @@ int CliqueCountCreateCache(int *g, int gsize) {
   int i, j, k, l, m, n, o;
   int count = 0, color;
 	int sgsize = 7;
-    int clique_6_counter=0;
-    int Clique_7_counter=0;
   cache_6.length=0;
   cache_7.length = 0;
 

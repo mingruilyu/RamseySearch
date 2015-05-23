@@ -15,9 +15,9 @@
 int desNum = 0;
 int active_count = 0;
 int send_count = 0;
-int collect_count = 0;
+int collect_count = 1;
 int collected_graph_count = 2;
-int gsize = 103;
+int gsize = 80;
 /*
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 void *(*start_routine) (void *), void *arg);
@@ -68,8 +68,7 @@ int main(int argc, char* argv[]) {
 		}*/
 		if (collect_count == active_count + 1) {
 			collected_graph_count = collect_count;
-			gsize++;
-			sprintf(dir_name, "../../file/server/CE_%d", gsize);
+			sprintf(dir_name, "../../file/server/CE_%d",  ++ gsize);
 			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			collect_count = 0;
 			broadcast_graph();

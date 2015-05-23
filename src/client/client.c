@@ -35,12 +35,11 @@ int main(int argc, char *argv[]) {
 
 	set_port();
 
-	int err = 0, gsize, socketfd;
+	int err = 0, gsize;
 	int *g;
-	Broadcast* server = (Broadcast*)malloc(sizeof(Broadcast));
-	construct_broadcast(server, argv[1], 1);
+	char *ip_addr = argv[1];
 
-	printf("argv[1]: %s\n", server->ipAddr);
+	printf("IP_ADDR: %s\n", ip_addr);
 	// create a listener thread
 	pthread_t sock_recv_thread_id;
 	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
@@ -56,10 +55,7 @@ int main(int argc, char *argv[]) {
 		printf("sock_thread goes wrong! %s \n", strerror(err));
 		perror("sock_thread goes wrong!");
 	}*/
-	socketfd = create_connection(server);
-	send_check(socketfd);
-	receive_file(socketfd);
-
+	send_check(ip_addr);
 	while (1) {
 		if (recv_flag || one_more_flag) {
 			if (one_more_flag) one_more_flag = false;
@@ -75,9 +71,7 @@ int main(int argc, char *argv[]) {
 					printf("sock_thread goes wrong! %s \n", strerror(err));
 					perror("sock_thread goes wrong!");
 				}*/
-				socketfd = create_connection(server);
-				send_file(socketfd);
-				close(socketfd);
+				send_file(ip_addr);
 			}
 		}
 		else sleep(10);

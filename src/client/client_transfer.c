@@ -16,31 +16,26 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
-	strcpy(bc->ipAddr, ip_addr);
-	bc->active = act;
-}
-
-void send_file(int connected_socket) {
-	printf("connected_socket: %d", connected_socket);
+int send_file(char* ip_addr) {
 	char buffer[BUFFER_SIZE], filename[250];
-
+	int connected_socket, file_block_length = 0;
 	memset(buffer, 0, sizeof(buffer));
-	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count++);
+	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count);
 	printf("Trying to transfer file : %s\n", filename);
 	FILE * fp = fopen(filename, "r");
 	if (fp == NULL) {
 		perror("Could not open to read!\n");
-		return;
+		return -1;
 	}
 	else {
-		int file_block_length = 0;
+		connected_socket = create_connection(ip_addr);	
+		file_block_length = 0;
 		//printf("Entering the read while block!\n");
 		while (1) {
 			file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
 			if(file_block_length <= 0) {
 				perror("fread error!\n");
-				break;
+				return -1;
 			} 
 			printf("file_block_length = %d\n", file_block_length);
 			printf("strlen(buffer):%d \n", strlen(buffer));
@@ -49,23 +44,21 @@ void send_file(int connected_socket) {
 			//if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 			if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 				perror("Sending file failed!\n");
-				break;
+				return -1;
 			}
 		}
-		/*	sprintf(buffer, "xxxxchar array");
-			printf("buffer : %s\n", buffer);
-			if (send(connected_socket, buffer, 9, 0) < 0) {
-				perror("Sending file failed!\n");
-		//		break;
-			}*/
 
 		memset(buffer, 0, sizeof(buffer));
 		fclose(fp);
+		close(connected_socket);
 		printf("File transmitted!\n\n");
+		new_graph_count ++;
 	}
+	return 0;
 }
 
-void send_check(int connected_socket) {
+void send_check(char* ip_addr) {
+	int connected_socket = create_connection(ip_addr);
 	char buffer[BUFFER_SIZE];
 	memset(buffer, 0, sizeof(buffer));
 	buffer[0] = 'c';
@@ -73,6 +66,9 @@ void send_check(int connected_socket) {
 		printf("Sending check signal failed!\n");
 	first_connection = false;
 	printf("check signal transmitted!\n\n");
+	
+	receive_file(connected_socket);
+	close(connected_socket);
 }
 
 void receive_file(int connected_socket) {
@@ -264,12 +260,12 @@ void *client_always_listen_to_one_handler() {
 	pthread_exit(0);
 }
 
-int create_connection(Broadcast* des) {
+int create_connection(char* ip_addr) {
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
-	if (inet_aton(des->ipAddr, &server_addr.sin_addr) <= 0) {
+	if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
 		printf("Input IP is not correct!\n");
 		exit(1);
 	}

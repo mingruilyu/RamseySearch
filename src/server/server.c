@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}*/
-		if (collect_count == GRAPH_COLLECT_NO || start_flag) {
+		if (collect_count >= GRAPH_COLLECT_NO || start_flag) {
 			if(start_flag) start_flag = false;
 			else collected_graph_count = collect_count;
 			sprintf(dir_name, "../../file/server/CE_%d",  ++ gsize);

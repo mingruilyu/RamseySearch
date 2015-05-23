@@ -25,7 +25,7 @@ void send_file(int connected_socket) {
 	printf("connected_socket: %d", connected_socket);
 	char buffer[BUFFER_SIZE], filename[250];
 
-	memset(buffer, '\0', sizeof(buffer));
+	memset(buffer, 0, sizeof(buffer));
 	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count++);
 	printf("Trying to transfer file : %s\n", filename);
 	FILE * fp = fopen(filename, "r");
@@ -43,7 +43,7 @@ void send_file(int connected_socket) {
 				perror("Sending file failed!\n");
 				break;
 			}
-			memset(buffer, '\0', sizeof(buffer));
+			memset(buffer, 0, sizeof(buffer));
 		}
 		fclose(fp);
 		printf("File transmitted!\n\n");
@@ -52,7 +52,7 @@ void send_file(int connected_socket) {
 
 void send_check(int connected_socket) {
 	char buffer[BUFFER_SIZE];
-	memset(buffer, '0', sizeof(buffer));
+	memset(buffer, 0, sizeof(buffer));
 	buffer[0] = 'c';
 	if (send(connected_socket, buffer, 1, 0) < 0)
 		printf("Sending check signal failed!\n");
@@ -63,7 +63,7 @@ void send_check(int connected_socket) {
 void receive_file(int connected_socket) {
 	char buffer[BUFFER_SIZE], filename[250];
 	int written_length;
-	memset(buffer, '0', sizeof(buffer));
+	memset(buffer, 0, sizeof(buffer));
 
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
 	printf("Receiving from server %s\n", buffer);
@@ -85,7 +85,7 @@ void receive_file(int connected_socket) {
 		}
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
-		memset(buffer, '0', BUFFER_SIZE);
+		memset(buffer, 0, BUFFER_SIZE);
 		while (true) {
 			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
 			perror("recv error :");
@@ -96,7 +96,7 @@ void receive_file(int connected_socket) {
 			if (length == 0) break;
 			written_length = fwrite(buffer, sizeof(char), length, fp);
 			if (written_length < length) printf("File writing failed!\n");
-			memset(buffer, '0', BUFFER_SIZE);
+			memset(buffer, 0, BUFFER_SIZE);
 		}
 		fclose(fp);
 		recv_flag = true;
@@ -178,7 +178,7 @@ void *client_always_listen_to_one_handler() {
 	int iResult = 0;
 
 	struct sockaddr_in serv_addr;
-	memset(&serv_addr, '0', sizeof(serv_addr));
+	memset(&serv_addr, 0, sizeof(serv_addr));
 
 	//Address family (must be AF_INET)
 	serv_addr.sin_family = AF_INET;
@@ -251,7 +251,7 @@ void *client_always_listen_to_one_handler() {
 
 int create_connection(Broadcast* des) {
 	struct sockaddr_in server_addr;
-	memset(&server_addr, '0', sizeof(server_addr));
+	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
 	if (inet_aton(des->ipAddr, &server_addr.sin_addr) <= 0) {

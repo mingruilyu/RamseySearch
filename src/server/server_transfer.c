@@ -43,9 +43,9 @@ void send_file(int connected_socket) {
         	file_block_length = 0;
                 //printf("Entering the read while block!\n");
 			while ((file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp)) > 0) {
-				printf("file_block_length = %d\n", file_block_length);
+				perror("file_block_length = %d\n : ", file_block_length);
 				if (send(connected_socket, buffer, file_block_length, 0) < 0) {
-					printf("Sending file failed!\n");
+					perror("Sending file failed!\n : ");
 					break;
 				}
 				memset(buffer, '0', sizeof(buffer));

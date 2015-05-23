@@ -106,7 +106,7 @@ void receive_file(int connected_socket) {
 void set_port() {
 	srand(time(NULL) * 1000);
 	SERVER_LISTEN_PORT = PORT;
-	CLIENT_LISTEN_PORT = PORT + 1;
+	CLIENT_LISTEN_PORT = PORT;
 }
 
 void *send_to_one_des(void* _des) {

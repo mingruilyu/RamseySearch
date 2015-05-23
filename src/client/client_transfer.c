@@ -64,6 +64,7 @@ void receive_file(int connected_socket) {
 	memset(buffer, '0', sizeof(buffer));
 
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+	printf("receiving from server %s\n", buffer);
 	if (length < 0) {
 		printf("Receiving data failed!\n");
 		return;

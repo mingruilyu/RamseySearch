@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 		printf("sock_thread goes wrong! %s \n", strerror(err));
 		perror("sock_thread goes wrong!");
 	}*/
-	socketfd = create_connect(server);
+	socketfd = create_connection(server);
 	send_check(socketfd);
 	receive_file(socketfd);
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 					printf("sock_thread goes wrong! %s \n", strerror(err));
 					perror("sock_thread goes wrong!");
 				}*/
-				socketfd = create_connect(server);
+				socketfd = create_connection(server);
 				send_file(socketfd);
 			}
 		}

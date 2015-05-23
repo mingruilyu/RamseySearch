@@ -17,7 +17,7 @@ int active_count = 0;
 int send_count = 0;
 int collect_count = 0;
 int collected_graph_count = 10;
-int gsize = 104;
+int gsize = 103;
 /*
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 void *(*start_routine) (void *), void *arg);

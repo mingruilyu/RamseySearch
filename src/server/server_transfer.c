@@ -33,6 +33,7 @@ void send_file(int connected_socket) {
 		int file_block_length = 0;
         memset(buffer, '0', sizeof(buffer));
 		sprintf(filename, "../../file/server/CE_%d/%d", gsize - 1, (send_count ++) % collected_graph_count) ;
+		printf("reading file %s\n", filename);
 		FILE * fp = fopen(filename, "r");
 		if (fp == NULL) {
 			printf("Could not open to read!\n");
@@ -69,6 +70,7 @@ void receive_file(int connected_socket) {
 	memset(buffer, '0', sizeof(buffer));
 	
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+	printf("buffer %s", buffer);
 	if (length < 0) {
 		printf("Receiving data failed!\n");
 		return;

@@ -85,20 +85,21 @@ int receive_file(int connected_socket) {
 		sprintf(filename, "../../file/server/CE_%d/%d", gsize, collect_count ++);
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
-			printf("Could not open to write!\n");
+			perror("Could not open to write! fopen error: ");
 			return -1;
 		}
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
 		while ((length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) != 0) {
+			
 			if (length < 0) {
-				printf("Receiving data failed!\n");
+				perror("Receiving data failed! recv error: ");
 				break;
 			}
-
+			printf("buffer: %s\n", buffer);
 			written_length = fwrite(buffer, sizeof(char), length, fp);
-			if (written_length < length) printf("File writing failed!\n");
+			if (written_length < length) perror("File writing failed! :");
 			memset(buffer, '0', BUFFER_SIZE);
 		}
 		fclose(fp);

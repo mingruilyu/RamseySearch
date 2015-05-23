@@ -83,6 +83,7 @@ int receive_file(int connected_socket) {
 	}
 	else {
 		sprintf(filename, "../../file/server/CE_%d/%d", gsize, collect_count ++);
+		printf("receiving filename: %s \n", filename);
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
 			perror("Could not open to write! fopen error: ");
@@ -91,17 +92,26 @@ int receive_file(int connected_socket) {
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
+		printf("ENTERING WHILE!!!!!!!!!\n");
 		while (1) {
+			printf("FISRT COMMAND OF WHILE  before recv!!!!!!!!\n");
 			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
- 			if(!length) break;
+			printf("After recv!!!!!!!!!!!!!!!!!!!\n");
+ 			if(!length) {
+				printf("length = 0!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+				break;
+			}
 			else if (length < 0) {
 				perror("Receiving data failed! recv error: ");
 				break;
 			}
+			
 			printf("buffer: %s\n", buffer);
 			written_length = fwrite(buffer, sizeof(char), length, fp);
+			printf("written length: %d\n", written_length);
 			if (written_length < length) perror("File writing failed! :");
 			memset(buffer, '0', BUFFER_SIZE);
+			printf("LAST command of while!!!!!!!!!!!!\n");
 		}
 		fclose(fp);
 		printf("File receiveing finished!\n\n");

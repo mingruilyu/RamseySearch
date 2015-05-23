@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 			if (one_more_flag) one_more_flag = false;
 			else recv_flag = false;
 			g = load_graph(&gsize);
-			if (search(g, gsize, new_graph_count ++, &recv_flag) == 0) {
+			if (search(g, gsize, new_graph_count, &recv_flag) == 0) {
 				one_more_flag = true;
 				/*err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
 				if (err != 0) perror("Could not create send_to_one_des thread!");

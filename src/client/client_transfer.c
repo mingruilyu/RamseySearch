@@ -25,7 +25,7 @@ void send_file(int connected_socket) {
 	char buffer[BUFFER_SIZE], filename[250];
 
 	memset(buffer, '0', sizeof(buffer));
-	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count);
+	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count++);
 	FILE * fp = fopen(filename, "r");
 	if (fp == NULL) {
 		printf("Could not open to read!\n");

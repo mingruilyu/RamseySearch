@@ -16,6 +16,8 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
+int create_connection(Broadcast*);
+
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
 	strcpy(bc->fileName, file_name);
@@ -167,7 +169,7 @@ void set_port() {
 	pthread_exit(0);
 }*/
 
-void *client_always_listen_to_one_handler(void* _file_name) {
+void *client_always_listen_to_one_handler() {
 	int err = pthread_detach(pthread_self());
 	if (err != 0) {
 		perror("Could not pthread_detach!");

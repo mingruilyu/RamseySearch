@@ -20,7 +20,6 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-//void *connection_handler(void*);
 int create_connection(Broadcast* des);
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
@@ -240,14 +239,12 @@ void *send_to_des(void* _des) {
 	pthread_exit(0);
 }
 
-void *server_listen_to_clients_handler(void* _file_name) {
+void *server_listen_to_clients_handler() {
 	int err = pthread_detach(pthread_self());
 	if (err != 0) {
 		perror("Could not pthread_detach!");
 	}
 	
-	char* file_name = (char*)_file_name;
-
 	int iResult = 0;
 	
 	struct sockaddr_in serv_addr;
@@ -307,8 +304,6 @@ void *server_listen_to_clients_handler(void* _file_name) {
 	socklen_t length = sizeof(client_addr);
 
 	//printf("\nserver_listen_to_clients_handler starts to accept!\n");
-
-	pthread_t thread_id;
 	
 	int connectedSocket;
 	

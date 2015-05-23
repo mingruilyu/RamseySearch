@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 	int err = 0, gsize, socketfd;
 	int *g;
 	Broadcast* server = (Broadcast*)malloc(sizeof(Broadcast));
-	construct_broadcast(server, argv[1], "DataToServer.txt", 1);
+	construct_broadcast(server, argv[1], 1);
 
 	printf("argv[1]: %s\n", server->ipAddr);
 	printf("fileName: %s\n", server->fileName);

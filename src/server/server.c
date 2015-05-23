@@ -95,7 +95,7 @@ void broadcast_graph() {
 		char* ip_addr = (*(broadcast_list + i))->ipAddr;
 	
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
-		construct_broadcast(tmp, ip_addr, "\0", 1);
+		construct_broadcast(tmp, ip_addr, 1);
 
 		printf("ip_addr: %s\n", ip_addr);
 

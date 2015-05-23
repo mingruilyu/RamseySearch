@@ -18,9 +18,8 @@ static int CLIENT_LISTEN_PORT = -1;
 
 int create_connection(Broadcast*);
 
-void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
+void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	strcpy(bc->ipAddr, ip_addr);
-	strcpy(bc->fileName, file_name);
 	bc->active = act;
 }
 

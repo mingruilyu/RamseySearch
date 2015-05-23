@@ -7,10 +7,10 @@
 
 typedef struct broadcast {
 	char ipAddr[250];
-	char fileName[250];
 	int active;
 } Broadcast;
-void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act);
+
+void construct_broadcast(Broadcast* bc, const char* ip_addr, int act);
 
 void send_file(int connected_socket);
 
@@ -20,9 +20,7 @@ void receive_file(int connected_socket);
 
 void set_port();
 
-void *send_to_one_des(void* _des);
-
-void *client_always_listen_to_one_handler(void* _file_name);
+void *client_always_listen_to_one_handler();
 
 extern bool recv_flag;
 extern bool first_connection;

@@ -348,6 +348,7 @@ void *server_listen_to_clients_handler() {
 			continue;
 		}
 		pthread_join(thread_id, NULL);*/
+		printf("Trying to recv!\n");
 		int recv_result = receive_file(connectedSocket);
 		if (recv_result == -1) printf("Return -1, receive error\n");
 		else if (recv_result == 1) send_file(connectedSocket);

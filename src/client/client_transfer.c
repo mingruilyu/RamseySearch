@@ -24,7 +24,7 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 void send_file(int connected_socket) {
 	char buffer[BUFFER_SIZE], filename[250];
 
-	memset(buffer, '0', sizeof(buffer));
+	memset(buffer, '\0', sizeof(buffer));
 	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count++);
 	printf("Trying to transfer file : %s\n", filename);
 	FILE * fp = fopen(filename, "r");
@@ -41,7 +41,7 @@ void send_file(int connected_socket) {
 				printf("Sending file failed!\n");
 				break;
 			}
-			memset(buffer, '0', sizeof(buffer));
+			memset(buffer, '\0', sizeof(buffer));
 		}
 		fclose(fp);
 		printf("File transmitted!\n\n");

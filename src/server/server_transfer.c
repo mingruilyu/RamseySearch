@@ -91,9 +91,10 @@ int receive_file(int connected_socket) {
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
-		while ((length = recv(connected_socket, buffer, BUFFER_SIZE, 0)) != 0) {
-			
-			if (length < 0) {
+		while (1) {
+			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+ 			if(!length) break;
+			else if (length < 0) {
 				perror("Receiving data failed! recv error: ");
 				break;
 			}
@@ -185,9 +186,13 @@ void *send_to_des(void* _des) {
 
 		printf("ip_addr: %s\n", ip_addr);
 		
-		int iResult = 0;
+		int iResult = 0, client_socket = socket(AF_INET, SOCK_STREAM, 0);
+		if (client_socket < 0) {
+			printf("Could not create send_to_des socket!\n");
+			exit(1);
+		}
 
-		struct sockaddr_in client_addr;
+		/*struct sockaddr_in client_addr;
 		memset(&client_addr, '0', sizeof(client_addr));
 		client_addr.sin_family = AF_INET;
 		client_addr.sin_port = htons(0);
@@ -205,7 +210,7 @@ void *send_to_des(void* _des) {
 		if (iResult != 0) {
 			perror("Could not bind send_to_des socket!\n");
 			exit(1);
-		}
+		}*/
 		//printf("send_to_des socket bounded!\n");
 
 		struct sockaddr_in server_addr;
@@ -307,6 +312,7 @@ void *server_listen_to_clients_handler() {
 	int connectedSocket;
 	
 	while (1) {
+		printf("goint to waiting\n");
 		connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length);
 		if (connectedSocket == 0) {
 			perror("accept error :");
@@ -359,8 +365,10 @@ void *server_listen_to_clients_handler() {
 		int recv_result = receive_file(connectedSocket);
 		if (recv_result == -1) printf("Return -1, receive error\n");
 		else if (recv_result == 1) send_file(connectedSocket);
+		printf("finish receivning\n");
 		close(connectedSocket);
 	}
+	printf("out of loop\n");
 	close(serv_socket);
 	pthread_exit(0);
 }

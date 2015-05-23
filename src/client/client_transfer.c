@@ -36,25 +36,28 @@ void send_file(int connected_socket) {
 	else {
 		int file_block_length = 0;
 		//printf("Entering the read while block!\n");
-		/*while (1) {
+		while (1) {
 			file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
 			if(file_block_length <= 0) {
 				perror("fread error!\n");
 				break;
 			} 
 			printf("file_block_length = %d\n", file_block_length);
+			printf("strlen(buffer):%d \n", strlen(buffer));
 			printf("buffer:  %s \n", buffer);
+			
+			//if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 			if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 				perror("Sending file failed!\n");
 				break;
 			}
-		}*/
-			sprintf(buffer, "char array");
+		}
+		/*	sprintf(buffer, "xxxxchar array");
 			printf("buffer : %s\n", buffer);
-			if (send(connected_socket, buffer, file_block_length, 0) < 0) {
+			if (send(connected_socket, buffer, 9, 0) < 0) {
 				perror("Sending file failed!\n");
 		//		break;
-			}
+			}*/
 
 		memset(buffer, 0, sizeof(buffer));
 		fclose(fp);

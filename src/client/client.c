@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
 				}*/
 				socketfd = create_connection(server);
 				send_file(socketfd);
+				close(socketfd);
 			}
 		}
 		else sleep(10);

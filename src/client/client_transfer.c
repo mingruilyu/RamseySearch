@@ -22,6 +22,7 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 }
 
 void send_file(int connected_socket) {
+	printf("connected_socket: %d", connected_socket);
 	char buffer[BUFFER_SIZE], filename[250];
 
 	memset(buffer, '0', sizeof(buffer));
@@ -29,7 +30,7 @@ void send_file(int connected_socket) {
 	printf("Trying to transfer file : %s\n", filename);
 	FILE * fp = fopen(filename, "r");
 	if (fp == NULL) {
-		printf("Could not open to read!\n");
+		perror("Could not open to read!\n");
 		return;
 	}
 	else {
@@ -37,8 +38,9 @@ void send_file(int connected_socket) {
 		//printf("Entering the read while block!\n");
 		while ((file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp)) > 0) {
 			printf("file_block_length = %d\n", file_block_length);
+			printf("buffer:  %s \n", buffer);
 			if (send(connected_socket, buffer, file_block_length, 0) < 0) {
-				printf("Sending file failed!\n");
+				perror("Sending file failed!\n");
 				break;
 			}
 			memset(buffer, '0', sizeof(buffer));

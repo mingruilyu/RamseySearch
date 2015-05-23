@@ -64,17 +64,21 @@ void receive_file(int connected_socket) {
 	memset(buffer, '0', sizeof(buffer));
 
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
-	printf("receiving from server %s\n", buffer);
+	printf("Receiving from server %s\n", buffer);
 	if (length < 0) {
 		printf("Receiving data failed!\n");
 		return;
 	}
-	else if (buffer[0] == 'c') return;
+	else if (buffer[0] == 'c'){
+		printf("buffer[0] is c\n");
+		return;
+	}
 	else {
+		printf("Now starts to receive file.\n");
 		sprintf(filename, "../../file/client/old_graph");
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
-			printf("Could not open to write!\n");
+			perror("Could not open to write!\n");
 			return;
 		}
 		written_length = fwrite(buffer, sizeof(char), length, fp);
@@ -82,6 +86,7 @@ void receive_file(int connected_socket) {
 		memset(buffer, '0', BUFFER_SIZE);
 		while (true) {
 			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+			perror("recv error :");
 			if (length < 0) {
 				printf("Receiving data failed!\n");
 				break;
@@ -228,7 +233,7 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 		int connected_socket;
 		printf("\nStarts to accept!\n");
 		if ((connected_socket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) == -1) {
-			printf("Accepting failed!\n");
+			perror("Accepting failed!\n");
 			exit(1);
 		}
 		

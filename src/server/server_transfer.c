@@ -20,7 +20,8 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-void *connection_handler(void*);
+//void *connection_handler(void*);
+int create_connection(Broadcast* des);
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
 	strcpy(bc->ipAddr, ip_addr);
@@ -69,7 +70,7 @@ void send_check(int connected_socket) {
 	printf("check signal transmitted!\n\n");
 }
 
-void receive_file(int connected_socket) {
+int receive_file(int connected_socket) {
 	char buffer[BUFFER_SIZE], filename[250];
 	int written_length;
 	memset(buffer, '0', sizeof(buffer));
@@ -78,18 +79,17 @@ void receive_file(int connected_socket) {
 	printf("buffer %s", buffer);
 	if (length < 0) {
 		printf("Receiving data failed!\n");
-		return;
+		return -1;
 	}
 	else if (buffer[0] == 'c') {
-		send_file(connected_socket);
-		return;
+		return 1;
 	}
 	else {
 		sprintf(filename, "../../file/server/CE_%d/%d", gsize, collect_count ++);
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
 			printf("Could not open to write!\n");
-			return;
+			return -1;
 		}
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
@@ -106,6 +106,7 @@ void receive_file(int connected_socket) {
 		}
 		fclose(fp);
 		printf("File receiveing finished!\n\n");
+		return 0;
 	}
 }
 
@@ -309,10 +310,9 @@ void *server_listen_to_clients_handler(void* _file_name) {
 
 	pthread_t thread_id;
 	
-	struct sockandfilename sf;
-	sf.fileName = file_name;
+	int connectedSocket;
 	
-	while ((sf.connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) != 0) {
+	while ((connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) != 0) {
 		//printf("server_listen_to_clients_handler did accept!\n");
 		char incoming_ip_addr[20];
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
@@ -349,21 +349,25 @@ void *server_listen_to_clients_handler(void* _file_name) {
 			++desNum;
 		}
 
-		err = pthread_create(&thread_id, NULL, connection_handler, (void*)&sf) != 0;
+		/*err = pthread_create(&thread_id, NULL, connection_handler, (void*)&connectedSocket) != 0;
 		if (err != 0) {
 			printf("Could not create thread! errno: %d \n", errno);
 			perror("Could not create thread!");
 			continue;
 		}
-		pthread_join(thread_id, NULL);
+		pthread_join(thread_id, NULL);*/
+		int recv_result = receive_file(connectedSocket);
+		if (recv_result == -1) printf("Return -1, receive error\n");
+		else if (recv_result == 1) send_file(connectedSocket);
+		close(connectedSocket);
 	}
 	close(serv_socket);
 	pthread_exit(0);
 }
 
-void *connection_handler(void* connected_info) {
+/*void *connection_handler(void* connected_info) {
 	struct sockandfilename sock = *(struct sockandfilename*)connected_info;
-	
+	int connected_socket = 
 	int connected_sock = sock.connectedSocket;
 	
 	//printf("This is connection_handler thread. Starts to receive file.\n");
@@ -371,4 +375,30 @@ void *connection_handler(void* connected_info) {
 	
 	close(connected_sock);
 	pthread_exit(0);
+}*/
+
+int create_connection(Broadcast* des) {
+	struct sockaddr_in server_addr;
+	memset(&server_addr, '0', sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
+	if (inet_aton(des->ipAddr, &server_addr.sin_addr) <= 0) {
+		printf("Input IP is not correct!\n");
+		exit(1);
+	}
+
+	int client_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (client_socket < 0) {
+		printf("Could not create send_to_one_des socket!\n");
+		exit(1);
+	}
+
+	socklen_t server_addr_length = sizeof(server_addr);
+
+	if (connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length) < 0) {
+		printf("send_to_one_des could not connect!\n");
+		exit(1);
+	}
+	printf("Connected to the server!\n");
+	return client_socket;
 }

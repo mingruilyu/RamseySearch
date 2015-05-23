@@ -306,7 +306,14 @@ void *server_listen_to_clients_handler() {
 	
 	int connectedSocket;
 	
-	while ((connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length)) != 0) {
+	while (1) {
+		connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length));
+		perror("While loop! accept error :");
+		if (connectedSocket != 0) {
+			perror("accept error :");
+			break;
+		}
+
 		//printf("server_listen_to_clients_handler did accept!\n");
 		char incoming_ip_addr[20];
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));

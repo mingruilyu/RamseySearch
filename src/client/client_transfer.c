@@ -16,9 +16,9 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
-void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act) {
+void construct_broadcast(Broadcast* bc, const char* ip_addr, int sock, int act) {
 	strcpy(bc->ipAddr, ip_addr);
-	strcpy(bc->fileName, file_name);
+	bc->socket = sock;
 	bc->active = act;
 }
 
@@ -244,5 +244,46 @@ void *client_always_listen_to_one_handler(void* _file_name) {
 		close(connected_socket);
 	}
 	close(serv_socket);
+	pthread_exit(0);
+}
+
+int create_connection(Broadcast* des) {
+	struct sockaddr_in server_addr;
+	memset(&server_addr, '0', sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
+	if (inet_aton(des->ipAddr, &server_addr.sin_addr) <= 0) {
+		printf("Input IP is not correct!\n");
+		exit(1);
+	}
+
+	int client_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (client_socket < 0) {
+		printf("Could not create send_to_one_des socket!\n");
+		exit(1);
+	}
+
+	socklen_t server_addr_length = sizeof(server_addr);
+
+	if (connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length) < 0) {
+		printf("send_to_one_des could not connect!\n");
+		exit(1);
+	}
+	printf("Connected to the server!\n");
+	return client_socket;
+}
+
+
+void* client_listen(void* socket) {
+	int sock = *(int*)socket;
+	int err = pthread_detach(pthread_self());
+	if (err != 0) {
+		perror("Could not pthread_detach!");
+	}
+
+	while(1) {
+		receive_file(sock);
+	}
+
 	pthread_exit(0);
 }

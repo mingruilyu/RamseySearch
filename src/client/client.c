@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
 	set_port();
 
-	int err = 0, gsize;
+	int err = 0, gsize, connected_socket;
 	int *g;
 	Broadcast* server = (Broadcast*)malloc(sizeof(Broadcast));
 	construct_broadcast(server, argv[1], "DataToServer.txt", 1);
@@ -43,12 +43,21 @@ int main(int argc, char *argv[]) {
 	printf("argv[1]: %s\n", server->ipAddr);
 	printf("fileName: %s\n", server->fileName);
 	// create a listener thread
-	pthread_t sock_recv_thread_id;
-	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
-	if (err != 0) perror("Could not create client_always_listen_to_one_handler thread!");
+	
+	//err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
+	//if (err != 0) perror("Could not create client_always_listen_to_one_handler thread!");
+
 
 	// init a connection with server
-	pthread_t sock_send_thread_id;
+	int connected_socket = create_connection(&server);
+	send_check(client_socket);
+
+	pthread_t listen_thread_id;
+	err = pthread_create(&listen_thread_id, NULL, client_listen, (void*)&client_socket);
+	if (err != 0) perror("Could not create send_to_one_des thread!");
+
+	
+	/*pthread_t sock_send_thread_id;
 	err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
 	if (err != 0) perror("Could not create send_to_one_des thread!");
 
@@ -56,7 +65,7 @@ int main(int argc, char *argv[]) {
 	if (err != 0) {
 		printf("sock_thread goes wrong! %s \n", strerror(err));
 		perror("sock_thread goes wrong!");
-	}
+	}*/
 
 	while (1) {
 		if (recv_flag || one_more_flag) {
@@ -65,14 +74,17 @@ int main(int argc, char *argv[]) {
 			g = load_graph(&gsize);
 			if (search(g, gsize, new_graph_count ++, &recv_flag) == 0) {
 				one_more_flag = true;
-				err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
-				if (err != 0) perror("Could not create send_to_one_des thread!");
 
-				err = pthread_join(sock_send_thread_id, NULL);
+				send_file(client_socket);
+
+				//err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)&client_socket);
+				//if (err != 0) perror("Could not create send_to_one_des thread!");
+
+				/*err = pthread_join(sock_send_thread_id, NULL);
 				if (err != 0) {
 					printf("sock_thread goes wrong! %s \n", strerror(err));
 					perror("sock_thread goes wrong!");
-				}
+				}*/
 			}
 		}
 		else sleep(10);

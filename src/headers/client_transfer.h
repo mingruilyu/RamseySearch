@@ -7,7 +7,7 @@
 
 typedef struct broadcast {
 	char ipAddr[250];
-	char fileName[250];
+	int socket;
 	int active;
 } Broadcast;
 void construct_broadcast(Broadcast* bc, const char* ip_addr, const char* file_name, int act);

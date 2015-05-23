@@ -4,7 +4,7 @@
 
 typedef struct broadcast {
 	char ipAddr[250];
-	char fileName[250];
+	int socket;
 	int active;
 } Broadcast;
 

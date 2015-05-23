@@ -308,11 +308,11 @@ void *server_listen_to_clients_handler() {
 	
 	while (1) {
 		connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length);
-		perror("While loop! accept error :");
 		if (connectedSocket != 0) {
 			perror("accept error :");
 			break;
 		}
+		printf("connectedSocket:            %d\n", connectedSocket);
 
 		//printf("server_listen_to_clients_handler did accept!\n");
 		char incoming_ip_addr[20];

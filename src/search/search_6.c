@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 	int* node;
 	long clique_6;
 	int graph_count = 0;
+	bool forward_flag = false;
 	int stat[120][120];
 	bool people[120];
 	int hot_i, hot_j;
@@ -166,6 +167,7 @@ int main(int argc, char *argv[])
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
 				PrintGraphCopy(g, gsize, graph_count ++);
+				if(forward_flag) break;
 			}
 					// do the second round of clean up by breaking the ties
 					// since best_count is initialized to BIGCOUNT, we won't

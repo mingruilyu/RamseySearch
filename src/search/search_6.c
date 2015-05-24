@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
 			t, try_count = 0, rand_count = 0;
 	void *taboo_list, *rand_taboo_list;
 	srand(time(NULL));
-	bool backtrack_flag = false, break_flag = false, regenerate_flag = false;
-	int rand_i, rand_j;
+	bool backtrack_flag = false, break_flag = false, regenerate_flag = false, cycle_flag = false;
+	int rand_i, rand_j, last_i, last_j;
 	int last_best = 10000;
 	int rand_list[5000][2];
 	int rand_list_index = 0;
@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
 	int best_ever = BIGCOUNT + 1;
 	int* node;
 	long clique_6;
+	int graph_count = 0;
 	int stat[120][120];
 	bool people[120];
 	int hot_i, hot_j;
@@ -156,16 +157,15 @@ int main(int argc, char *argv[])
 		best_count = BIGCOUNT;	
 			// directed search to kill most of clique 7
 		CliqueCountCreateCache(g, gsize);
-		while(best_count != 0) {
+		while(true) {
 				
 			CliqueCountCreateCache(g, gsize);
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(cache_7.length == 0) {
+			if(cache_7.length == 0 && !cycle_flag) {
 				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
 				backtrack_flag = false;
-				PrintGraphCopy(g, gsize, 0);
-				break;
+				PrintGraphCopy(g, gsize, graph_count ++);
 			}
 					// do the second round of clean up by breaking the ties
 					// since best_count is initialized to BIGCOUNT, we won't
@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
           }
         }
       }*/
+
 			for(i = 0; i < gsize; i ++) {
 				for(j = i + 1; j < gsize; j ++) {
           g[i * gsize + j] = 1 - g[i * gsize + j];
@@ -206,6 +207,9 @@ int main(int argc, char *argv[])
               best_count = count;
               best_i = i;
               best_j = j;
+              cycle_flag = (i == last_i && j == last_j) ? true : false;
+
+              
 						}
 					}
           g[i * gsize + j] = 1 - g[i * gsize + j];
@@ -289,6 +293,8 @@ int main(int argc, char *argv[])
 							 g[best_i * gsize + best_j]); 
 						// keep the best flip we saw. 
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+				last_i = best_i;
+      				last_j = best_j;
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 			//	FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
 				best_count = BIGCOUNT;

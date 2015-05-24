@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
 			t, try_count = 0, rand_count = 0;
 	void *taboo_list, *rand_taboo_list;
 	srand(time(NULL));
-	bool backtrack_flag = false, break_flag = false, regenerate_flag = false, cycle_flag = false;
-	int rand_i, rand_j, last_i, last_j;
+	bool backtrack_flag = false, break_flag = false, regenerate_flag = false;
+	int rand_i, rand_j;
 	int last_best = 10000;
 	int rand_list[5000][2];
 	int rand_list_index = 0;
@@ -93,12 +93,10 @@ int main(int argc, char *argv[])
 	int best_ever = BIGCOUNT + 1;
 	int* node;
 	long clique_6;
-	int graph_count = 0;
-	bool forward_flag = false;
 	int stat[120][120];
 	bool people[120];
 	int hot_i, hot_j;
-	int edge_count;
+	int edge_count, add_count = 0, new_add;
 	best_count = BIGCOUNT;
 	if(argc == 1) { 
 		// start with graph of size 8
@@ -121,7 +119,7 @@ int main(int argc, char *argv[])
 		CliqueCountCreateCache(g, gsize);
 		best_ever = cache_7.length;
 		best_count = BIGCOUNT;
-/*		new_g = (int *) malloc((gsize + 1) 
+		new_g = (int *) malloc((gsize + 1) 
 															* (gsize + 1) * sizeof(int));
 		if(new_g == NULL) exit(1);
 		// copy the old graph into the new graph leaving 
@@ -132,7 +130,7 @@ int main(int argc, char *argv[])
 		g = new_g;
 		// randomly assigned value for last column
 		for(i = 0; i < gsize + 1; i ++) {
-			rand_no = rand() % 100;
+		/*	rand_no = rand() % 100;
 			if(rand_no > 50) {
 				new_g[i * (gsize + 1) + gsize] = 1; // last column
 				new_g[gsize * (gsize + 1) + i] = 1;	
@@ -140,9 +138,11 @@ int main(int argc, char *argv[])
 			else {
 				new_g[i * (gsize + 1) + gsize] = 0; // last column
 				new_g[gsize * (gsize + 1) + i] = 0;	
-			}
+			}*/
+			new_g[i * (gsize + 1) + gsize] = -1; // last column
 		}
 		gsize = gsize + 1;
+		PrintGraph(g, gsize);
 			// reset the taboo list for the new graph*/
 	}
 	// make a fifo to use as the taboo list
@@ -163,11 +163,37 @@ int main(int argc, char *argv[])
 			CliqueCountCreateCache(g, gsize);
 				// see how many clique 7 we have left. If there are still 
 				// a lot, we will need to clean it up.
-			if(cache_7.length == 0 && !cycle_flag) {
-				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
-				backtrack_flag = false;
-				PrintGraphCopy(g, gsize, graph_count ++);
-				if(forward_flag) break;
+			while(cache_7.length == 0) {
+//				printf("CLEAN SHOT!!!!!!!!!!!!!!!\n");
+//				backtrack_flag = false;
+//		
+				if(add_count == gsize + 1) {
+					PrintGraphCopy(g, gsize, 0);
+					add_count == 0;
+					break;
+				}
+					
+				bool found = false;
+				for(i = 0; i < cache_6.length; i ++) {
+					node = cache_6.array[i].clique_node;
+					for(j = 0; j < 6; j ++) {
+						if(g[node[j] * gsize + gsize - 1] != -1) continue;
+						else {
+							found = true;
+							if(rand() % 100 > 50)
+								g[node[j] * gsize + gsize - 1] = 0; // last column
+							else
+								g[node[j] * gsize + gsize - 1] = 1; // last column
+						}
+						add_count ++;
+						printf("clique_7 %d new_add %d add_count %d\n", cache_7.length, node[j], add_count);
+					}
+					if(found) break;
+				}
+				CliqueCountCreateCache(g, gsize);
+				FIFODelete(taboo_list);
+				taboo_list = FIFOInitEdge(TABOOSIZE);
+			//	break;
 			}
 					// do the second round of clean up by breaking the ties
 					// since best_count is initialized to BIGCOUNT, we won't
@@ -175,33 +201,10 @@ int main(int argc, char *argv[])
 			best_i = -2;	
 		//	edge_count = create_edge_stat(stat, people, gsize);
 			break_flag = false;
-			/*for(i = gsize - 2; i >= 0 && !break_flag; i --) {
-        if(people[i]) {
-          for(j = i + 1; j < gsize && !break_flag; j ++) {
-            if(stat[i][j] != 0) {
-              //printf("edge count %d i = %d j = %d \n", edge_count, i, j);
-              g[i * gsize + j] = 1 - g[i * gsize + j];
-							count = CliqueCountUseCache(g, gsize, i, j, best_count);
-			//				if(count != -1 && !FIFOFindEdgeCount(rand_taboo_list, i, j, 100) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
-							if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, 100)) {
-				//			if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, 100)) {
-                if(count < best_count) {
-                  best_count = count;
-                  best_i = i;
-                  best_j = j;
-        //          break_flag = true;
-         //         g[i * gsize + j] = 1 - g[i * gsize + j];
-          //        break;
-                }
-              }
-              g[i * gsize + j] = 1 - g[i * gsize + j];
-            }
-          }
-        }
-      }*/
-
 			for(i = 0; i < gsize; i ++) {
+				//int upperbound = (i <= add_count) ? gsize : gsize - 1;
 				for(j = i + 1; j < gsize; j ++) {
+					if(g[i * gsize + j] == -1) continue;
           g[i * gsize + j] = 1 - g[i * gsize + j];
 					count = CliqueCountUseCache(g, gsize, i, j, best_count);
 					if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
@@ -209,9 +212,6 @@ int main(int argc, char *argv[])
               best_count = count;
               best_i = i;
               best_j = j;
-              cycle_flag = (i == last_i && j == last_j) ? true : false;
-
-              
 						}
 					}
           g[i * gsize + j] = 1 - g[i * gsize + j];
@@ -295,8 +295,6 @@ int main(int argc, char *argv[])
 							 g[best_i * gsize + best_j]); 
 						// keep the best flip we saw. 
 				g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
-				last_i = best_i;
-      				last_j = best_j;
 				FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 			//	FIFOInsertEdgeCount(taboo_list, best_i, best_j, 100);
 				best_count = BIGCOUNT;

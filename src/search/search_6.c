@@ -130,6 +130,8 @@ int main(int argc, char *argv[])
 						}
 					} 
 					g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+					printf("best_count = %d, edge(%d, %d) \n", 
+							 best_count, best_i, best_j, g[best_i * gsize + best_j]);
 					FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 				}
 				PrintGraph(g, gsize);

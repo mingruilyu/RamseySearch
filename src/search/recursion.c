@@ -16,7 +16,7 @@ int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEI
 		best_count = neighbours[NEIGHBOR_SIZE-1][NEIGHBOR_PARAM-1];
 		g[i * gsize + j] = 1 - g[i * gsize + j];
 		count = CliqueCountUseCache(g, gsize, i, j, best_count);
-		if(count != -1 &&  !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+		if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 			for(k=0; k < NEIGHBOR_SIZE; k++){
 				if(count < neighbours[k][NEIGHBOR_PARAM-1]){
 					counter++;
@@ -101,6 +101,10 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     // flip current edge
     g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
     CliqueCountCreateCache(g, gsize);
+		if(cache_7.length > best_ever + 5) {
+    	g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
+			return to_return;
+		}
 		printf(" RECURSION gsize %d in level %d edge (%d, %d) best_ever %d current_count %d \n", gsize, level, cur_i, cur_j, best_ever, cache_7.length);
     //check whether this flip itself will reduce clique 7 count
     if(cache_7.length < best_ever) {

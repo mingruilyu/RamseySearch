@@ -32,7 +32,7 @@ void send_file(int connected_socket) {
 		int file_block_length = 0;
         memset(buffer, '0', sizeof(buffer));
 		printf("sending graph %d\n", send_count % GRAPH_COLLECT_NO);
-		sprintf(filename, "../../file/server/CE_%d/%d", gsize - 1, send_count ++);
+		sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_count ++);
 		printf("reading file %s\n", filename);
 		FILE * fp = fopen(filename, "r");
 		if (fp == NULL) {
@@ -71,13 +71,12 @@ int receive_file(int connected_socket) {
 		printf("Receiving data failed!\n");
 		return RECV_RETURN_ERROR;
 	}
-	else if (buffer[0] == 'c') {
-		return RECV_RETURN_SEND_GRAPH;
-	}
 	else if (buffer[0] == 'r') {
 		recv_count++;
-		if (send_count == GRAPH_COLLECT_NO && recv_count == GRAPH_COLLECT_NO)
+		if (send_count == max_graph_count && recv_count == max_graph_count) {
+			max_graph_no = collect_count;
 			return RECV_RETURN_BROADCASTNEW;
+		}
 		else
 			return RECV_RETURN_SEND_GRAPH;
 	}
@@ -304,14 +303,14 @@ void *server_listen_to_clients_handler() {
 			ReadGraph("../../file/server/temp/temp", &g, &gsize);
 			count = CliqueCount(g, gsize);
 			if(count == 0) {
-				sprintf(des_file, "../../file/server/ce_%d/ce_%d", gsize, collect_count);
+				sprintf(des_file, "../../file/server/ce_%d/%d", gsize, collect_count);
 				copy("../../file/server/temp/temp", des_file);
-				collect_count ++;
+				sprintf(des_file, "../../file/server/seed_%d/%d", clique_count % 2, collect_count ++);
+				copy("../../file/server/temp/temp", des_file);
 			}
 			else if(count <= clique_count){
-				sprintf(des_file, "../../file/server/seed/cc_%d", collect_count);
+				sprintf(des_file, "../../file/server/seed_%d/%d", clique_count % 2, collect_count ++);
 				copy("../../file/server/temp/temp", des_file);
-				collect_count ++;
 			} // else leave the received file there because it is obsolete
 		}
 		printf("finish receivning\n");
@@ -348,6 +347,7 @@ int create_connection(Broadcast* des) {
 }
 
 void broadcast_graph() {
+	TODO: delete send directory
 	int i, err;
 	collect_count = 0;
 	recv_count = 0;

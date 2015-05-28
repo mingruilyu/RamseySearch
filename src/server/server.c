@@ -12,6 +12,7 @@
 #include "server_transfer.h"
 #include "search.h"
 int desNum = 0;
+int max_graph_no;
 int recv_count = 0;
 int send_count = 0;
 int collect_count = 0;
@@ -39,10 +40,17 @@ int main(int argc, char* argv[]) {
 
 	while (1) {
 		if (collect_count >= GRAPH_COLLECT_NO || start_flag) {
-			if(start_flag) start_flag = false;
-			sprintf(dir_name, "../../file/server/CE_%d",  ++ gsize);
-			mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-			broadcast_graph();
+			if(clique_count == 0){
+				clique_count = RECURSION_THRESHOLD - 1;
+				sprintf(dir_name, "../../file/server/ce_%d",  ++ gsize);
+				mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+				broadcast_graph();
+			} else {
+				clique_count --;
+			}
+		//	if(start_flag) start_flag = false;
+			max_graph_no = GRAPH_COLLECT_NO;
+			
 		}
 		else {
 			sleep(5);

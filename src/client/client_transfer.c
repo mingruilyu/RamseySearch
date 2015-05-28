@@ -127,13 +127,6 @@ void *client_always_listen_to_one_handler() {
 	//IP port
 	serv_addr.sin_port = htons(CLIENT_LISTEN_PORT);
 	//IP address
-	/*struct sockaddr_in {
-	short sin_family;
-	unsigned short sin_port;
-	struct in_addr sin_addr;
-	char sin_zero[8];
-	};
-	*/
 	//The in_addr structure represents an IPv4 Internet address.
 	/*If an application does not care what local address is assigned,
 	specify the constant value INADDR_ANY for an IPv4 local address.

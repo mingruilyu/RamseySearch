@@ -61,11 +61,11 @@ int send_file(char* ip_addr) {
 	return 0;
 }
 
-void send_check(char* ip_addr) {
+void send_request(char* ip_addr) {
 	int connected_socket = create_connection(ip_addr);
 	char buffer[BUFFER_SIZE];
 	memset(buffer, 0, sizeof(buffer));
-	buffer[0] = 'c';
+	buffer[0] = 'r';
 	if (send(connected_socket, buffer, 1, 0) < 0)
 		printf("Sending check signal failed!\n");
 	printf("check signal transmitted!\n\n");

@@ -373,3 +373,34 @@ void broadcast_graph() {
 		free(tmp);
 	}
 }
+
+void copy(char* source_file, char* target_file) {
+	char ch;
+	FILE* source, *target;
+
+	printf("Enter name of file to copy\n");
+
+	source = fopen(source_file, "r");
+
+	if (source == NULL)
+	{
+		printf("Press any key to exit...\n");
+		return;
+	}
+
+	printf("Enter name of target file\n");
+
+	target = fopen(target_file, "w");
+	if (target == NULL) {
+		perror("Could not open to write! fopen error: ");
+		return;
+	}
+
+	while ((ch = fgetc(source)) != EOF)
+		fputc(ch, target);
+
+	printf("File copied successfully.\n");
+
+	fclose(source);
+	fclose(target);
+}

@@ -3,7 +3,7 @@
 #include "fifo.h"
 #include "clique_count.h"
 #include "client_transfer.h"
-
+#include "graph.h"
 #define RECURSION_RETURN_FAIL    -1
 #define RECURSION_RETURN_SUCCESS -2
 #define RECURSION_RETURN_TERMINATION -3
@@ -100,8 +100,8 @@ int create_edge_stat( int gsize) {
 int recursiveSearch(int* g, int gsize, int level, int best_ever,
                     int cur_i, int cur_j, void *taboo_list) {
 	int neighbor[NEIGHBOR_SIZE][3];
-  int k, nb_i, nb_j, i, j, best_i, best_j, best_count, edge_count, count;
-  int to_return = RECURSION_RETURN_FAIL, return_result;
+  int k, nb_i, nb_j, i, j, best_i, best_j, best_count, count;
+  int to_return = RECURSION_RETURN_FAIL;
 	if(recv_flag == true) return RECURSION_RETURN_TERMINATION; 
     // flip current edge
  	g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
@@ -119,7 +119,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
 	}
   // check upon this flip, is there any chance we may reduce
   // clique 7 count by flip another edge
-  edge_count = create_edge_stat(gsize);
+  create_edge_stat(gsize);
   best_count = best_ever;
   for(i = 0; i < gsize; i ++) {
 		if(vertex[i]) {

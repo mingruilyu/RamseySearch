@@ -13,7 +13,8 @@
 
 #include <pthread.h>
 #include "server_transfer.h"
-
+#include "clique_count.h"
+#include "graph.h"
 #define BUFFER_SIZE 1024
 #define PORT 8000
 
@@ -80,7 +81,7 @@ int receive_file(int connected_socket) {
 			return RECV_RETURN_SEND_GRAPH;
 	}
 	else {
-		sprintf(filename, "../../file/server/CE_%d/%d", gsize, collect_count ++);
+		sprintf(filename, "../../file/server/temp/temp");
 		printf("receiving filename: %s \n", filename);
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
@@ -90,15 +91,9 @@ int receive_file(int connected_socket) {
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, '0', BUFFER_SIZE);
-		//printf("ENTERING WHILE!!!!!!!!!\n");
 		while (1) {
-			//printf("FISRT COMMAND OF WHILE  before recv!!!!!!!!\n");
 			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
-			//printf("After recv!!!!!!!!!!!!!!!!!!!\n");
- 			if(!length) {
-				//printf("length = 0!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-				break;
-			}
+ 			if(!length) break;
 			else if (length < 0) {
 				perror("Receiving data failed! recv error: ");
 				return RECV_RETURN_ERROR;
@@ -109,7 +104,6 @@ int receive_file(int connected_socket) {
 			printf("written length: %d\n", written_length);
 			if (written_length < length) perror("File writing failed! :");
 			memset(buffer, '0', BUFFER_SIZE);
-			//printf("LAST command of while!!!!!!!!!!!!\n");
 		}
 		fclose(fp);
 		printf("File receiveing finished!\n\n");
@@ -209,10 +203,13 @@ void *send_to_des(void* _des) {
 }
 
 void *server_listen_to_clients_handler() {
-	int err = pthread_detach(pthread_self());
-	if (err != 0) {
-		perror("Could not pthread_detach!");
-	}
+	int *g;
+	char des_file[250], incoming_ip_addr[20];
+	char* existing_ip_addr;
+	int connectedSocket, gsize, count, i, exist, 
+			serv_socket = 0, recv_result,
+			err = pthread_detach(pthread_self());
+	if (err != 0) perror("Could not pthread_detach!");
 	
 	int iResult = 0;
 	
@@ -230,7 +227,6 @@ void *server_listen_to_clients_handler() {
 	*/
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	int serv_socket = 0;
 	//If no error occurs, socket returns a descriptor referencing the
 	//new socket. Otherwise, a value of INVALID_SOCKET is returned, and a specific error code can be retrieved by calling WSAGetLastError.
 	serv_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -258,10 +254,6 @@ void *server_listen_to_clients_handler() {
 	memset(&client_addr, '0', sizeof(client_addr));
 	socklen_t length = sizeof(client_addr);
 
-	//printf("\nserver_listen_to_clients_handler starts to accept!\n");
-	
-	int connectedSocket;
-	
 	while (1) {
 		printf("goint to waiting\n");
 		connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length);
@@ -272,13 +264,11 @@ void *server_listen_to_clients_handler() {
 		printf("connectedSocket:            %d\n", connectedSocket);
 
 		//printf("server_listen_to_clients_handler did accept!\n");
-		char incoming_ip_addr[20];
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
 		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
 		
-		int exist = 0, i;
 		for (i = 0; i < desNum; ++i) {
-			char* existing_ip_addr = broadcast_list[i]->ipAddr;
+			existing_ip_addr = broadcast_list[i]->ipAddr;
 			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {
 				printf("This IP is already in the list!\n");
 				printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
@@ -302,17 +292,30 @@ void *server_listen_to_clients_handler() {
 		}
 
 		printf("Trying to recv!\n");
-		int recv_result = receive_file(connectedSocket);
+		recv_result = receive_file(connectedSocket);
 		if (recv_result == RECV_RETURN_ERROR) 
 			printf("Return error, receive error\n");
 		else if (recv_result == RECV_RETURN_SEND_GRAPH)
 			send_file(connectedSocket);
 		else if (recv_result == RECV_RETURN_BROADCASTNEW)
 			broadcast_graph();
+		else {
+			ReadGraph("../../file/server/temp/temp", &g, &gsize);
+			count = CliqueCount(g, gsize);
+			if(count == 0) {
+				sprintf(des_file, "../../file/server/ce_%d/ce_%d", gsize, collect_count);
+				copy("../../file/server/temp/temp", des_file);
+				collect_count ++;
+			}
+			else if(count <= clique_count){
+				sprintf(des_file, "../../file/server/seed/cc_%d", collect_count);
+				copy("../../file/server/temp/temp", des_file);
+				collect_count ++;
+			} // else leave the received file there because it is obsolete
+		}
 		printf("finish receivning\n");
 		close(connectedSocket);
 	}
-	printf("out of loop\n");
 	close(serv_socket);
 	pthread_exit(0);
 }

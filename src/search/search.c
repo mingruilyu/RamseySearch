@@ -8,6 +8,7 @@
 #include "clique_count.h"
 #include "search.h"
 #include "graph.h"
+#include "recursion.h"
 #define TABOOSIZE (500)
 #define BIGCOUNT (1000)
 #define RECURSION_THRESHOLD (50)
@@ -33,7 +34,7 @@ int search(int *g, int gsize) {
 	if(cache_7.length == 0) {
 		best_ever = RECURSION_THRESHOLD - 1;
 		printf("Eureka! Counter-example found!\n");
-		new_g = (int *) malloc((*gsize + 1) * (*gsize + 1) * sizeof(int));
+		new_g = (int *) malloc((gsize + 1) * (gsize + 1) * sizeof(int));
 		// copy the old graph into the new graph leaving 
 		// the last row and last column alone
 		CopyGraph(g, *gsize, new_g, *gsize + 1);
@@ -41,17 +42,17 @@ int search(int *g, int gsize) {
 		free(g);
 		g = new_g;
 		// randomly assigned value for last column
-		for(i = 0; i < *gsize + 1; i ++) {
+		for(i = 0; i < gsize + 1; i ++) {
 			if(rand() % 100 > 50) {
-				new_g[i * (*gsize + 1) + *gsize] = 1; // last column
-				new_g[*gsize * (*gsize + 1) + i] = 1;	
+				new_g[i * (gsize + 1) + gsize] = 1; // last column
+				new_g[gsize * (gsize + 1) + i] = 1;	
 			}
 			else {
-				new_g[i * (*gsize + 1) + *gsize] = 0; // last column
-				new_g[*gsize * (*gsize + 1) + i] = 0;	
+				new_g[i * (gsize + 1) + gsize] = 0; // last column
+				new_g[gsize * (gsize + 1) + i] = 0;	
 			}
 		}
-		*gsize = *gsize + 1;
+		gsize = gsize + 1;
 	} else 
 		best_ever = cache_7.length - 1;
 	CliqueCountCreateCache(g, gsize);
@@ -82,7 +83,7 @@ int search(int *g, int gsize) {
 	}
 
 	if(cache_7.length <= best_ever) {
-		PrintGraphNew(g, gsize);
+		PrintGraphNew(g, gsize, new_graph_count);
 		send_file();
 		return (0);
 	}

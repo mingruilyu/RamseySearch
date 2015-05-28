@@ -11,13 +11,13 @@
 #include <pthread.h>
 #include "server_transfer.h"
 #include "search.h"
-
+#include "recursion.h"
 int desNum = 0;
 int recv_count = 0;
 int send_count = 0;
 int collect_count = 0;
 int gsize = 80;
-
+int clique_count; // the clique count of the seeds we are currently waiting for
 struct broadcast* broadcast_list[100];
 
 void broadcast_graph();
@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
 	char dir_name[250];
 	int p, err = 0;
 	bool start_flag = true;
+	clique_count = RECURSION_THRESHOLD - 1;
 	// initialize server
 	memset(&broadcast_list, '0', sizeof(broadcast_list));
 	for (p = 0; p < 100; ++ p)
@@ -51,6 +52,5 @@ int main(int argc, char* argv[]) {
 			printf("current maximum counterexample %d\n", gsize - 1);
 		}
 	}
-
 	return 0;
 }

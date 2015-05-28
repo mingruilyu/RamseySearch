@@ -9,9 +9,9 @@
 #include "search.h"
 #include "graph.h"
 #include "recursion.h"
+#include "client_transfer.h"
 #define TABOOSIZE (500)
 #define BIGCOUNT (1000)
-#define RECURSION_THRESHOLD (50)
 /*
  * example of very simple search for R(7, 7) counter 
  * examples starts with a small randomized graph and 
@@ -37,7 +37,7 @@ int search(int *g, int gsize) {
 		new_g = (int *) malloc((gsize + 1) * (gsize + 1) * sizeof(int));
 		// copy the old graph into the new graph leaving 
 		// the last row and last column alone
-		CopyGraph(g, *gsize, new_g, *gsize + 1);
+		CopyGraph(g, gsize, new_g, gsize + 1);
 		// throw away the old graph and make new one 
 		free(g);
 		g = new_g;
@@ -84,7 +84,7 @@ int search(int *g, int gsize) {
 
 	if(cache_7.length <= best_ever) {
 		PrintGraphNew(g, gsize, new_graph_count);
-		send_file();
+		send_file(ip_addr);
 		return (0);
 	}
 	for(i = 0; i < gsize; i ++) {

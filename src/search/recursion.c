@@ -4,10 +4,11 @@
 #include "clique_count.h"
 #include "client_transfer.h"
 #include "graph.h"
+#include <stdio.h>
 #define RECURSION_RETURN_FAIL    -1
 #define RECURSION_RETURN_SUCCESS -2
 #define RECURSION_RETURN_TERMINATION -3
-
+extern bool recv_flag;
 int edges[200][200];
 bool vertex[200];
 int findNeighbours(int* g, int gsize, int cur_i, int cur_j, int neighbours[][NEIGHBOR_PARAM], void *taboo_list){
@@ -147,7 +148,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
     FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
     printf("best_count = %d, edge(%d, %d) \n",
-           best_count, best_i, best_j, g[best_i * gsize + best_j]);
+           best_count, best_i, best_j);
     return best_count;
   }
   

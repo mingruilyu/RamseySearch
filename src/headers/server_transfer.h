@@ -32,10 +32,13 @@ int create_connection(Broadcast*);
 
 void broadcast_graph();
 
+
+
 extern struct broadcast* broadcast_list[100];
 extern int desNum;
 extern int recv_count;
 extern int send_count;
 extern int collect_count;
 extern int gsize;
+extern int clique_count;
 #endif

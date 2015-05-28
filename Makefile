@@ -1,6 +1,5 @@
 SERVER_SRC_DIRS=\
 src/utils \
-src/search \
 src/server
 
 CLIENT_SRC_DIRS=\

@@ -21,6 +21,7 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
+void copy(char* source_file, char* target_file);
 void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	strcpy(bc->ipAddr, ip_addr);
 	bc->active = act;
@@ -378,7 +379,6 @@ void copy(char* source_file, char* target_file) {
 	char ch;
 	FILE* source, *target;
 
-	printf("Enter name of file to copy\n");
 
 	source = fopen(source_file, "r");
 
@@ -387,8 +387,6 @@ void copy(char* source_file, char* target_file) {
 		printf("Press any key to exit...\n");
 		return;
 	}
-
-	printf("Enter name of target file\n");
 
 	target = fopen(target_file, "w");
 	if (target == NULL) {

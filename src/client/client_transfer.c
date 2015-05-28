@@ -78,44 +78,31 @@ void receive_file(int connected_socket) {
 	int written_length;
 	memset(buffer, 0, sizeof(buffer));
 
-	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+	int length;
 	printf("Receiving from server %s\n", buffer);
-	if (length < 0) {
-		printf("Receiving data failed!\n");
+	printf("Now starts to receive file.\n");
+	sprintf(filename, "../../file/client/old_graph");
+	FILE * fp = fopen(filename, "w");
+	if (fp == NULL) {
+		perror("Could not open to write!\n");
 		return;
 	}
-	else if (buffer[0] == 'c'){
-		printf("buffer[0] is c\n");
-		return;
-	}
-	else {
-		printf("Now starts to receive file.\n");
-		sprintf(filename, "../../file/client/old_graph");
-		FILE * fp = fopen(filename, "w");
-		if (fp == NULL) {
-			perror("Could not open to write!\n");
-			return;
+	while (true) {
+		length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+		perror("recv error :");
+		if (length < 0) {
+			printf("Receiving data failed!\n");
+			break;
 		}
+		if (length == 0) break;
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
 		memset(buffer, 0, BUFFER_SIZE);
-		while (true) {
-			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
-			perror("recv error :");
-			if (length < 0) {
-				printf("Receiving data failed!\n");
-				break;
-			}
-			if (length == 0) break;
-			written_length = fwrite(buffer, sizeof(char), length, fp);
-			if (written_length < length) printf("File writing failed!\n");
-			memset(buffer, 0, BUFFER_SIZE);
-		}
-		fclose(fp);
-		recv_flag = true;
-		new_graph_count = 0;
-		printf("File receiveing finished!\n\n");
 	}
+	fclose(fp);
+	recv_flag = true;
+	new_graph_count = 0;
+	printf("File receiveing finished!\n\n");
 }
 
 void set_port() {

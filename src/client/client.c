@@ -23,10 +23,8 @@ start_routine().
 #include <pthread.h>
 
 bool recv_flag = false;
-bool first_connection = true;
 int new_graph_count = 0;
-int one_more_flag = false;
-
+char *ip_addr;
 int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		printf("You should input server IP address only!\n");
@@ -37,44 +35,21 @@ int main(int argc, char *argv[]) {
 
 	int err = 0, gsize;
 	int *g;
-	char *ip_addr = argv[1];
+	ip_addr = argv[1];
 
 	printf("IP_ADDR: %s\n", ip_addr);
 	// create a listener thread
 	pthread_t sock_recv_thread_id;
 	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
 	if (err != 0) perror("Could not create client_always_listen_to_one_handler thread!");
-
-	/*// init a connection with server
-	pthread_t sock_send_thread_id;
-	err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
-	if (err != 0) perror("Could not create send_to_one_des thread!");
-
-	err = pthread_join(sock_send_thread_id, NULL);
-	if (err != 0) {
-		printf("sock_thread goes wrong! %s \n", strerror(err));
-		perror("sock_thread goes wrong!");
-	}*/
+	// init a connection with server
 	send_check(ip_addr);
 	while (1) {
-		if (recv_flag || one_more_flag) {
-			if (one_more_flag) one_more_flag = false;
-			else recv_flag = false;
+		if (recv_flag) {
+			recv_flag = false;
 			g = load_graph(&gsize);
-			if (search(g, gsize, new_graph_count, &recv_flag) == 0) {
-				one_more_flag = true;
-				/*err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)server);
-				if (err != 0) perror("Could not create send_to_one_des thread!");
-
-				err = pthread_join(sock_send_thread_id, NULL);
-				if (err != 0) {
-					printf("sock_thread goes wrong! %s \n", strerror(err));
-					perror("sock_thread goes wrong!");
-				}*/
-				if(send_file(ip_addr) != 0) {
-					printf("Failed to send graph!\n");
-				}
-			}
+			search(g, gsize);
+			send_request();
 		}
 		else sleep(10);
 	}

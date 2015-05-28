@@ -5,7 +5,7 @@
 #define BUFFER_SIZE 1024
 #define PORT 8000
 
-int send_file(char *ip_addr);
+int send_file();
 
 void send_check(char *ip_addr);
 
@@ -18,8 +18,7 @@ void *client_always_listen_to_one_handler();
 int create_connection(char *ip_addr);
 
 extern bool recv_flag;
-extern bool first_connection;
 extern int new_graph_count;
-extern int one_more_flag;
+extern char *ip_addr;
 
 #endif

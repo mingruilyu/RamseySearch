@@ -8,8 +8,7 @@
 #define MAXSIZE (541)
 void PrintGraphNew(int *g, int gsize, int new_graph_count)
 {
-	int i;
-	int j;
+	int i, j;
 	char file_name[100];
 	sprintf(file_name, "../../file/client/new_graph_%d", new_graph_count);
 	FILE* fd = fopen(file_name, "w");

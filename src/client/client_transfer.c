@@ -68,9 +68,7 @@ void send_check(char* ip_addr) {
 	buffer[0] = 'c';
 	if (send(connected_socket, buffer, 1, 0) < 0)
 		printf("Sending check signal failed!\n");
-	first_connection = false;
 	printf("check signal transmitted!\n\n");
-	
 	receive_file(connected_socket);
 	close(connected_socket);
 }
@@ -125,64 +123,6 @@ void set_port() {
 	SERVER_LISTEN_PORT = PORT;
 	CLIENT_LISTEN_PORT = PORT;
 }
-
-/*void *send_to_one_des(void* _des) {
-	struct broadcast* des = (struct broadcast*)_des;
-	
-	char* ip_addr = des->ipAddr;
-
-	//printf("des->ipAddr: %s\n", ip_addr);
-	//printf("des->fileName: %s\n", file_name);
-	
-	int iResult = 0;
-
-	struct sockaddr_in client_addr;
-	memset(&client_addr, '0', sizeof(client_addr));
-	client_addr.sin_family = AF_INET;
-	client_addr.sin_port = htons(0);
-	client_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	int client_socket = 0;
-	client_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (client_socket < 0) {
-		printf("Could not create send_to_one_des socket!\n");
-		exit(1);
-	}
-	//printf("send_to_one_des socket created!\n");
-
-	iResult = bind(client_socket, (struct sockaddr*)&client_addr, sizeof(client_addr));
-	if (iResult != 0) {
-		perror("Could not bind send_to_one_des socket!\n");
-		exit(1);
-	}
-	//printf("send_to_one_des socket bounded!\n");
-
-	struct sockaddr_in server_addr;
-	memset(&server_addr, '0', sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
-
-	if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
-		printf("Input IP is not correct!\n");
-		exit(1);
-	}
-
-	socklen_t server_addr_length = sizeof(server_addr);
-
-	iResult = connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length);
-	if (iResult != 0) {
-		printf("send_to_one_des could not connect!\n");
-		exit(1);
-	}
-	//printf("send_to_one_des connected!\n");
-	if (first_connection == true)
-		send_check(client_socket);
-	else
-		send_file(client_socket);
-	
-	close(client_socket);
-	pthread_exit(0);
-}*/
 
 void *client_always_listen_to_one_handler() {
 	int err = pthread_detach(pthread_self());

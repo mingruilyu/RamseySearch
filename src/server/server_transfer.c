@@ -29,13 +29,13 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	bc->active = act;
 }
 
-void send_file(int connected_socket, bool mode) {
+void send_file(int connected_socket, bool search_mode, int send_mode) {
 		char buffer[BUFFER_SIZE], filename[250];
 		int file_block_length = 0, send_no;
 		memset(buffer, 0, sizeof(buffer));
 		
 		printf("sending clique_count %d\n", clique_count);	
-		if (mode == SEARCH_MODE_DEPTH_FIRST)
+		if (search_mode == SEARCH_MODE_DEPTH_FIRST)
 			buffer[0] = 'd';
 		else
 			buffer[0] = 'b';
@@ -56,19 +56,22 @@ void send_file(int connected_socket, bool mode) {
 		
 		printf("sending graph %d\n", send_count % GRAPH_COLLECT_NO);
 
-		if (mode == SEARCH_MODE_DEPTH_FIRST && collect_count == 0) {
-			send_no = rand() % GRAPH_COLLECT_NO;
-			sprintf(filename, "../../file/server/seed_%d/%d", clique_count % 2, send_no);
-			printf("sending %d graph from last seed dir\n", send_no);
-		}
-		else if (mode == SEARCH_MODE_DEPTH_FIRST) {
+		switch(send_mode) {
+		case BROADCAST_RANDOM_RESTART:
 			send_no = rand() % GRAPH_COLLECT_NO;
 			sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_no);
-			printf("sending %d graph from current seed dir\n", send_no);
-		}
-		else 
+			printf("RESTARTING, sending %d graph from last seed dir\n", send_no);
+			break;
+		case BROADCAST_RANDOM_CONTINUE:
+			send_no = rand() % GRAPH_COLLECT_NO;
+			sprintf(filename, "../../file/server/seed_%d/%d", clique_count % 2, send_no);
+			printf("CONTINUING, sending %d graph from current seed dir\n", send_no);
+			break;
+		case BROADCAST_ORDER:
 			sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_count ++);
-
+			printf("NEW, sending %d graph from current seed dir\n", send_no);
+			break;
+		}
 		printf("reading file %s\n", filename);
 		
 		FILE * fp = fopen(filename, "r");
@@ -158,7 +161,7 @@ void set_port() {
 	CLIENT_LISTEN_PORT = PORT;
 }
 
-void *send_to_one_des(void* _des) {
+/*void *send_to_one_des(void* _des) {
 	struct broadcast* des = (struct broadcast*)_des;
 
 	char* ip_addr = des->ipAddr;
@@ -191,11 +194,11 @@ void *send_to_one_des(void* _des) {
 	}
 	//printf("send_to_one_des connected!\n");
 
-	send_file(client_socket, SEARCH_MODE_BREADTH_FIRST);
+	send_file(client_socket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 
 	close(client_socket);
 	pthread_exit(0);
-}
+}*/
 
 void *send_to_des(void* _des) {
 	struct broadcast** des_list = (struct broadcast **)_des;
@@ -250,43 +253,44 @@ int create_connection(Broadcast* des) {
 	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
 	if (inet_aton(des->ipAddr, &server_addr.sin_addr) <= 0) {
 		printf("Input IP is not correct!\n");
-		exit(1);
+		return -1;
 	}
 
 	int client_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (client_socket < 0) {
 		printf("Could not create send_to_one_des socket!\n");
-		exit(1);
+		return -1;
 	}
 
 	socklen_t server_addr_length = sizeof(server_addr);
 
 	if (connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length) < 0) {
 		printf("send_to_one_des could not connect!\n");
-		exit(1);
+		return -1;
 	}
 	printf("Connected to the server!\n");
 	return client_socket;
 }
 
-void broadcast_graph() {
-	char directory[250];
-	sprintf(directory, "../../file/server/seed_%d", (clique_count + 1) % 2);
-	delete_graph(directory);
-
-	int i, err;
+void broadcast_graph(bool search_mode, int broadcast_type) {
+	int i, socket;
 	collect_count = 0;
 	recv_count = 0;
+	send_count = 0;
 	for (i = 0; i < desNum; i++) {
 		int is_active = (*(broadcast_list + i))->active;
 		if (is_active == -1) continue;
 
 		char* ip_addr = (*(broadcast_list + i))->ipAddr;
-
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
 		construct_broadcast(tmp, ip_addr, 1);
-
-		printf("ip_addr: %s\n", ip_addr);
+		socket = create_connection(tmp);
+		if(socket != -1) 
+			send_file(socket, search_mode, broadcast_type);
+		else {
+			printf("connect fail!\n");
+		}
+/*		printf("ip_addr: %s\n", ip_addr);
 
 		pthread_t sock_send_thread_id;
 		err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)tmp);
@@ -297,7 +301,8 @@ void broadcast_graph() {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
 		}
-		free(tmp);
+		free(tmp);*/
+		
 	}
 }
 

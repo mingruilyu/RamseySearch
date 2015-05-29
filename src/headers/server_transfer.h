@@ -7,7 +7,9 @@
 #define RECV_RETURN_SEND_GRAPH_BREADTH_FIRST 2
 #define RECV_RETURN_WRITE_GRAPH 3
 #define RECV_RETURN_ERROR 4
-
+#define BROADCAST_RANDOM_RESTART 1
+#define BROADCAST_RANDOM_CONTINUE 2
+#define BROADCAST_ORDER	3
 #define GRAPH_COLLECT_NO 10
 
 extern int SERVER_LISTEN_PORT;
@@ -19,7 +21,7 @@ typedef struct broadcast {
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, int act);
 
-void send_file(int connected_socket, bool mode);
+void send_file(int connected_socket, bool search_mode, int send_mode);
 
 int receive_file(int connected_socket);
 
@@ -33,9 +35,10 @@ void *server_listen_to_clients_handler();
 
 int create_connection(Broadcast*);
 
-void broadcast_graph();
+void broadcast_graph(bool search_type, int broadcast_type);
 
 void copy(char*, char*);
+void delete_graph(char* send_dir);
 
 extern struct broadcast* broadcast_list[100];
 extern int desNum;

@@ -23,7 +23,7 @@ int clique_count = 49; // the clique count of the seeds we are currently waiting
 struct broadcast* broadcast_list[100];
 int SERVER_LISTEN_PORT = -1;
 
-void broadcast_graph();
+void broadcast_graph(bool search_mode, int broadcast_type);
 void *server_print_handler();
 
 int main(int argc, char* argv[]) {
@@ -136,10 +136,14 @@ int main(int argc, char* argv[]) {
 		recv_result = receive_file(connectedSocket);
 		if (recv_result == RECV_RETURN_ERROR)
 			printf("Return error, receive error\n");
-		else if (recv_result == RECV_RETURN_SEND_GRAPH_DEPTH_FIRST)
-			send_file(connectedSocket, SEARCH_MODE_DEPTH_FIRST);
+		else if (recv_result == RECV_RETURN_SEND_GRAPH_DEPTH_FIRST) {
+			if (collect_count == 0) 
+				broadcast_graph(SEARCH_MODE_DEPTH_FIRST, BROADCAST_RANDOM_RESTART);
+			else
+				broadcast_graph(SEARCH_MODE_DEPTH_FIRST, BROADCAST_RANDOM_CONTINUE);
+		}
 		else if (recv_result == RECV_RETURN_SEND_GRAPH_BREADTH_FIRST)
-			send_file(connectedSocket, SEARCH_MODE_BREADTH_FIRST);
+			send_file(connectedSocket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 		else {
 			ReadGraph("../../file/server/temp/temp", &g, &gsize);
 			count = CliqueCount(g, gsize);
@@ -161,7 +165,11 @@ int main(int argc, char* argv[]) {
 					mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 				}
 				else clique_count--;
-				broadcast_graph();
+				// clean seed file
+				sprintf(dir_name, "../../file/server/seed_%d", clique_count % 2);
+				printf("cleaning %s\n", dir_name);
+				delete_graph(dir_name);
+				broadcast_graph(SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 			}
 		}
 		printf("finish receivning\n");

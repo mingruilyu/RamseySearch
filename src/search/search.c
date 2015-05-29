@@ -21,7 +21,7 @@
  * encoding of and edge (i, j) + clique_count
  */
 
-int search(int *g, int gsize) {
+int BFsearch(int *g, int gsize) {
 	int count, i, j, best_count = BIGCOUNT, best_ever,
 			best_i, best_j;
 	int *new_g;
@@ -103,6 +103,51 @@ int search(int *g, int gsize) {
 					best_i, best_j, taboo_list);
 	return (0);
 }
+
+int DFsearch(int *g, int gsize, int new_graph_count, bool *recv_flag) {
+	int count, i, j, best_count = BIGCOUNT, best_i, best_j;
+	void *taboo_list = FIFOInitEdge(TABOOSIZE);
+	while(!*recv_flag) {
+		CliqueCountCreateCache(g, gsize);
+		// see how many clique 7 we have left. If there are still 
+		// a lot, we will need to clean it up.
+		if(cache_7.length == 0) {
+			printf("Eureka! Counter-example found!\n");
+			FIFODelete(taboo_list);
+			PrintGraphNew(g, gsize, new_graph_count);
+			free(g);
+			return (0);
+		}
+		// do the second round of clean up by breaking the ties
+		// since best_count is initialized to BIGCOUNT, we won't
+		// have 
+		for(i = 0; i < gsize; i ++) {
+			for(j = i + 1; j < gsize; j ++) {
+        g[i * gsize + j] = 1 - g[i * gsize + j];
+				count = CliqueCountUseCache(g, gsize, i, j, best_count);
+				if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+  	      if(count < best_count) {
+    	      best_count = count;
+            best_i = i;
+            best_j = j;
+					}
+				}
+        g[i * gsize + j] = 1 - g[i * gsize + j];
+			}
+		} 
+							
+		printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+					 gsize, cache_6.length, best_count, best_i, best_j, 
+					 g[best_i * gsize + best_j]); 
+		// keep the best flip we saw. 
+		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+		FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
+		best_count = BIGCOUNT;
+		PrintGraph(g, gsize);
+	}
+	return (-1);
+}
+
 
 int *load_graph(int* gsize) {
 	int *g;

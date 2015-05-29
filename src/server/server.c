@@ -169,10 +169,14 @@ int main(int argc, char* argv[]) {
 
 void *server_print_handler() {
 	while (1) {
-		printf("current received graphs: %d\n", collect_count);
+		printf("recv_count: %d\n", recv_count);
+		printf("send_count: %d\n", send_count);
+		printf("clique_count: %d\n", clique_count);
 		printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
 		printf("current maximum counterexample %d\n", gsize - 1);
+		sleep(5);
 	}
+
 	pthread_exit(0);
 }
 

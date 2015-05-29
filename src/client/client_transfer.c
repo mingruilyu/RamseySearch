@@ -86,12 +86,29 @@ void send_request(char* ip_addr) {
 }
 
 void receive_file(int connected_socket) {
-	char buffer[BUFFER_SIZE], filename[250];
-	int written_length;
+	const char buffer[BUFFER_SIZE], filename[250];
+	int written_length, length;
 	memset(buffer, 0, sizeof(buffer));
 
-	int length;
 	printf("Receiving from server %s\n", buffer);
+	// receive search mode
+	length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+	if(length <= 0) return;
+	if(buffer[0] == 'd') {
+		search_mode = SEARCH_MODE_DEPTH_FIRST;
+		printf("Received DF search instruction!\n");
+	}
+	else if(buffer[0] == 'b') {
+		search_mode = SEARCH_MODE_BREADTH_FIRST;
+		printf("Received BF search instruction!\n");
+	}
+	// receive best_ever
+	length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
+	if(length <= 0) return;
+	best_ever = atoi(buffer);
+	printf("Current searching target is %d!\n", best_ever);
+		
+	// receive file	
 	printf("Now starts to receive file.\n");
 	sprintf(filename, "../../file/client/old_graph");
 	FILE * fp = fopen(filename, "w");
@@ -99,6 +116,7 @@ void receive_file(int connected_socket) {
 		perror("Could not open to write!\n");
 		return;
 	}
+	
 	while (true) {
 		length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
 		perror("recv error :");

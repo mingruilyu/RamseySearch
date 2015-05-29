@@ -33,7 +33,6 @@ int BFsearch(int *g, int gsize) {
 	// see how many clique 7 we have left. If there are still 
 	// a lot, we will need to clean it up.
 	if(cache_7.length == 0) {
-		best_ever = RECURSION_THRESHOLD - 1;
 		printf("Eureka! Counter-example found!\n");
 		new_g = (int *) malloc((gsize + 1) * (gsize + 1) * sizeof(int));
 		// copy the old graph into the new graph leaving 
@@ -56,8 +55,7 @@ int BFsearch(int *g, int gsize) {
 		gsize = gsize + 1;
 	} 
 	CliqueCountCreateCache(g, gsize);
-	while(cache_7.length > RECURSION_THRESHOLD) {
-		CliqueCountCreateCache(g, gsize);	
+	while(cache_7.length > best_ever) {
 	// reset the taboo list for the new graph
 		for(i = 0; i < gsize; i ++) {
 			for(j = i + 1; j < gsize; j ++) {

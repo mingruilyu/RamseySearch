@@ -19,7 +19,7 @@ int recv_count = 0;
 int send_count = 0;
 int collect_count = 0;
 int gsize = 107;
-int clique_count = RECURSION_THRESHOLD - 1; // the clique count of the seeds we are currently waiting for
+int clique_count; // the clique count of the seeds we are currently waiting for
 struct broadcast* broadcast_list[100];
 int SERVER_LISTEN_PORT = -1;
 

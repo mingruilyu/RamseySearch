@@ -9,12 +9,13 @@
 
 #include "client_transfer.h"
 #include "search.h"
-
 #include <pthread.h>
 
 bool recv_flag = false;
 int new_graph_count = 0;
 char *ip_addr;
+int best_ever;
+bool search_mode;
 int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		printf("You should input server IP address only!\n");
@@ -38,8 +39,12 @@ int main(int argc, char *argv[]) {
 		if (recv_flag) {
 			recv_flag = false;
 			g = load_graph(&gsize);
-			search(g, gsize);
-			send_request();
+			if(search_mode == SEARCH_MODE_DEPTH_FIRST)
+				DFsearch(g, gsize);
+			else {
+				BFsearch(g, gsize);
+				send_request();
+			}
 		}
 		else sleep(5);
 	}

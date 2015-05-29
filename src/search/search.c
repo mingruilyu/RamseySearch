@@ -12,6 +12,7 @@
 #include "client_transfer.h"
 #define TABOOSIZE (500)
 #define BIGCOUNT (1000)
+#define SA_THRESHOLD (90)
 /*
  * example of very simple search for R(7, 7) counter 
  * examples starts with a small randomized graph and 
@@ -104,19 +105,50 @@ int BFsearch(int *g, int gsize) {
 	return (0);
 }
 
-int DFsearch(int *g, int gsize, int new_graph_count, bool *recv_flag) {
+int DFsearch(int *g, int gsize) {
 	int count, i, j, best_count = BIGCOUNT, best_i, best_j;
 	void *taboo_list = FIFOInitEdge(TABOOSIZE);
-	while(!*recv_flag) {
+	CliqueCountCreateCache(g, gsize);
+	// this is the first phase of DFsearch, that is to find
+	// a good graph whose clique count is less than best_ever
+	while(!recv_flag && cache_7.length > best_ever) {
+		CliqueCountCreateCache(g, gsize);
+		// do the second round of clean up by breaking the ties
+		// since best_count is initialized to BIGCOUNT, we won't
+		// have 
+		for(i = 0; i < gsize; i ++) {
+			for(j = i + 1; j < gsize; j ++) {
+        g[i * gsize + j] = 1 - g[i * gsize + j];
+				count = CliqueCountUseCache(g, gsize, i, j, best_count + 10);
+				if((count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_count) )
+						&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+    	    best_count = count;
+          best_i = i;
+          best_j = j;
+				}
+        g[i * gsize + j] = 1 - g[i * gsize + j];
+			}
+		} 
+							
+		printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+					 gsize, cache_6.length, best_count, best_i, best_j, 
+					 g[best_i * gsize + best_j]); 
+		// keep the best flip we saw. 
+		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+		FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
+		best_count = BIGCOUNT;
+		PrintGraph(g, gsize);
+	}
+	// this is the second phase of DFSearch, that is to 
+	// generate as many seed as possible
+	while(!recv_flag) {
 		CliqueCountCreateCache(g, gsize);
 		// see how many clique 7 we have left. If there are still 
 		// a lot, we will need to clean it up.
-		if(cache_7.length == 0) {
-			printf("Eureka! Counter-example found!\n");
-			FIFODelete(taboo_list);
+		if(cache_7.length == best_ever) {
 			PrintGraphNew(g, gsize, new_graph_count);
-			free(g);
-			return (0);
+			if(send_file(ip_addr) != 0)
+				printf("Failed to send graph!\n");
 		}
 		// do the second round of clean up by breaking the ties
 		// since best_count is initialized to BIGCOUNT, we won't
@@ -124,13 +156,12 @@ int DFsearch(int *g, int gsize, int new_graph_count, bool *recv_flag) {
 		for(i = 0; i < gsize; i ++) {
 			for(j = i + 1; j < gsize; j ++) {
         g[i * gsize + j] = 1 - g[i * gsize + j];
-				count = CliqueCountUseCache(g, gsize, i, j, best_count);
-				if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
-  	      if(count < best_count) {
-    	      best_count = count;
-            best_i = i;
-            best_j = j;
-					}
+				count = CliqueCountUseCache(g, gsize, i, j, best_count + 10);
+				if((count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_count) )
+						&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+    	    best_count = count;
+          best_i = i;
+          best_j = j;
 				}
         g[i * gsize + j] = 1 - g[i * gsize + j];
 			}

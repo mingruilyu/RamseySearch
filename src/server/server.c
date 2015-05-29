@@ -12,7 +12,6 @@
 #include "server_transfer.h"
 #include "search.h"
 int desNum = 0;
-int max_graph_no;
 int recv_count = 0;
 int send_count = 0;
 int collect_count = 0;
@@ -129,10 +128,10 @@ int main(int argc, char* argv[]) {
 		recv_result = receive_file(connectedSocket);
 		if (recv_result == RECV_RETURN_ERROR)
 			printf("Return error, receive error\n");
-		else if (recv_result == RECV_RETURN_SEND_GRAPH)
-			send_file(connectedSocket);
-		else if (recv_result == RECV_RETURN_BROADCASTNEW)
-			broadcast_graph();
+		else if (recv_result == RECV_RETURN_SEND_GRAPH_DEPTH_FIRST)
+			send_file(connectedSocket, SEARCH_MODE_DEPTH_FIRST);
+		else if (recv_result == RECV_RETURN_SEND_GRAPH_BREADTH_FIRST)
+			send_file(connectedSocket, SEARCH_MODE_BREADTH_FIRST);
 		else {
 			ReadGraph("../../file/server/temp/temp", &g, &gsize);
 			count = CliqueCount(g, gsize);
@@ -155,7 +154,6 @@ int main(int argc, char* argv[]) {
 					broadcast_graph();
 				}
 				else clique_count--;
-				max_graph_no = GRAPH_COLLECT_NO;
 			}
 		}
 		printf("finish receivning\n");

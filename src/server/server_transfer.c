@@ -96,12 +96,13 @@ int receive_file(int connected_socket) {
 	}
 	else if (buffer[0] == 'r') {
 		recv_count++;
-		if (send_count == max_graph_count && recv_count == max_graph_count) {
-			max_graph_no = collect_count;
-			return RECV_RETURN_BROADCASTNEW;
+		if (send_count == GRAPH_COLLECT_NO 
+				&& recv_count == GRAPH_COLLECT_NO 
+				&& collect_count != GRAPH_COLLECT_NO) {
+			return RECV_RETURN_SEND_GRAPH_DEPTH_FIRST;
 		}
 		else
-			return RECV_RETURN_SEND_GRAPH;
+			return RECV_RETURN_SEND_GRAPH_BREADTH_FIRST;
 	}
 	else {
 		sprintf(filename, "../../file/server/temp/temp");

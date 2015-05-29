@@ -54,7 +54,7 @@ int search(int *g, int gsize) {
 		}
 		gsize = gsize + 1;
 	} else 
-		best_ever = cache_7.length - 1;
+		best_ever = ??cache_7.length - 1;
 	CliqueCountCreateCache(g, gsize);
 	while(cache_7.length > RECURSION_THRESHOLD) {
 		CliqueCountCreateCache(g, gsize);	
@@ -100,7 +100,7 @@ int search(int *g, int gsize) {
 		}
 	}
 	recursiveSearch(g, gsize, RECURSION_DEPTH, best_ever, 
-									best_i, best_j, taboo_list);
+					best_i, best_j, taboo_list);
 	return (0);
 }
 

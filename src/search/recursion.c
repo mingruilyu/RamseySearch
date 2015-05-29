@@ -114,13 +114,16 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
 	printf(" RECURSION gsize %d in level %d edge (%d, %d) best_ever %d current_count %d \n", 
 				 gsize, level, cur_i, cur_j, best_ever, cache_7.length);
     //check whether this flip itself will reduce clique 7 count
-  if(cache_7.length < best_ever) {
-		g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
-    return cache_7.length;
+  if(cache_7.length <= best_ever) {
+		to_return = RECURSION_RETURN_SUCCESS;
+		PrintGraphNew(g, gsize, new_graph_count);
+		FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
+		if(send_file(ip_addr) != 0)
+			printf("Failed to send graph!\n");
 	}
   // check upon this flip, is there any chance we may reduce
   // clique 7 count by flip another edge
-  create_edge_stat(gsize);
+/* create_edge_stat(gsize);
   best_count = best_ever;
   for(i = 0; i < gsize; i ++) {
 		if(vertex[i]) {
@@ -145,14 +148,22 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
         // we need to flip this edge, and leave the caller
         // of this function to flip the i, j
   	g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
-    g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
+   // g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
     FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
     printf("best_count = %d, edge(%d, %d) \n",
            best_count, best_i, best_j);
-    return best_count;
-  }
+		to_return = RECURSION_RETURN_SUCCESS;
+		PrintGraphNew(g, gsize, new_graph_count);
+		FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
+		if(send_file(ip_addr) != 0)
+			printf("Failed to send graph!\n");
+    //return best_count;
+  }*/
   
-	if(level == 0) return RECURSION_RETURN_FAIL;
+	if(level == 0) {
+ 		g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
+		return RECURSION_RETURN_FAIL;
+	}
   int neighbourCounter = findNeighbours(g, gsize, cur_i, cur_j, neighbor,taboo_list);
     // recursively check neighbor one by one
   for(k = 0; k < neighbourCounter; k ++) {
@@ -164,14 +175,14 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     if(count == RECURSION_RETURN_TERMINATION) {
 			to_return = RECURSION_RETURN_TERMINATION;
 			break;
-		} else if(count >= 0) {
+		}/* else if(count >= 0) {
 			to_return = RECURSION_RETURN_SUCCESS;
 			FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
     	g[nb_i * gsize + nb_j] = 1 - g[nb_i * gsize + nb_j];
 			PrintGraphNew(g, gsize, new_graph_count);
 			if(send_file(ip_addr) != 0)
 				printf("Failed to send graph!\n");
-		}
+		}*/
 	}		
   g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
   return to_return;	

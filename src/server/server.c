@@ -177,7 +177,7 @@ void *server_print_handler() {
 		printf("send_count: %d\n", send_count);
 		printf("clique_count: %d\n", clique_count);
 		printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
-		printf("current maximum counterexample %d\n", gsize - 1);
+		printf("current maximum counterexample %d\n", gsize);
 		sleep(5);
 	}
 

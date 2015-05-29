@@ -23,7 +23,6 @@
 static int CLIENT_LISTEN_PORT = -1;
 
 void delete_graph(char*);
-void copy(char* source_file, char* target_file);
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	strcpy(bc->ipAddr, ip_addr);

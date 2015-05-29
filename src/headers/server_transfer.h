@@ -10,7 +10,7 @@
 
 #define GRAPH_COLLECT_NO 1000
 
-extern int SERVER_LISTEN_PORT = -1;
+extern int SERVER_LISTEN_PORT;
 
 typedef struct broadcast {
 	char ipAddr[250];
@@ -35,7 +35,7 @@ int create_connection(Broadcast*);
 
 void broadcast_graph();
 
-
+void copy(char*, char*);
 
 extern struct broadcast* broadcast_list[100];
 extern int desNum;

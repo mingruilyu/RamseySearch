@@ -11,6 +11,9 @@
 #include <pthread.h>
 #include "server_transfer.h"
 #include "search.h"
+#include "graph.h"
+#include "clique_count.h"
+
 int desNum = 0;
 int recv_count = 0;
 int send_count = 0;
@@ -21,6 +24,7 @@ struct broadcast* broadcast_list[100];
 int SERVER_LISTEN_PORT = -1;
 
 void broadcast_graph();
+void *server_print_handler();
 
 int main(int argc, char* argv[]) {
 	char dir_name[250];

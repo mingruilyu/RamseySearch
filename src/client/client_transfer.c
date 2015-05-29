@@ -20,7 +20,7 @@ int send_file(char* ip_addr) {
 	char buffer[BUFFER_SIZE], filename[250];
 	int connected_socket, file_block_length = 0;
 	memset(buffer, 0, sizeof(buffer));
-	sprintf(filename, "../../file/client/new_graph_%d", new_graph_count);
+	sprintf(filename, "../../file/client/new_graph");
 	printf("Trying to transfer file : %s\n", filename);
 	FILE * fp = fopen(filename, "r");
 	if (fp == NULL) {
@@ -56,7 +56,7 @@ int send_file(char* ip_addr) {
 		fclose(fp);
 		close(connected_socket);
 		printf("File transmitted!\n\n");
-		new_graph_count ++;
+		//nnew_graph_count ++;
 	}
 	return 0;
 }
@@ -131,7 +131,7 @@ void receive_file(int connected_socket) {
 	}
 	fclose(fp);
 	recv_flag = true;
-	new_graph_count = 0;
+	//new_graph_count = 0;
 	printf("File receiveing finished!\n\n");
 }
 

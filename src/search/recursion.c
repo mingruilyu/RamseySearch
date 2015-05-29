@@ -116,7 +116,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     //check whether this flip itself will reduce clique 7 count
   if(cache_7.length <= best_ever) {
 		to_return = RECURSION_RETURN_SUCCESS;
-		PrintGraphNew(g, gsize, new_graph_count);
+		PrintGraphNew(g, gsize);
 		FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
 		if(send_file(ip_addr) != 0)
 			printf("Failed to send graph!\n");

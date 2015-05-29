@@ -83,7 +83,7 @@ int BFsearch(int *g, int gsize) {
 	}
 
 	if(cache_7.length <= best_ever) {
-		PrintGraphNew(g, gsize, new_graph_count);
+		PrintGraphNew(g, gsize);
 		send_file(ip_addr);
 		//return (0);
 	}
@@ -145,7 +145,7 @@ int DFsearch(int *g, int gsize) {
 		// see how many clique 7 we have left. If there are still 
 		// a lot, we will need to clean it up.
 		if(cache_7.length == best_ever) {
-			PrintGraphNew(g, gsize, new_graph_count);
+			PrintGraphNew(g, gsize);
 			if(send_file(ip_addr) != 0)
 				printf("Failed to send graph!\n");
 		}

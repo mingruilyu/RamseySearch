@@ -18,7 +18,6 @@ void *client_always_listen_to_one_handler();
 int create_connection(char *ip_addr);
 
 extern bool recv_flag;
-extern int new_graph_count;
 extern char *ip_addr;
 
 #endif

@@ -159,9 +159,9 @@ int main(int argc, char* argv[]) {
 					clique_count = RECURSION_THRESHOLD - 1;
 					sprintf(dir_name, "../../file/server/ce_%d", ++gsize);
 					mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-					broadcast_graph();
 				}
 				else clique_count--;
+				broadcast_graph();
 			}
 		}
 		printf("finish receivning\n");

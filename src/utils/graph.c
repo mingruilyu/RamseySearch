@@ -6,11 +6,11 @@
 
 
 #define MAXSIZE (541)
-void PrintGraphNew(int *g, int gsize, int new_graph_count)
+void PrintGraphNew(int *g, int gsize)
 {
 	int i, j;
 	char file_name[100];
-	sprintf(file_name, "../../file/client/new_graph_%d", new_graph_count);
+	sprintf(file_name, "../../file/client/new_graph");
 	FILE* fd = fopen(file_name, "w");
 	fprintf(fd,"%d-------------------\n",gsize);
 	fprintf(stdout,"%d-------------------\n",gsize);

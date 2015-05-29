@@ -39,9 +39,9 @@ int send_file(char* ip_addr) {
 				close(connected_socket);
 				return -1;
 			} 
-			printf("file_block_length = %d\n", file_block_length);
-			printf("strlen(buffer):%d \n", strlen(buffer));
-			printf("buffer:  %s \n", buffer);
+			//printf("file_block_length = %d\n", file_block_length);
+			//printf("strlen(buffer):%d \n", strlen(buffer));
+			//printf("buffer:  %s \n", buffer);
 			
 			//if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 			if(send(connected_socket, buffer, file_block_length, 0) < 0) {

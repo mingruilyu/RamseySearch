@@ -79,8 +79,8 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			perror("Could not open to read!\n");
 			return;
 		}
-        else {
-        	file_block_length = 0;
+    else {
+      file_block_length = 0;
 			//printf("Entering the read while block!\n");
 			while (1) {
 				file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
@@ -160,45 +160,6 @@ void set_port() {
 	SERVER_LISTEN_PORT = PORT;
 	CLIENT_LISTEN_PORT = PORT;
 }
-
-/*void *send_to_one_des(void* _des) {
-	struct broadcast* des = (struct broadcast*)_des;
-
-	char* ip_addr = des->ipAddr;
-
-	int iResult = 0;
-
-	int client_socket = 0;
-	client_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (client_socket < 0) {
-		printf("Could not create send_to_one_des socket!\n");
-		exit(1);
-	}
-
-	struct sockaddr_in server_addr;
-	memset(&server_addr, '0', sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
-
-	if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
-		printf("Input IP is not correct!\n");
-		exit(1);
-	}
-
-	socklen_t server_addr_length = sizeof(server_addr);
-
-	iResult = connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length);
-	if (iResult != 0) {
-		printf("send_to_one_des could not connect!\n");
-		exit(1);
-	}
-	//printf("send_to_one_des connected!\n");
-
-	send_file(client_socket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
-
-	close(client_socket);
-	pthread_exit(0);
-}*/
 
 void *send_to_des(void* _des) {
 	struct broadcast** des_list = (struct broadcast **)_des;
@@ -285,11 +246,12 @@ void broadcast_graph(bool search_mode, int broadcast_type) {
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
 		construct_broadcast(tmp, ip_addr, 1);
 		socket = create_connection(tmp);
-		if(socket != -1) 
+		if(socket != -1){ 
 			send_file(socket, search_mode, broadcast_type);
-		else {
-			printf("connect fail!\n");
+			close(socket);
 		}
+		else
+			printf("connect fail!\n");
 /*		printf("ip_addr: %s\n", ip_addr);
 
 		pthread_t sock_send_thread_id;

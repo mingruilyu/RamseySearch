@@ -23,7 +23,7 @@
  */
 
 int BFsearch(int *g, int gsize) {
-	int count, i, j, best_count = BIGCOUNT, best_ever,
+	int count, i, j, best_count = BIGCOUNT,
 			best_i, best_j;
 	int *new_g;
 	void *taboo_list = FIFOInitEdge(TABOOSIZE);

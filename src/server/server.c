@@ -87,6 +87,10 @@ int main(int argc, char* argv[]) {
 	struct sockaddr_in client_addr;
 	memset(&client_addr, '0', sizeof(client_addr));
 	socklen_t length = sizeof(client_addr);
+	
+	pthread_t server_print_thread_id;
+	err = pthread_create(&server_print_thread_id, NULL, server_print_handler, NULL);
+	if (err != 0) perror("Could not create server_print_thread_id thread!");
 
 	while (1) {
 		printf("goint to waiting\n");
@@ -165,6 +169,14 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
+void *server_print_handler() {
+	while (1) {
+		printf("current received graphs: %d\n", collect_count);
+		printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
+		printf("current maximum counterexample %d\n", gsize - 1);
+	}
+	pthread_exit(0);
+}
 
 
 
@@ -181,6 +193,3 @@ int main(int argc, char* argv[]) {
 
 
 
-			//printf("current received graphs: %d\n", collect_count);
-			//printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
-			//printf("current maximum counterexample %d\n", gsize - 1);

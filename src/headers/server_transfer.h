@@ -4,10 +4,13 @@
 
 #define RECV_RETURN_BROADCASTNEW 0
 #define RECV_RETURN_SEND_GRAPH_DEPTH_FIRST 1
-#define RECV_RETURN_WRITE_GRAPH_BREADTH_FIRST 2
-#define RECV_RETURN_ERROR 3
+#define RECV_RETURN_SEND_GRAPH_BREADTH_FIRST 2
+#define RECV_RETURN_WRITE_GRAPH 3
+#define RECV_RETURN_ERROR 4
 
 #define GRAPH_COLLECT_NO 1000
+
+extern int SERVER_LISTEN_PORT = -1;
 
 typedef struct broadcast {
 	char ipAddr[250];
@@ -16,7 +19,7 @@ typedef struct broadcast {
 
 void construct_broadcast(Broadcast* bc, const char* ip_addr, int act);
 
-void send_file(int connected_socket);
+void send_file(int connected_socket, bool mode);
 
 int receive_file(int connected_socket);
 

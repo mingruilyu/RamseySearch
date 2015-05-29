@@ -20,7 +20,6 @@
 #define BUFFER_SIZE 1024
 #define PORT 8000
 
-static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
 void delete_graph(char*);

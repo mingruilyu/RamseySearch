@@ -106,7 +106,7 @@ int receive_file(int connected_socket) {
 		return RECV_RETURN_ERROR;
 	}
 	else if (buffer[0] == 'c') {
-		return RECV_RETURN_SEND_GRAPH;
+		return RECV_RETURN_SEND_GRAPH_BREADTH_FIRST;
 	}
 	else if (buffer[0] == 'r') {
 		recv_count++;
@@ -188,7 +188,7 @@ void *send_to_one_des(void* _des) {
 	}
 	//printf("send_to_one_des connected!\n");
 
-	send_file(client_socket);
+	send_file(client_socket, SEARCH_MODE_BREADTH_FIRST);
 
 	close(client_socket);
 	pthread_exit(0);

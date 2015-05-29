@@ -32,7 +32,6 @@ int main(int argc, char* argv[]) {
 	char des_file[250], incoming_ip_addr[20];
 	char* existing_ip_addr;
 	int p, err = 0;
-	bool start_flag = true;
 	struct sockaddr_in serv_addr;
 	
 	

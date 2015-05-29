@@ -33,7 +33,7 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 
 void send_file(int connected_socket, bool mode) {
 		char buffer[BUFFER_SIZE], filename[250];
-		int file_block_length = 0;
+		int file_block_length = 0, send_no;
 		memset(buffer, 0, sizeof(buffer));
 		
 		if (mode == SEARCH_MODE_DEPTH_FIRST)
@@ -54,7 +54,20 @@ void send_file(int connected_socket, bool mode) {
 		memset(buffer, 0, sizeof(buffer));
 		
 		printf("sending graph %d\n", send_count % GRAPH_COLLECT_NO);
-		sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_count ++);
+
+		if (mode == SEARCH_MODE_DEPTH_FIRST && collect_count == 0) {
+			send_no = rand() % GRAPH_COLLECT_NO;
+			sprintf(filename, "../../file/server/seed_%d/%d", clique_count % 2, send_no);
+			printf("sending %d graph from last seed dir\n", send_no);
+		}
+		else if (mode == SEARCH_MODE_DEPTH_FIRST) {
+			send_no = rand() % GRAPH_COLLECT_NO;
+			sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_no);
+			printf("sending %d graph from current seed dir\n", send_no);
+		}
+		else 
+			sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_count ++);
+
 		printf("reading file %s\n", filename);
 		
 		FILE * fp = fopen(filename, "r");

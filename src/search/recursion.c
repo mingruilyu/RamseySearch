@@ -116,8 +116,8 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     //check whether this flip itself will reduce clique 7 count
   if(cache_7.length <= best_ever) {
 		to_return = RECURSION_RETURN_SUCCESS;
-		PrintGraphNew(g, gsize);
 		FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
+		PrintGraphNew(g, gsize);
 		if(recv_flag == true) {
    		g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
 			return RECURSION_RETURN_TERMINATION; 

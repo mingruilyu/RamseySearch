@@ -173,7 +173,7 @@ int DFsearch(int *g, int gsize) {
 		best_count = BIGCOUNT;
 		PrintGraph(g, gsize);
 	}
-	FIFODeleteGraph(taboo_list); 
+	//FIFODeleteGraph(taboo_list); 
 	return (-1);
 }
 

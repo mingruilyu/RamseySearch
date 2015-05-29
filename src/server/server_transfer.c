@@ -300,8 +300,8 @@ void broadcast_graph(bool search_mode, int broadcast_type) {
 		if (err != 0) {
 			printf("sock_thread goes wrong! %s \n", strerror(err));
 			perror("sock_thread goes wrong!");
-		}
-		free(tmp);*/
+		}*/
+		free(tmp);
 		
 	}
 }

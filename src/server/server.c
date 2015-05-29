@@ -162,29 +162,25 @@ int main(int argc, char* argv[]) {
 		close(connectedSocket);
 	}
 	close(serv_socket);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			sleep(5);
-			printf("current received graphs: %d\n", collect_count);
-			printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
-			printf("current maximum counterexample %d\n", gsize - 1);
-	}
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			//printf("current received graphs: %d\n", collect_count);
+			//printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
+			//printf("current maximum counterexample %d\n", gsize - 1);

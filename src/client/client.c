@@ -9,13 +9,12 @@
 
 #include "client_transfer.h"
 #include "search.h"
+
 #include <pthread.h>
 
 bool recv_flag = false;
 int new_graph_count = 0;
-char *ip_addr;
-int best_ever;
-bool search_mode;
+char* ip_addr;
 int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		printf("You should input server IP address only!\n");

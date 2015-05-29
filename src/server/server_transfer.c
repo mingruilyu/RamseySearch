@@ -15,6 +15,7 @@
 #include "server_transfer.h"
 #include "clique_count.h"
 #include "graph.h"
+#include "search.h"
 #define BUFFER_SIZE 1024
 #define PORT 8000
 
@@ -27,17 +28,35 @@ void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	bc->active = act;
 }
 
-void send_file(int connected_socket) {
-		TODO: send twice
-        char buffer[BUFFER_SIZE], filename[250];
+void send_file(int connected_socket, bool mode) {
+		char buffer[BUFFER_SIZE], filename[250];
 		int file_block_length = 0;
-        memset(buffer, '0', sizeof(buffer));
+		memset(buffer, 0, sizeof(buffer));
+		
+		if (mode == SEARCH_MODE_DEPTH_FIRST)
+			buffer[0] = 'd';
+		else
+			buffer[0] = 'b';
+		if (send(connected_socket, buffer, sizeof(char), 0) < 0) {
+			perror("Sending failed! error: ");
+			return;
+		}
+		memset(buffer, 0, sizeof(buffer));
+		
+		sprintf(buffer, "%d", clique_count);
+		if (send(connected_socket, buffer, strlen(buffer), 0) < 0) {
+			perror("Sending failed! error: ");
+			return;
+		}
+		memset(buffer, 0, sizeof(buffer));
+		
 		printf("sending graph %d\n", send_count % GRAPH_COLLECT_NO);
 		sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_count ++);
 		printf("reading file %s\n", filename);
+		
 		FILE * fp = fopen(filename, "r");
 		if (fp == NULL) {
-			printf("Could not open to read!\n");
+			perror("Could not open to read!\n");
 			return;
 		}
         else {

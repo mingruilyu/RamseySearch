@@ -53,33 +53,32 @@ int BFsearch(int *g, int gsize) {
 			}
 		}
 		gsize = gsize + 1;
-	} 
-	CliqueCountCreateCache(g, gsize);
-	while(cache_7.length > best_ever) {
-	// reset the taboo list for the new graph
-		for(i = 0; i < gsize; i ++) {
-			for(j = i + 1; j < gsize; j ++) {
-      	g[i * gsize + j] = 1 - g[i * gsize + j];
-				count = CliqueCountUseCache(g, gsize, i, j, best_count);
-				if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
-    	  	best_count = count;
-          best_i = i;
-          best_j = j;
+		CliqueCountCreateCache(g, gsize);
+		while(cache_7.length > best_ever) {
+		// reset the taboo list for the new graph
+			for(i = 0; i < gsize; i ++) {
+				for(j = i + 1; j < gsize; j ++) {
+      		g[i * gsize + j] = 1 - g[i * gsize + j];
+					count = CliqueCountUseCache(g, gsize, i, j, best_count);
+					if(count != -1 && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+    	  		best_count = count;
+          	best_i = i;
+          	best_j = j;
+					}
+        	g[i * gsize + j] = 1 - g[i * gsize + j];
 				}
-        g[i * gsize + j] = 1 - g[i * gsize + j];
-			}
-		} 
-		printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+			}	 
+			printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
 					 gsize, cache_6.length, best_count, best_i, best_j, 
 					 g[best_i * gsize + best_j]); 
-		// keep the best flip we saw. 
-		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
-		CliqueCountCreateCache(g, gsize);
-		FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
-		best_count = BIGCOUNT;
-		PrintGraph(g, gsize);
-	}
-
+			// keep the best flip we saw. 
+			g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+			CliqueCountCreateCache(g, gsize);
+			FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
+			best_count = BIGCOUNT;
+			PrintGraph(g, gsize);
+		}
+	} 
 	if(cache_7.length <= best_ever) {
 		PrintGraphNew(g, gsize);
 		send_file(ip_addr);

@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include "dirent.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -22,7 +23,9 @@
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
+void delete_graph(char*);
 void copy(char* source_file, char* target_file);
+
 void construct_broadcast(Broadcast* bc, const char* ip_addr, int act) {
 	strcpy(bc->ipAddr, ip_addr);
 	bc->active = act;
@@ -252,7 +255,10 @@ int create_connection(Broadcast* des) {
 }
 
 void broadcast_graph() {
-	TODO: delete send directory
+	char directory[250];
+	sprintf(directory, "../../file/server/seed_%d", (clique_count + 1) % 2);
+	delete_graph(directory);
+
 	int i, err;
 	collect_count = 0;
 	recv_count = 0;
@@ -306,4 +312,20 @@ void copy(char* source_file, char* target_file) {
 
 	fclose(source);
 	fclose(target);
+}
+
+void delete_graph(char* send_dir) {
+	// These are data types defined in the "dirent" header
+	struct dirent *next_file;
+	DIR *theFolder;
+
+	char filepath[256];
+
+	theFolder = opendir(send_dir);
+
+	while (next_file = readdir(theFolder))   {
+		// build the full path for each file in the folder
+		sprintf(filepath, "%s/%s", send_dir, next_file->d_name);
+		remove(filepath);
+	}
 }

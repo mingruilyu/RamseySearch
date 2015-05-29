@@ -1,7 +1,7 @@
 #include "stdbool.h"
-#define NEIGHBOR_SIZE 5
+#define NEIGHBOR_SIZE 2
 #define NEIGHBOR_PARAM 3
-#define RECURSION_DEPTH 7
+#define RECURSION_DEPTH 2
 //extern bool recv_flag;
 //extern int new_graph_count;
 //extern char* ip_addr; 

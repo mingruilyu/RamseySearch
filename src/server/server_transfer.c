@@ -34,18 +34,21 @@ void send_file(int connected_socket, bool mode) {
 		int file_block_length = 0, send_no;
 		memset(buffer, 0, sizeof(buffer));
 		
+		printf("sending clique_count %d\n", clique_count);	
 		if (mode == SEARCH_MODE_DEPTH_FIRST)
 			buffer[0] = 'd';
 		else
 			buffer[0] = 'b';
-		if (send(connected_socket, buffer, sizeof(char), 0) < 0) {
+		buffer[1] = '\0';
+		if (send(connected_socket, buffer, BUFFER_SIZE, 0) < 0) {
 			perror("Sending failed! error: ");
 			return;
 		}
 		memset(buffer, 0, sizeof(buffer));
 		
+		printf("sending clique_count %d\n", clique_count);	
 		sprintf(buffer, "%d", clique_count);
-		if (send(connected_socket, buffer, strlen(buffer), 0) < 0) {
+		if (send(connected_socket, buffer, BUFFER_SIZE, 0) < 0) {
 			perror("Sending failed! error: ");
 			return;
 		}

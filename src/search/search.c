@@ -85,7 +85,7 @@ int BFsearch(int *g, int gsize) {
 	if(cache_7.length <= best_ever) {
 		PrintGraphNew(g, gsize, new_graph_count);
 		send_file(ip_addr);
-		return (0);
+		//return (0);
 	}
 	for(i = 0; i < gsize; i ++) {
 		for(j = i + 1; j < gsize; j ++) {

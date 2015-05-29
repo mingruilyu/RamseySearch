@@ -12,7 +12,7 @@
 
 #include <pthread.h>
 #include "client_transfer.h"
-
+#include "search.h"
 static int SERVER_LISTEN_PORT = -1;
 static int CLIENT_LISTEN_PORT = -1;
 
@@ -86,7 +86,7 @@ void send_request(char* ip_addr) {
 }
 
 void receive_file(int connected_socket) {
-	const char buffer[BUFFER_SIZE], filename[250];
+	char buffer[BUFFER_SIZE], filename[250];
 	int written_length, length;
 	memset(buffer, 0, sizeof(buffer));
 

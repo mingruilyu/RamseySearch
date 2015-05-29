@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 				DFsearch(g, gsize);
 			else {
 				BFsearch(g, gsize);
-				send_request();
+				send_request(ip_addr);
 			}
 		}
 		else sleep(5);

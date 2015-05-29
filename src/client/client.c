@@ -33,12 +33,13 @@ int main(int argc, char *argv[]) {
 	err = pthread_create(&sock_recv_thread_id, NULL, client_always_listen_to_one_handler, NULL);
 	if (err != 0) perror("Could not create client_always_listen_to_one_handler thread!");
 	// init a connection with server
+	send_check(ip_addr);
 	while (1) {
-		send_request(ip_addr);
 		if (recv_flag) {
 			recv_flag = false;
 			g = load_graph(&gsize);
 			search(g, gsize);
+			send_request();
 		}
 		else sleep(5);
 	}

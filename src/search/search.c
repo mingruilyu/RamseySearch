@@ -206,7 +206,7 @@ bool compare_graph(int *g, int gsize) {
 		for(j = i + 1; j < gsize; j ++) {
 			if(g[i * gsize + j] != old_g[i * gsize + j]) {
 				diff_count ++;
-				if(diff_count > 3)
+				if(diff_count > 2)
 					return false;
 			}
 		}

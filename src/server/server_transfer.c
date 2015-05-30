@@ -112,7 +112,11 @@ int receive_file(int connected_socket) {
 		return RECV_RETURN_ERROR;
 	}
 	else if (buffer[0] == 'c') {
-		return RECV_RETURN_SEND_GRAPH_BREADTH_FIRST;
+		if(send_count == GRAPH_COLLECT_NO
+			 && collect_count != GRAPH_COLLECT_NO)
+			return RECV_RETURN_SEND_GRAPH_DEPTH_FIRST;
+		else
+			return RECV_RETURN_SEND_GRAPH_BREADTH_FIRST;
 	}
 	else if (buffer[0] == 'r') {
 		recv_count++;

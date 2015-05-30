@@ -198,13 +198,17 @@ int DFsearch(int *g, int gsize) {
 bool compare_graph(int *g, int gsize) {
 	int *old_g;
 	int old_gsize, i, j;
+	int diff_count = 0;
 	if(!ReadGraph("../../file/client/new_graph", &old_g, &old_gsize))
 		return false;
 	if(gsize != old_gsize) return false;
 	for(i = 0; i < gsize; i ++) {
 		for(j = i + 1; j < gsize; j ++) {
-			if(g[i * gsize + j] != old_g[i * gsize + j])
-				return false;
+			if(g[i * gsize + j] != old_g[i * gsize + j]) {
+				diff_count ++;
+				if(diff_count > 3)
+					return false;
+			}
 		}
 	}
 	free(old_g);

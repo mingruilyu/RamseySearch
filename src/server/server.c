@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
 		//printf("server_listen_to_clients_handler did accept!\n");
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
 		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
-
+		exist = 0;
 		for (i = 0; i < desNum; ++i) {
 			existing_ip_addr = broadcast_list[i]->ipAddr;
 			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {

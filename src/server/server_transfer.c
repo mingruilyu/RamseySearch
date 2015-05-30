@@ -39,7 +39,7 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			buffer[0] = 'd';
 		else
 			buffer[0] = 'b';
-		buffer[1] = '\0';
+		
 		if (send(connected_socket, buffer, BUFFER_SIZE, 0) < 0) {
 			perror("Sending failed! error: ");
 			return;
@@ -68,8 +68,8 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			printf("CONTINUING, sending %d graph from current seed dir\n", send_no);
 			break;
 		case BROADCAST_ORDER:
+			printf("NEW, sending %d graph from current seed dir\n", send_count);
 			sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_count ++);
-			printf("NEW, sending %d graph from current seed dir\n", send_no);
 			break;
 		}
 		printf("reading file %s\n", filename);

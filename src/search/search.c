@@ -105,6 +105,8 @@ int BFsearch(int *g, int gsize) {
 int DFsearch(int *g, int gsize) {
 	int count, i, j, best_count = BIGCOUNT, best_i, best_j;
 	void *taboo_list = FIFOInitEdge(TABOOSIZE);
+	int last_i, last_j;
+
 	CliqueCountCreateCache(g, gsize);
 	// this is the first phase of DFsearch, that is to find
 	// a good graph whose clique count is less than best_ever
@@ -130,7 +132,7 @@ int DFsearch(int *g, int gsize) {
 		printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
 					 gsize, cache_6.length, best_count, best_i, best_j, 
 					 g[best_i * gsize + best_j]); 
-		// keep the best flip we saw. 
+		// keep the best flip we saw.
 		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 		FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 		CliqueCountCreateCache(g, gsize);
@@ -154,9 +156,9 @@ int DFsearch(int *g, int gsize) {
 		for(i = 0; i < gsize; i ++) {
 			for(j = i + 1; j < gsize; j ++) {
         g[i * gsize + j] = 1 - g[i * gsize + j];
-				count = CliqueCountUseCache(g, gsize, i, j, best_count + 10);
-				if(count != -1 && (count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_count))
-						&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+				count = CliqueCountUseCache(g, gsize, i, j, best_count);
+				if(count != -1 && last_i != i && last_j != j 
+					&& (count <= best_count) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
     	    best_count = count;
           best_i = i;
           best_j = j;
@@ -169,6 +171,8 @@ int DFsearch(int *g, int gsize) {
 					 gsize, cache_6.length, best_count, best_i, best_j, 
 					 g[best_i * gsize + best_j]); 
 		// keep the best flip we saw. 
+		last_i = best_i;
+		last_j = best_j;
 		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 		FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
 		best_count = BIGCOUNT;

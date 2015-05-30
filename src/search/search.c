@@ -115,7 +115,7 @@ int DFsearch(int *g, int gsize) {
 		for(i = 0; i < gsize; i ++) {
 			for(j = i + 1; j < gsize; j ++) {
         g[i * gsize + j] = 1 - g[i * gsize + j];
-				count = CliqueCountUseCache(g, gsize, i, j, best_count + 10);
+				count = CliqueCountUseCache(g, gsize, i, j, best_count);
 				//if(count != -1 && (count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_ever))
 					//	&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
 				if(count != -1 && count <= best_count && !FIFOFindEdgeCount(taboo_list, i, j, count)) {

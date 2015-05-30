@@ -206,6 +206,7 @@ bool compare_graph(int *g, int gsize) {
 		}
 	}
 	free(old_g);
+	printf("duplicate graph!\n");
 	return true;
 }
 

@@ -234,7 +234,8 @@ int create_connection(Broadcast* des) {
 
 void broadcast_graph(bool search_mode, int broadcast_type) {
 	int i, socket;
-	collect_count = 0;
+	if(broadcast_type != BROADCAST_RANDOM_CONTINUE)
+		collect_count = 0;
 	recv_count = 0;
 	send_count = 0;
 	for (i = 0; i < desNum; i++) {

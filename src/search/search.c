@@ -197,7 +197,7 @@ int DFsearch(int *g, int gsize) {
 bool compare_graph(int *g, int gsize) {
 	int *old_g;
 	int old_gsize, i, j;
-	if(!ReadGraph("../../file/client/new_graph", &old_g, old_gsize))
+	if(!ReadGraph("../../file/client/new_graph", &old_g, &old_gsize))
 		return false;
 	if(gsize != old_gsize) return false;
 	for(i = 0; i < gsize; i ++) {

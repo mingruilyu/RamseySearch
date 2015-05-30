@@ -98,7 +98,7 @@ int BFsearch(int *g, int gsize) {
 	}
 	recursiveSearch(g, gsize, RECURSION_DEPTH, best_ever, 
 					best_i, best_j, taboo_list);
-	//FIFODeleteGraph(taboo_list); 
+	FIFODelete(taboo_list); 
 	return (0);
 }
 
@@ -109,7 +109,6 @@ int DFsearch(int *g, int gsize) {
 	// this is the first phase of DFsearch, that is to find
 	// a good graph whose clique count is less than best_ever
 	while(!recv_flag && cache_7.length > best_ever) {
-		CliqueCountCreateCache(g, gsize);
 		// do the second round of clean up by breaking the ties
 		// since best_count is initialized to BIGCOUNT, we won't
 		// have 
@@ -117,8 +116,9 @@ int DFsearch(int *g, int gsize) {
 			for(j = i + 1; j < gsize; j ++) {
         g[i * gsize + j] = 1 - g[i * gsize + j];
 				count = CliqueCountUseCache(g, gsize, i, j, best_count + 10);
-				if(count != -1 && (count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_ever))
-						&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+				//if(count != -1 && (count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_ever))
+					//	&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+				if(count != -1 && count <= best_count && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
     	    best_count = count;
           best_i = i;
           best_j = j;
@@ -133,6 +133,7 @@ int DFsearch(int *g, int gsize) {
 		// keep the best flip we saw. 
 		g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
 		FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
+		CliqueCountCreateCache(g, gsize);
 		best_count = BIGCOUNT;
 		PrintGraph(g, gsize);
 	}
@@ -173,7 +174,7 @@ int DFsearch(int *g, int gsize) {
 		best_count = BIGCOUNT;
 		PrintGraph(g, gsize);
 	}
-	//FIFODeleteGraph(taboo_list); 
+	FIFODelete(taboo_list); 
 	return (-1);
 }
 

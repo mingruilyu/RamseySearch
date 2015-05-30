@@ -1,5 +1,7 @@
 import os;
-path =  
+path ="."  
 count = 0
 for file in os.listdir(path):
-	os.rename(file, count ++)
+	if(file.startswith("ce")):	
+		os.rename(file, str(count))
+		count = count+1

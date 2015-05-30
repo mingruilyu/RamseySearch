@@ -67,7 +67,11 @@ int BFsearch(int *g, int gsize) {
 					}
         	g[i * gsize + j] = 1 - g[i * gsize + j];
 				}
-			}	 
+			}
+			if(recv_flag) {
+				FIFODelete(taboo_list); 
+				return (0);	 
+			}
 			printf("BACKTRACKING size: %d, best_6_count: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
 					 gsize, cache_6.length, best_count, best_i, best_j, 
 					 g[best_i * gsize + best_j]); 

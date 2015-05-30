@@ -63,7 +63,7 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			printf("RESTARTING, sending %d graph from last seed dir\n", send_no);
 			break;
 		case BROADCAST_RANDOM_CONTINUE:
-			send_no = rand() % GRAPH_COLLECT_NO;
+			send_no = rand() % collect_count;
 			sprintf(filename, "../../file/server/seed_%d/%d", clique_count % 2, send_no);
 			printf("CONTINUING, sending %d graph from current seed dir\n", send_no);
 			break;

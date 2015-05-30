@@ -149,7 +149,7 @@ int DFsearch(int *g, int gsize) {
 		CliqueCountCreateCache(g, gsize);
 		// see how many clique 7 we have left. If there are still 
 		// a lot, we will need to clean it up.
-		if(cache_7.length == best_ever) {
+		if(cache_7.length <= best_ever) {
 			PrintGraphNew(g, gsize);
 			if(send_file(ip_addr) != 0)
 				printf("Failed to send graph!\n");

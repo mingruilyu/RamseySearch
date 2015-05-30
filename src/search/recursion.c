@@ -117,12 +117,12 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
   if(cache_7.length <= best_ever) {
 		to_return = RECURSION_RETURN_SUCCESS;
 		FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
-		PrintGraphNew(g, gsize);
 		if(recv_flag == true) {
    		g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
 			return RECURSION_RETURN_TERMINATION; 
 		}
 		if(!compare_graph(g, gsize)) {
+			PrintGraphNew(g, gsize);
 			if(send_file(ip_addr) != 0)
 				printf("Failed to send graph!\n");
 		}

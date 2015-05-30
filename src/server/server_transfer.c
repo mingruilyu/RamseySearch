@@ -232,11 +232,9 @@ int create_connection(Broadcast* des) {
 	return client_socket;
 }
 
-void broadcast_graph(bool search_mode, int broadcast_type) {
+void broadcast_graph() {
 	int i, socket;
-	if(broadcast_type != BROADCAST_RANDOM_CONTINUE)
-		collect_count = 0;
-	recv_count = 0;
+	collect_count = 0;
 	send_count = 0;
 	for (i = 0; i < desNum; i++) {
 		int is_active = (*(broadcast_list + i))->active;
@@ -247,7 +245,7 @@ void broadcast_graph(bool search_mode, int broadcast_type) {
 		construct_broadcast(tmp, ip_addr, 1);
 		socket = create_connection(tmp);
 		if(socket != -1){ 
-			send_file(socket, search_mode, broadcast_type);
+			send_file(socket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 			close(socket);
 		}
 		else

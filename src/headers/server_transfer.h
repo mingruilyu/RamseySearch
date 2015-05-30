@@ -35,7 +35,7 @@ void *server_listen_to_clients_handler();
 
 int create_connection(Broadcast*);
 
-void broadcast_graph(bool search_type, int broadcast_type);
+void broadcast_graph();
 
 void copy(char*, char*);
 void delete_graph(char* send_dir);

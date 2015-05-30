@@ -122,8 +122,10 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
    		g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
 			return RECURSION_RETURN_TERMINATION; 
 		}
-		if(send_file(ip_addr) != 0)
-			printf("Failed to send graph!\n");
+		if(!compare_graph(g, gsize)) {
+			if(send_file(ip_addr) != 0)
+				printf("Failed to send graph!\n");
+		}
 	}
   // check upon this flip, is there any chance we may reduce
   // clique 7 count by flip another edge

@@ -85,7 +85,8 @@ int BFsearch(int *g, int gsize) {
 	} 
 	if(cache_7.length <= best_ever) {
 		PrintGraphNew(g, gsize);
-		send_file(ip_addr);
+		if(!compare_graph(g, gsize))
+			send_file(ip_addr);
 		//return (0);
 	}
 	for(i = 0; i < gsize; i ++) {
@@ -102,7 +103,8 @@ int BFsearch(int *g, int gsize) {
 	}
 	recursiveSearch(g, gsize, RECURSION_DEPTH, best_ever, 
 					best_i, best_j, taboo_list);
-	FIFODelete(taboo_list); 
+	FIFODelete(taboo_list);
+	free(g); 
 	return (0);
 }
 
@@ -151,8 +153,10 @@ int DFsearch(int *g, int gsize) {
 		// a lot, we will need to clean it up.
 		if(cache_7.length <= best_ever) {
 			PrintGraphNew(g, gsize);
-			if(send_file(ip_addr) != 0)
-				printf("Failed to send graph!\n");
+			if(!compare_graph(g, gsize)) {
+				if(send_file(ip_addr) != 0)
+					printf("Failed to send graph!\n");
+			}
 		}
 		// do the second round of clean up by breaking the ties
 		// since best_count is initialized to BIGCOUNT, we won't
@@ -185,10 +189,24 @@ int DFsearch(int *g, int gsize) {
 		best_count = BIGCOUNT;
 		PrintGraph(g, gsize);
 	}
-	FIFODelete(taboo_list); 
+	FIFODelete(taboo_list);
+	free(g); 
 	return (-1);
 }
 
+bool compare_graph(int *g, int gsize) {
+	int *old_g;
+	int old_gsize, i, j;
+	ReadGraph("../../file/client/new_graph", &old_g, old_gsize);
+	if(gsize != old_gsize) return false;
+	for(i = 0; i < gsize; i ++) {
+		for(j = i + 1; j < gsize; j ++) {
+			if(g[i * gsize + j] != old_g[i * gsize + j])
+				return false;
+		}
+	}
+	free(old_g);
+}
 
 int *load_graph(int* gsize) {
 	int *g;

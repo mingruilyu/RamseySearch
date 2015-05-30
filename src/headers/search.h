@@ -7,7 +7,7 @@
 int BFsearch(int *g, int gsize);
 int DFsearch(int *g, int gsize);
 int *load_graph(int* gsize);
-
+bool compare_graph(int *g, int gsize);
 extern int best_ever;
 extern bool search_mode;
 #endif

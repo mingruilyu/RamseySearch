@@ -98,7 +98,7 @@ int BFsearch(int *g, int gsize) {
 	}
 	recursiveSearch(g, gsize, RECURSION_DEPTH, best_ever, 
 					best_i, best_j, taboo_list);
-	FIFODeleteGraph(taboo_list); 
+	//FIFODeleteGraph(taboo_list); 
 	return (0);
 }
 

@@ -15,7 +15,7 @@ void set_port();
 
 void *client_always_listen_to_one_handler();
 
-int create_connection(char *ip_addr);
+int create_connection(char*, int);
 
 extern bool recv_flag;
 extern char *ip_addr;

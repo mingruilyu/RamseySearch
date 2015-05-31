@@ -12,8 +12,6 @@
 #define BROADCAST_ORDER	3
 #define GRAPH_COLLECT_NO 5000
 
-extern int SERVER_LISTEN_PORT;
-
 typedef struct broadcast {
 	char ipAddr[250];
 	int active;
@@ -25,7 +23,7 @@ void send_file(int connected_socket, bool search_mode, int send_mode);
 
 int receive_file(int connected_socket);
 
-void set_port();
+int set_port(int p);
 
 void *send_to_one_des(void* _des);
 
@@ -33,7 +31,7 @@ void *send_to_des(void* _des);
 
 void *server_listen_to_clients_handler();
 
-int create_connection(Broadcast*);
+int create_connection(Broadcast*, int);
 
 void broadcast_graph();
 

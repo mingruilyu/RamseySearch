@@ -20,7 +20,7 @@
 #define BUFFER_SIZE 1024
 #define PORT 8000
 
-static int CLIENT_LISTEN_PORT = -1;
+static int CLIENT_LISTEN_PORT = 8000;
 
 void delete_graph(char*);
 
@@ -68,10 +68,12 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			printf("CONTINUING, sending %d graph from current seed dir\n", send_no);
 			break;
 		case BROADCAST_ORDER:
+			pthread_mutex_lock(send_count_mutex);
 			send_no = (send_count * 10 + rand() % 100) % GRAPH_COLLECT_NO;
 			printf("NEW, sending %d graph from current seed dir\n", send_no);
 			sprintf(filename, "../../file/server/seed_%d/%d", (clique_count + 1) % 2, send_no);
 			send_count ++;
+			pthread_mutex_unlock(send_count_mutex);
 			break;
 		}
 		printf("reading file %s\n", filename);
@@ -109,11 +111,14 @@ int receive_file(int connected_socket) {
 	
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
 	//printf("buffer %s", buffer);
+	
 	if (length < 0) {
 		printf("Receiving data failed!\n");
+		pthread_mutex_lock(send_count_mutex);
 		return RECV_RETURN_ERROR;
 	}
 	else if (buffer[0] == 'c') {
+		pthread_mutex_lock(send_count_mutex);
 		if(send_count == GRAPH_COLLECT_NO
 			 && collect_count != GRAPH_COLLECT_NO)
 			return RECV_RETURN_SEND_GRAPH_DEPTH_FIRST;
@@ -121,7 +126,7 @@ int receive_file(int connected_socket) {
 			return RECV_RETURN_SEND_GRAPH_BREADTH_FIRST;
 	}
 	else if (buffer[0] == 'r') {
-		recv_count++;
+		pthread_mutex_lock(send_count_mutex);
 		if (send_count == GRAPH_COLLECT_NO 
 				&& collect_count != GRAPH_COLLECT_NO) {
 			return RECV_RETURN_SEND_GRAPH_DEPTH_FIRST;
@@ -156,14 +161,13 @@ int receive_file(int connected_socket) {
 		}
 		fclose(fp);
 		printf("File receiveing finished!\n\n");
+		pthread_mutex_lock(send_count_mutex);
 		return RECV_RETURN_WRITE_GRAPH;
 	}
 }
 
-void set_port() {
-	srand(time(NULL) * 1000);
-	SERVER_LISTEN_PORT = PORT;
-	CLIENT_LISTEN_PORT = PORT;
+int set_port(int p) {
+	return PORT+p;
 }
 
 void *send_to_des(void* _des) {
@@ -212,11 +216,18 @@ void *send_to_des(void* _des) {
 	pthread_exit(0);
 }
 
-int create_connection(Broadcast* des) {
+void *send_to_des(void* _des) {
+
+	printf("Out of loop\n");
+	close(serv_socket);
+	pthread_exit(0);
+}
+
+int create_connection(Broadcast* des, int port_to_connect) {
 	struct sockaddr_in server_addr;
-	memset(&server_addr, '0', sizeof(server_addr));
+	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
+	server_addr.sin_port = htons(port_to_connect);
 	if (inet_aton(des->ipAddr, &server_addr.sin_addr) <= 0) {
 		printf("Input IP is not correct!\n");
 		return -1;
@@ -241,8 +252,11 @@ int create_connection(Broadcast* des) {
 void broadcast_graph() {
 	int i, socket;
 	collect_count = 0;
+	pthread_mutex_lock(send_count_mutex);
 	send_count = 0;
-	for (i = 0; i < desNum; i++) {
+	pthread_mutex_unlock(send_count_mutex);
+	for (i = 0; i < 100; i++) {
+		if (broadcast_list[i] == NULL) continue;
 		int is_active = (*(broadcast_list + i))->active;
 		if (is_active == -1) continue;
 

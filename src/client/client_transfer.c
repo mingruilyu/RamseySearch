@@ -13,8 +13,7 @@
 #include <pthread.h>
 #include "client_transfer.h"
 #include "search.h"
-static int SERVER_LISTEN_PORT = -1;
-static int CLIENT_LISTEN_PORT = -1;
+static int CLIENT_LISTEN_PORT = 8000;
 
 int send_file(char* ip_addr) {
 	char buffer[BUFFER_SIZE], filename[250];
@@ -135,12 +134,6 @@ void receive_file(int connected_socket) {
 	printf("File receiveing finished!\n\n");
 }
 
-void set_port() {
-	srand(time(NULL) * 1000);
-	SERVER_LISTEN_PORT = PORT;
-	CLIENT_LISTEN_PORT = PORT;
-}
-
 void *client_always_listen_to_one_handler() {
 	int err = pthread_detach(pthread_self());
 	if (err != 0) {
@@ -214,11 +207,11 @@ void *client_always_listen_to_one_handler() {
 	pthread_exit(0);
 }
 
-int create_connection(char* ip_addr) {
+int create_connection(char* ip_addr, int port_to_connect) {
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(SERVER_LISTEN_PORT);
+	server_addr.sin_port = htons(port_to_connect);
 	if (inet_aton(ip_addr, &server_addr.sin_addr) <= 0) {
 		printf("Input IP is not correct!\n");
 		exit(1);

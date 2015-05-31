@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
+	srand(time(NULL) * 1000);
 	set_port();
 
 	int err = 0, gsize;

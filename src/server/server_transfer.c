@@ -148,9 +148,9 @@ int receive_file(int connected_socket) {
 				return RECV_RETURN_ERROR;
 			}
 			
-			printf("buffer: %s\n", buffer);
+			//printf("buffer: %s\n", buffer);
 			written_length = fwrite(buffer, sizeof(char), length, fp);
-			printf("written length: %d\n", written_length);
+			//printf("written length: %d\n", written_length);
 			if (written_length < length) perror("File writing failed! :");
 			memset(buffer, '0', BUFFER_SIZE);
 		}

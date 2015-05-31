@@ -107,7 +107,7 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     // flip current edge
  	g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
   CliqueCountCreateCache(g, gsize);
-	if(cache_7.length > best_ever + 2) {
+	if(cache_7.length > best_ever + 5) {
    	g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
 		return to_return;
 	}

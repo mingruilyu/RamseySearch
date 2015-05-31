@@ -90,7 +90,7 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 					perror("fread error: ");
 					break;
 				}
-				printf("file_block_length = %d\n", file_block_length);
+				//printf("file_block_length = %d\n", file_block_length);
 				if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 					perror("Sending file failed! error: ");
 					break;

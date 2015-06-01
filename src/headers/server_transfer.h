@@ -47,4 +47,5 @@ extern int send_count;
 extern int collect_count;
 extern int gsize;
 extern int clique_count;
+extern char ip_log[10];
 #endif

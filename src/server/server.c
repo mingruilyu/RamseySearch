@@ -22,6 +22,7 @@ int gsize = 107;
 int clique_count; // the clique count of the seeds we are currently waiting for
 struct broadcast* broadcast_list[100];
 int SERVER_LISTEN_PORT = -1;
+char ip_log[10] = "ip_status.log";
 
 void broadcast_graph();
 void *server_print_handler();
@@ -32,18 +33,15 @@ int main(int argc, char* argv[]) {
 	char des_file[250], incoming_ip_addr[20];
 	char* existing_ip_addr;
 	int p, err = 0;
-	struct sockaddr_in serv_addr;
-	
+	struct sockaddr_in serv_addr;	
 	
 	clique_count = RECURSION_THRESHOLD - 1;
 	// upon initialization, put all files into seed_0
-
-	
 	
 	// initialize server
-	memset(&broadcast_list, '0', sizeof(broadcast_list));
+	memset(&broadcast_list, 0, sizeof(broadcast_list));
 	for (p = 0; p < 100; ++p)
-		memset(&broadcast_list[p], '0', sizeof(broadcast_list[p]));
+		memset(&broadcast_list[p], 0, sizeof(broadcast_list[p]));
 	set_port();
 
 
@@ -68,51 +66,54 @@ int main(int argc, char* argv[]) {
 	//new socket. Otherwise, a value of INVALID_SOCKET is returned, and a specific error code can be retrieved by calling WSAGetLastError.
 	serv_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serv_socket < 0) {
-		printf("Could not create server_listen_to_clients_handler socket!\n");
+		perror("Could not create server_listen_to_clients_handler socket!");
 		exit(1);
 	}
 
 	//A pointer to a sockaddr structure of the local address to assign to the bound socket.
 	iResult = bind(serv_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 	if (iResult != 0) {
-		perror("Could not bind server_listen_to_clients_handler socket!\n");
+		perror("Could not bind server_listen_to_clients_handler socket!");
 		exit(1);
 	}
 
-	printf("server_listen_to_clients_handler starts to listen!\n");
+	printf("Server starts to listen!\n");
 	//If no error occurs, listen returns zero.
-	//TODO: Listen to 20? OK or not
 	if (listen(serv_socket, 20)) {
-		printf("server_listen_to_clients_handler listening failed!\n");
+		perror("server_listen_to_clients_handler listening failed!");
 		exit(1);
 	}
 
 	struct sockaddr_in client_addr;
-	memset(&client_addr, '0', sizeof(client_addr));
+	memset(&client_addr, 0, sizeof(client_addr));
 	socklen_t length = sizeof(client_addr);
 	
 	pthread_t server_print_thread_id;
 	err = pthread_create(&server_print_thread_id, NULL, server_print_handler, NULL);
 	if (err != 0) perror("Could not create server_print_thread_id thread!");
 
+	FILE* log;
 	while (1) {
-		printf("goint to waiting\n");
 		connectedSocket = accept(serv_socket, (struct sockaddr*)&client_addr, &length);
 		if (connectedSocket == 0) {
-			perror("accept error :");
+			perror("accept:");
 			break;
 		}
-		printf("connectedSocket:            %d\n", connectedSocket);
 
 		//printf("server_listen_to_clients_handler did accept!\n");
+		log = fopen(ip_log, "a");
+		if (log == NULL) perror("Could not open to add!");
+
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
+		if (log != NULL) fprintf(log, "\nThe connection from %s\n", incoming_ip_addr);
 		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
 		exist = 0;
 		for (i = 0; i < desNum; ++i) {
 			existing_ip_addr = broadcast_list[i]->ipAddr;
 			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {
 				printf("This IP is already in the list!\n");
-				printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
+				if (log != NULL) fprintf(log, "IP Address: %s is already in the list!\n", incoming_ip_addr);
+				//printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
 				printf("desNum = %d\n", desNum);
 				if (broadcast_list[i]->active == -1)
 					broadcast_list[i]->active = 1;
@@ -127,12 +128,15 @@ int main(int argc, char* argv[]) {
 
 			broadcast_list[desNum] = broadcast_target;
 
-			printf("broadcast_list[%d] = broadcast_target", desNum);
+			//printf("broadcast_list[%d] = broadcast_target", desNum);
+			
+			if (log != NULL) fprintf(log, "New IP Address: %s added.\ndesNum = %d", incoming_ip_addr, desNum);
 
 			++desNum;
 		}
-
-		printf("Trying to recv!\n");
+		fclose(log);
+		
+		printf("Trying to receive!\n");
 		recv_result = receive_file(connectedSocket);
 		if (recv_result == RECV_RETURN_ERROR)
 			printf("Return error, receive error\n");
@@ -174,7 +178,7 @@ int main(int argc, char* argv[]) {
 				broadcast_graph();
 			}
 		}
-		printf("finish receivning\n");
+		printf("Finish receiving\n");
 		close(connectedSocket);
 	}
 	close(serv_socket);
@@ -182,30 +186,22 @@ int main(int argc, char* argv[]) {
 }
 
 void *server_print_handler() {
+	char* filename = "server_print.log";
+	FILE* fp;
 	while (1) {
-		printf("recv_count: %d\n", recv_count);
-		printf("send_count: %d\n", send_count);
-		printf("clique_count: %d\n", clique_count);
-		printf("currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
-		printf("current maximum counterexample %d\n", gsize);
+		fp = fopen(filename, "w");
+		if (fp == NULL) {
+			perror("Could not open to write!");
+			continue;
+		}
+
+		fprintf(fp, "recv_count: %d\n", recv_count);
+		fprintf(fp, "send_count: %d\n", send_count);
+		fprintf(fp, "clique_count: %d\n", clique_count);
+		fprintf(fp, "currently waiting for %d graphs\n", GRAPH_COLLECT_NO - collect_count);
+		fprintf(fp, "current maximum counterexample %d\n", gsize);
+		fclose(fp);
 		sleep(5);
 	}
-
 	pthread_exit(0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

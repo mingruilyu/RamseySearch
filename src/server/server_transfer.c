@@ -34,27 +34,27 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 		int file_block_length = 0, send_no;
 		memset(buffer, 0, sizeof(buffer));
 		
-		printf("sending clique_count %d\n", clique_count);	
+		printf("Sending clique_count %d\n", clique_count);	
 		if (search_mode == SEARCH_MODE_DEPTH_FIRST)
 			buffer[0] = 'd';
 		else
 			buffer[0] = 'b';
 		
 		if (send(connected_socket, buffer, BUFFER_SIZE, 0) < 0) {
-			perror("Sending failed! error: ");
+			perror("Sending failed! error");
 			return;
 		}
 		memset(buffer, 0, sizeof(buffer));
 		
-		printf("sending clique_count %d\n", clique_count);	
+		printf("Sending clique_count %d\n", clique_count);	
 		sprintf(buffer, "%d", clique_count);
 		if (send(connected_socket, buffer, BUFFER_SIZE, 0) < 0) {
-			perror("Sending failed! error: ");
+			perror("Sending failed! error ");
 			return;
 		}
 		memset(buffer, 0, sizeof(buffer));
 		
-		printf("sending graph %d\n", send_count % GRAPH_COLLECT_NO);
+		printf("Sending graph %d\n", send_count % GRAPH_COLLECT_NO);
 
 		switch(send_mode) {
 		case BROADCAST_RANDOM_RESTART:
@@ -74,11 +74,11 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			send_count ++;
 			break;
 		}
-		printf("reading file %s\n", filename);
+		printf("Reading file %s\n", filename);
 		
 		FILE * fp = fopen(filename, "r");
 		if (fp == NULL) {
-			perror("Could not open to read!\n");
+			perror("Could not open to read!");
 			return;
 		}
     else {
@@ -87,19 +87,19 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			while (1) {
 				file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
 				if (file_block_length <= 0) {
-					perror("fread error: ");
+					perror("fread error ");
 					break;
 				}
 				//printf("file_block_length = %d\n", file_block_length);
 				if (send(connected_socket, buffer, file_block_length, 0) < 0) {
-					perror("Sending file failed! error: ");
+					perror("Sending file failed! error ");
 					break;
 				}
 				memset(buffer, '0', sizeof(buffer));
 			}
 		}
 		fclose(fp);
-		printf("File transmitted!\n\n");
+		printf("File transmitted!\n");
 }
 
 int receive_file(int connected_socket) {
@@ -131,7 +131,7 @@ int receive_file(int connected_socket) {
 	}
 	else {
 		sprintf(filename, "../../file/server/temp/temp");
-		printf("receiving filename: %s \n", filename);
+		printf("Receiving filename: %s \n", filename);
 		FILE * fp = fopen(filename, "w");
 		if (fp == NULL) {
 			perror("Could not open to write! fopen error: ");
@@ -139,23 +139,23 @@ int receive_file(int connected_socket) {
 		}
 		written_length = fwrite(buffer, sizeof(char), length, fp);
 		if (written_length < length) printf("File writing failed!\n");
-		memset(buffer, '0', BUFFER_SIZE);
+		memset(buffer, 0, BUFFER_SIZE);
 		while (1) {
 			length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
  			if(!length) break;
 			else if (length < 0) {
-				perror("Receiving data failed! recv error: ");
+				perror("Receiving data failed! recv error ");
 				return RECV_RETURN_ERROR;
 			}
 			
 			//printf("buffer: %s\n", buffer);
 			written_length = fwrite(buffer, sizeof(char), length, fp);
 			//printf("written length: %d\n", written_length);
-			if (written_length < length) perror("File writing failed! :");
-			memset(buffer, '0', BUFFER_SIZE);
+			if (written_length < length) perror("File writing failed! ");
+			memset(buffer, 0, BUFFER_SIZE);
 		}
 		fclose(fp);
-		printf("File receiveing finished!\n\n");
+		printf("File receiveing finished!\n");
 		return RECV_RETURN_WRITE_GRAPH;
 	}
 }
@@ -177,7 +177,7 @@ void *send_to_des(void* _des) {
 
 		char* ip_addr = (*(des_list + i))->ipAddr;
 
-		printf("ip_addr: %s\n", ip_addr);
+		printf("Send to ip: %s\n", ip_addr);
 		
 		int iResult = 0, client_socket = socket(AF_INET, SOCK_STREAM, 0);
 		if (client_socket < 0) {
@@ -186,7 +186,7 @@ void *send_to_des(void* _des) {
 		}
 
 		struct sockaddr_in server_addr;
-		memset(&server_addr, '0', sizeof(server_addr));
+		memset(&server_addr, 0, sizeof(server_addr));
 		server_addr.sin_family = AF_INET;
 		server_addr.sin_port = htons(CLIENT_LISTEN_PORT);
 		
@@ -200,7 +200,7 @@ void *send_to_des(void* _des) {
 		//printf("send_to_des tries to connect!\n");
 		iResult = connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length);
 		if (iResult != 0) {
-			printf("\nsend_to_des could not connect! %s has retreated!!!\n", ip_addr);
+			printf("send_to_des could not connect! %s has retreated!!!\n", ip_addr);
 			(*(des_list + i))->active = -1;
 			close(client_socket);
 			continue;
@@ -232,9 +232,9 @@ int create_connection(Broadcast* des) {
 
 	if (connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length) < 0) {
 		printf("send_to_one_des could not connect!\n");
-		return -1;
+		return -2;
 	}
-	printf("Connected to the server!\n");
+	printf("Connected to the destination!\n");
 	return client_socket;
 }
 
@@ -254,8 +254,20 @@ void broadcast_graph() {
 			send_file(socket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 			close(socket);
 		}
-		else
-			printf("connect fail!\n");
+		else {
+			printf("create_connection failed!\n");
+			if (socket == -2) {
+				FILE* fp = fopen(ip_log, "a");
+				if (fp == NULL) {
+					perror("Could not open to add!");
+					continue;
+				}
+				fprintf(fp, "\nconnect()<0 ! %s has retreated!!!\n", ip_addr);
+				fclose(fp);
+				}
+			}
+		}
+
 /*		printf("ip_addr: %s\n", ip_addr);
 
 		pthread_t sock_send_thread_id;
@@ -268,7 +280,6 @@ void broadcast_graph() {
 			perror("sock_thread goes wrong!");
 		}*/
 		free(tmp);
-		
 	}
 }
 

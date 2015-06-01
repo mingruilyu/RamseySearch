@@ -239,6 +239,7 @@ int create_connection(Broadcast* des) {
 }
 
 void broadcast_graph() {
+	printf("broadcast_graph!\n");
 	int i, socket;
 	collect_count = 0;
 	send_count = 0;
@@ -250,13 +251,15 @@ void broadcast_graph() {
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
 		construct_broadcast(tmp, ip_addr, 1);
 		socket = create_connection(tmp);
-		if(socket != -1){ 
+		//printf("socket  =  %d\n", socket);
+		if(socket != -1 && socket != -2){ 
 			send_file(socket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 			close(socket);
 		}
 		else {
 			printf("create_connection failed!\n");
 			if (socket == -2) {
+				broadcast_list[i]->active = -1;
 				FILE* fp = fopen(ip_log, "a");
 				if (fp == NULL) {
 					perror("Could not open to add!");
@@ -264,7 +267,6 @@ void broadcast_graph() {
 				}
 				fprintf(fp, "\nconnect()<0 ! %s has retreated!!!\n", ip_addr);
 				fclose(fp);
-				}
 			}
 		}
 

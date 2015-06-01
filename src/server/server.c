@@ -22,7 +22,7 @@ int gsize = 107;
 int clique_count; // the clique count of the seeds we are currently waiting for
 struct broadcast* broadcast_list[100];
 int SERVER_LISTEN_PORT = -1;
-char ip_log[10] = "ip_status.log";
+char ip_log[14] = "ip_status.log";
 
 void broadcast_graph();
 void *server_print_handler();
@@ -105,18 +105,20 @@ int main(int argc, char* argv[]) {
 		if (log == NULL) perror("Could not open to add!");
 
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
-		if (log != NULL) fprintf(log, "\nThe connection from %s\n", incoming_ip_addr);
+		//if (log != NULL) fprintf(log, "\nThe connection from %s\n", incoming_ip_addr);
 		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
 		exist = 0;
 		for (i = 0; i < desNum; ++i) {
 			existing_ip_addr = broadcast_list[i]->ipAddr;
 			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {
 				printf("This IP is already in the list!\n");
-				if (log != NULL) fprintf(log, "IP Address: %s is already in the list!\n", incoming_ip_addr);
+				//if (log != NULL) fprintf(log, "IP Address: %s is already in the list!\n", incoming_ip_addr);
 				//printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
 				printf("desNum = %d\n", desNum);
-				if (broadcast_list[i]->active == -1)
+				if (broadcast_list[i]->active == -1) {
 					broadcast_list[i]->active = 1;
+					if (log != NULL) fprintf(log, "\nIP address: %s rejoins!!!\n", incoming_ip_addr);
+				}
 				exist = 1;
 				break;
 			}
@@ -130,7 +132,7 @@ int main(int argc, char* argv[]) {
 
 			//printf("broadcast_list[%d] = broadcast_target", desNum);
 			
-			if (log != NULL) fprintf(log, "New IP Address: %s added.\ndesNum = %d", incoming_ip_addr, desNum);
+			if (log != NULL) fprintf(log, "New IP Address: %s added.\ndesNum = %d\n", incoming_ip_addr, desNum);
 
 			++desNum;
 		}

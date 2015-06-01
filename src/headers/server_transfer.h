@@ -10,7 +10,7 @@
 #define BROADCAST_RANDOM_RESTART 1
 #define BROADCAST_RANDOM_CONTINUE 2
 #define BROADCAST_ORDER	3
-#define GRAPH_COLLECT_NO 1000
+#define GRAPH_COLLECT_NO 1000 
 
 extern int SERVER_LISTEN_PORT;
 
@@ -47,5 +47,5 @@ extern int send_count;
 extern int collect_count;
 extern int gsize;
 extern int clique_count;
-extern char ip_log[10];
+extern char ip_log[14];
 #endif

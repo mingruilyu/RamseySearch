@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	printf("Server starts to listen!\n");
+	//printf("Server starts to listen!\n");
 	//If no error occurs, listen returns zero.
 	if (listen(serv_socket, 20)) {
 		perror("server_listen_to_clients_handler listening failed!");
@@ -99,8 +99,6 @@ int main(int argc, char* argv[]) {
 			perror("accept:");
 			break;
 		}
-
-		//printf("server_listen_to_clients_handler did accept!\n");
 		log = fopen(ip_log, "a");
 		if (log == NULL) perror("Could not open to add!");
 
@@ -114,7 +112,7 @@ int main(int argc, char* argv[]) {
 				printf("This IP is already in the list!\n");
 				//if (log != NULL) fprintf(log, "IP Address: %s is already in the list!\n", incoming_ip_addr);
 				//printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
-				printf("desNum = %d\n", desNum);
+				//printf("desNum = %d\n", desNum);
 				if (broadcast_list[i]->active == -1) {
 					broadcast_list[i]->active = 1;
 					if (log != NULL) fprintf(log, "\nIP address: %s rejoins!!!\n", incoming_ip_addr);
@@ -138,7 +136,7 @@ int main(int argc, char* argv[]) {
 		}
 		fclose(log);
 		
-		printf("Trying to receive!\n");
+		//printf("Trying to receive!\n");
 		recv_result = receive_file(connectedSocket);
 		if (recv_result == RECV_RETURN_ERROR)
 			printf("Return error, receive error\n");
@@ -177,12 +175,12 @@ int main(int argc, char* argv[]) {
 				else clique_count--;
 				// clean seed file
 				sprintf(dir_name, "../../file/server/seed_%d", clique_count % 2);
-				printf("cleaning %s\n", dir_name);
+				//printf("cleaning %s\n", dir_name);
 				delete_graph(dir_name);
 				broadcast_graph();
 			}
 		}
-		printf("Finish receiving\n");
+		//printf("Finish receiving\n");
 		close(connectedSocket);
 	}
 	close(serv_socket);

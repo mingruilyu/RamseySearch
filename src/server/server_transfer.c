@@ -102,6 +102,36 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 		printf("File transmitted!\n");
 }
 
+void send_log(int connected_socket) {
+	char buffer[BUFFER_SIZE];
+	int file_block_length = 0;
+	memset(buffer, 0, sizeof(buffer));
+
+	FILE* fp = fopen("server_print.log", "r");
+	if (fp == NULL) {
+		perror("Could not open log to read!");
+		return;
+	}
+	else {
+		file_block_length = 0;
+		while (1) {
+			file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
+			if (file_block_length <= 0) {
+				perror("fread error ");
+				break;
+			}
+			//printf("file_block_length = %d\n", file_block_length);
+			if (send(connected_socket, buffer, file_block_length, 0) < 0) {
+				perror("Sending file failed! error ");
+				break;
+			}
+			memset(buffer, '0', sizeof(buffer));
+		}
+	}
+	fclose(fp);
+	printf("Log transmitted!\n");
+}
+
 int receive_file(int connected_socket) {
 	char buffer[BUFFER_SIZE], filename[250];
 	int written_length;
@@ -128,6 +158,9 @@ int receive_file(int connected_socket) {
 		}
 		else
 			return RECV_RETURN_SEND_GRAPH_BREADTH_FIRST;
+	}
+	else if (buffer[0] == 'l') {
+			return RECV_RETURN_LOG;
 	}
 	else {
 		sprintf(filename, "../../file/server/temp/temp");

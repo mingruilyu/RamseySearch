@@ -22,7 +22,7 @@ OBJS = $(SRCS:.c=.o)
 
 OBJS_BUILD = $(shell ls $(OBJ_DIR)/*.o)
 
-APP = prog
+APP = log
 
 all: dirs $(APP)
 

@@ -152,6 +152,8 @@ int main(int argc, char* argv[]) {
 		}
 		else if (recv_result == RECV_RETURN_SEND_GRAPH_BREADTH_FIRST)
 			send_file(connectedSocket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
+		else if (recv_result == RECV_RETURN_LOG)
+			send_log(connectedSocket);
 		else {
 			ReadGraph("../../file/server/temp/temp", &g, &gsize);
 			count = CliqueCount(g, gsize);

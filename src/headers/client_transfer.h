@@ -9,6 +9,8 @@ int send_file();
 
 void send_request(char *ip_addr);
 
+void send_check(char* ip_addr);
+
 void receive_file(int connected_socket);
 
 void set_port();

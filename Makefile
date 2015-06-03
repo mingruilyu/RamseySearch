@@ -5,7 +5,8 @@ src/server
 CLIENT_SRC_DIRS=\
 src/utils \
 src/search \
-src/client
+src/client \
+src/log
  
 SRC_DIRS=\
 src/utils \
@@ -13,12 +14,23 @@ src/search \
 src/server \
 src/client
 
+LOG_DIRS=\
+src/log
+
 all: multimake_server
 
 server: multimake_server
 
 client: multimake_client
- 
+
+log: multimake_log
+
+multimake_log:
+	@for d in $(LOG_DIRS);  \
+	do          \
+		make -C $$d;    \
+	done;       \
+
 multimake_client:
 	@for d in $(CLIENT_SRC_DIRS);  \
 	do          \

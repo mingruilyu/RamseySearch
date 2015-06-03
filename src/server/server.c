@@ -18,7 +18,7 @@ int desNum = 0;
 int recv_count = 0;
 int send_count = 0;
 int collect_count = 0;
-int gsize = 107;
+int gsize = 120;
 int clique_count; // the clique count of the seeds we are currently waiting for
 struct broadcast* broadcast_list[100];
 int SERVER_LISTEN_PORT = -1;

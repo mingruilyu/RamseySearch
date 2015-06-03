@@ -127,6 +127,45 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
 				printf("Failed to send graph!\n");
 		}
 	}
+  // check upon this flip, is there any chance we may reduce
+  // clique 7 count by flip another edge
+/* create_edge_stat(gsize);
+  best_count = best_ever;
+  for(i = 0; i < gsize; i ++) {
+		if(vertex[i]) {
+			for(j = i + 1; j < gsize; j ++) {
+				if(edges[i][j] != 0) {
+					g[i * gsize + j] = 1 - g[i * gsize + j];
+					count = CliqueCountUseCache(g, gsize, i, j, best_count);
+					if(count != -1 && count < best_count) {
+						best_count = count;
+						best_i = i;
+          	best_j = j;
+          }
+          g[i * gsize + j] = 1 - g[i * gsize + j];
+        }
+      }
+    }
+  }
+    // if nothing happened in previous loop
+    // best_count would have been equal to
+    // best_ever
+  if(best_count <= best_ever) {
+        // we need to flip this edge, and leave the caller
+        // of this function to flip the i, j
+  	g[best_i * gsize + best_j] = 1 - g[best_i * gsize + best_j];
+   // g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
+    FIFOInsertEdgeCount(taboo_list, best_i, best_j, best_count);
+    printf("best_count = %d, edge(%d, %d) \n",
+           best_count, best_i, best_j);
+		to_return = RECURSION_RETURN_SUCCESS;
+		PrintGraphNew(g, gsize, new_graph_count);
+		FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
+		if(send_file(ip_addr) != 0)
+			printf("Failed to send graph!\n");
+    //return best_count;
+  }*/
+  
 	if(level == 0) {
  		g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
 		return RECURSION_RETURN_FAIL;
@@ -142,7 +181,14 @@ int recursiveSearch(int* g, int gsize, int level, int best_ever,
     if(count == RECURSION_RETURN_TERMINATION) {
 			to_return = RECURSION_RETURN_TERMINATION;
 			break;
-		}
+		}/* else if(count >= 0) {
+			to_return = RECURSION_RETURN_SUCCESS;
+			FIFOInsertEdgeCount(taboo_list, nb_i, nb_j, count);
+    	g[nb_i * gsize + nb_j] = 1 - g[nb_i * gsize + nb_j];
+			PrintGraphNew(g, gsize, new_graph_count);
+			if(send_file(ip_addr) != 0)
+				printf("Failed to send graph!\n");
+		}*/
 	}		
   g[cur_i * gsize + cur_j] = 1 - g[cur_i * gsize + cur_j];
   return to_return;	

@@ -13,6 +13,14 @@
 #define TABOOSIZE (500)
 #define BIGCOUNT (1000)
 #define SA_THRESHOLD (90)
+/*
+ * example of very simple search for R(7, 7) counter 
+ * examples starts with a small randomized graph and 
+ * works its way up to successively larger graphs one 
+ * at a time
+ * uses a taboo list of size #TABOOSIZE# to hold and 
+ * encoding of and edge (i, j) + clique_count
+ */
 
 int BFsearch(int *g, int gsize) {
 	int count, i, j, best_count = BIGCOUNT,
@@ -161,8 +169,8 @@ int DFsearch(int *g, int gsize) {
 				if(count != -1 && last_i != i && last_j != j && 
 					(count <= best_count || rand() % 100 > SA_THRESHOLD + (count - best_ever))
 						&& !FIFOFindEdgeCount(taboo_list, i, j, count)) {
-			//if(count != -1 && last_i != i && last_j != j 
-			//		&& (count <= best_count) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
+				//if(count != -1 && last_i != i && last_j != j 
+				//	&& (count <= best_count) && !FIFOFindEdgeCount(taboo_list, i, j, count)) {
     	    best_count = count;
           best_i = i;
           best_j = j;

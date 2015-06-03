@@ -83,14 +83,12 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 		}
     else {
       file_block_length = 0;
-			//printf("Entering the read while block!\n");
 			while (1) {
 				file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
 				if (file_block_length <= 0) {
 					perror("fread error ");
 					break;
 				}
-				//printf("file_block_length = %d\n", file_block_length);
 				if (send(connected_socket, buffer, file_block_length, 0) < 0) {
 					perror("Sending file failed! error ");
 					break;
@@ -108,7 +106,6 @@ int receive_file(int connected_socket) {
 	memset(buffer, '0', sizeof(buffer));
 	
 	int length = recv(connected_socket, buffer, BUFFER_SIZE, 0);
-	//printf("buffer %s", buffer);
 	if (length < 0) {
 		printf("Receiving data failed!\n");
 		return RECV_RETURN_ERROR;
@@ -148,9 +145,7 @@ int receive_file(int connected_socket) {
 				return RECV_RETURN_ERROR;
 			}
 			
-			//printf("buffer: %s\n", buffer);
 			written_length = fwrite(buffer, sizeof(char), length, fp);
-			//printf("written length: %d\n", written_length);
 			if (written_length < length) perror("File writing failed! ");
 			memset(buffer, 0, BUFFER_SIZE);
 		}
@@ -197,7 +192,6 @@ void *send_to_des(void* _des) {
 		
 		socklen_t server_addr_length = sizeof(server_addr);
 
-		//printf("send_to_des tries to connect!\n");
 		iResult = connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length);
 		if (iResult != 0) {
 			printf("send_to_des could not connect! %s has retreated!!!\n", ip_addr);
@@ -251,7 +245,6 @@ void broadcast_graph() {
 		Broadcast* tmp = (Broadcast*)malloc(sizeof(Broadcast));
 		construct_broadcast(tmp, ip_addr, 1);
 		socket = create_connection(tmp);
-		//printf("socket  =  %d\n", socket);
 		if(socket != -1 && socket != -2){ 
 			send_file(socket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
 			close(socket);
@@ -269,18 +262,6 @@ void broadcast_graph() {
 				fclose(fp);
 			}
 		}
-
-/*		printf("ip_addr: %s\n", ip_addr);
-
-		pthread_t sock_send_thread_id;
-		err = pthread_create(&sock_send_thread_id, NULL, send_to_one_des, (void*)tmp);
-		if (err != 0) perror("Could not create send_to_one_des thread!");
-
-		err = pthread_join(sock_send_thread_id, NULL);
-		if (err != 0) {
-			printf("sock_thread goes wrong! %s \n", strerror(err));
-			perror("sock_thread goes wrong!");
-		}*/
 		free(tmp);
 	}
 }

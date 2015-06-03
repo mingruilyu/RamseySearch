@@ -100,21 +100,17 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 
-		//printf("server_listen_to_clients_handler did accept!\n");
 		log = fopen(ip_log, "a");
 		if (log == NULL) perror("Could not open to add!");
 
 		printf("\nThe connection from %s\n", inet_ntop(AF_INET, &(client_addr.sin_addr), incoming_ip_addr, 16));
-		//if (log != NULL) fprintf(log, "\nThe connection from %s\n", incoming_ip_addr);
-		//printf("incoming_ip_addr = %s\n", incoming_ip_addr);
+		
 		exist = 0;
 		for (i = 0; i < desNum; ++i) {
 			existing_ip_addr = broadcast_list[i]->ipAddr;
 			if (strcmp(incoming_ip_addr, existing_ip_addr) == 0) {
 				printf("This IP is already in the list!\n");
-				//if (log != NULL) fprintf(log, "IP Address: %s is already in the list!\n", incoming_ip_addr);
-				//printf("broadcast_list[%d]->ipAddr = %s\n", i, incoming_ip_addr);
-				printf("desNum = %d\n", desNum);
+	
 				if (broadcast_list[i]->active == -1) {
 					broadcast_list[i]->active = 1;
 					if (log != NULL) fprintf(log, "\nIP address: %s rejoins!!!\n", incoming_ip_addr);
@@ -130,8 +126,6 @@ int main(int argc, char* argv[]) {
 
 			broadcast_list[desNum] = broadcast_target;
 
-			//printf("broadcast_list[%d] = broadcast_target", desNum);
-			
 			if (log != NULL) fprintf(log, "New IP Address: %s added.\ndesNum = %d\n", incoming_ip_addr, desNum);
 
 			++desNum;
@@ -145,10 +139,8 @@ int main(int argc, char* argv[]) {
 		else if (recv_result == RECV_RETURN_SEND_GRAPH_DEPTH_FIRST) {
 			if (collect_count == 0) 
 				send_file(connectedSocket, SEARCH_MODE_DEPTH_FIRST, BROADCAST_RANDOM_RESTART);
-				//broadcast_graph(SEARCH_MODE_DEPTH_FIRST, BROADCAST_RANDOM_RESTART);
 			else
 				send_file(connectedSocket, SEARCH_MODE_DEPTH_FIRST, BROADCAST_RANDOM_CONTINUE);
-			//	broadcast_graph(SEARCH_MODE_DEPTH_FIRST, BROADCAST_RANDOM_CONTINUE);
 		}
 		else if (recv_result == RECV_RETURN_SEND_GRAPH_BREADTH_FIRST)
 			send_file(connectedSocket, SEARCH_MODE_BREADTH_FIRST, BROADCAST_ORDER);
@@ -164,7 +156,7 @@ int main(int argc, char* argv[]) {
 			else if (count <= clique_count){
 				sprintf(des_file, "../../file/server/seed_%d/%d", clique_count % 2, collect_count++);
 				copy("../../file/server/temp/temp", des_file);
-			} // else leave the received file there because it is obsolete
+			}
 
 			if (collect_count >= GRAPH_COLLECT_NO) {
 				if (clique_count == 0){

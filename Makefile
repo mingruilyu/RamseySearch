@@ -6,7 +6,6 @@ CLIENT_SRC_DIRS=\
 src/utils \
 src/search \
 src/client \
-src/log
  
 SRC_DIRS=\
 src/utils \

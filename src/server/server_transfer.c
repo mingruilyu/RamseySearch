@@ -87,7 +87,7 @@ void send_file(int connected_socket, bool search_mode, int send_mode) {
 			while (1) {
 				file_block_length = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
 				if (file_block_length <= 0) {
-					perror("fread error ");
+					//perror("fread error ");
 					break;
 				}
 				//printf("file_block_length = %d\n", file_block_length);
